@@ -6,7 +6,7 @@ import { initializeApp } from "firebase/app";
 import { fill } from "@cloudinary/url-gen/actions/resize";
 
 import { getFirestore } from "firebase/firestore";
-import { User, getAuth } from "firebase/auth";
+import { GoogleAuthProvider, User, getAuth } from "firebase/auth";
 import { useState } from "react";
 import Login from "./components/Login";
 import { Route, Routes } from "react-router-dom";
@@ -46,6 +46,7 @@ export default function App() {
       setUser(user);
     }
   });
+  const provider = new GoogleAuthProvider();
   const cld = new Cloudinary({ cloud: { cloudName: "dwdpgwxqv" } });
   const myImage = cld.image("docs/models");
   myImage.resize(fill().width(250).height(250));

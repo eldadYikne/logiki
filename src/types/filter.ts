@@ -1,5 +1,4 @@
-import { Soldier } from "./soldier";
-import { CombinedKeys, Item, TableData, itemType } from "./table";
+import { CombinedKeys, Item, itemType } from "./table";
 
 export interface FilterOptions {
   soldiers: FilterOption[];

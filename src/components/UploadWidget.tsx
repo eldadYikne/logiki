@@ -7,6 +7,7 @@ export function UploadWidget(props: Props) {
   const cloudinaryRef = useRef<any>();
   const widgetRef = useRef<any>();
   const [imageUrl, setImageUrl] = useState("");
+  imageUrl;
   const secureUri = "http://res.cloudinary.com/dfsknqfnh/image/upload/";
   useEffect(() => {
     cloudinaryRef.current = (window as any).cloudinary;

@@ -1,7 +1,6 @@
-import { AutoComplete, Button, DatePicker, Modal, Placeholder } from "rsuite";
+import { AutoComplete, Button, DatePicker, Modal } from "rsuite";
 import { DetailsItem } from "../types/soldier";
 import { useState } from "react";
-import SignatureCanvas from "react-signature-canvas";
 import Signature from "./Signature";
 import { Item } from "../types/table";
 export default function HModal({
@@ -10,7 +9,6 @@ export default function HModal({
   item,
   mode,
   dropdownOptions,
-  dropdownTitle,
   onConfirm,
 }: Props) {
   const modalOptions = {
@@ -23,6 +21,7 @@ export default function HModal({
   const [signatureUrl, setSignatureUrl] = useState<string>();
   const [selectedOption, setSelectedOption] = useState<DetailsItem>(); // Stores the selected object
   const [inputValue, setInputValue] = useState(""); // Manages input value for di
+  inputValue;
   return (
     <Modal
       open={isOpen}

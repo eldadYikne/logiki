@@ -11,9 +11,6 @@ import { useEffect, useState } from "react";
 import { Button } from "rsuite";
 import ExitIcon from "@rsuite/icons/Exit";
 function GoogleAuth(props: Props) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const [connectedUser, setConnectedUser] = useState<User>();
   const auth = getAuth();
 
@@ -21,7 +18,7 @@ function GoogleAuth(props: Props) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid;
+        user.uid;
         // console.log("connected user", user);
         setConnectedUser(user);
         props.setUser(user);

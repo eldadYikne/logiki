@@ -2,12 +2,9 @@ import React, { useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Item } from "../types/table";
 import {
-  PDFViewer,
   PDFDownloadLink,
   Document,
   Page,
-  View,
-  Text,
   Font,
   StyleSheet,
 } from "@react-pdf/renderer";

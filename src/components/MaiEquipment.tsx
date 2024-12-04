@@ -1,10 +1,4 @@
-import {
-  CombinedKeys,
-  Item,
-  TableData,
-  TableHeaders,
-  itemType,
-} from "../types/table";
+import { Item, TableData, TableHeaders, itemType } from "../types/table";
 import { Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
 import { useEffect, useState } from "react";

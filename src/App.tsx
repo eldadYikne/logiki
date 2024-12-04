@@ -46,7 +46,8 @@ export default function App() {
       setUser(user);
     }
   });
-  const provider = new GoogleAuthProvider();
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider;
   const cld = new Cloudinary({ cloud: { cloudName: "dwdpgwxqv" } });
   const myImage = cld.image("docs/models");
   myImage.resize(fill().width(250).height(250));

@@ -4,7 +4,6 @@ import {
   getAuth,
   onAuthStateChanged,
   signInWithPopup,
-  signInWithRedirect,
   signOut,
 } from "firebase/auth";
 import GoogleIcon from "@rsuite/icons/Google";
@@ -32,11 +31,11 @@ function GoogleAuth(props: Props) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithRedirect(auth, provider);
-    } catch (err) {
-      await signInWithPopup(auth, provider);
-    }
+    signInWithPopup(auth, provider);
+    // try {
+    //   await signInWithRedirect(auth, provider);
+    // } catch (err) {
+    // }
   };
 
   const logOut = async () => {

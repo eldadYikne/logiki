@@ -75,7 +75,8 @@ export default function HTable(props: Props) {
         <Tr>
           {props.headers.map((header, index) => {
             return (
-              header !== "id" && (
+              header !== "id" &&
+              header !== "soldierId" && (
                 <Th
                   key={index}
                   onClick={() => handleSort(header)}
@@ -98,7 +99,8 @@ export default function HTable(props: Props) {
           <Tr key={rowIndex}>
             {props.headers.map((header, colIndex) => {
               return (
-                header !== "id" && (
+                header !== "id" &&
+                header !== "soldierId" && (
                   <Td
                     className="cursor-pointer"
                     onClick={() => {

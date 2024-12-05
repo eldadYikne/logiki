@@ -3,6 +3,7 @@ import {
   User,
   getAuth,
   onAuthStateChanged,
+  signInWithPopup,
   signInWithRedirect,
   signOut,
 } from "firebase/auth";
@@ -29,10 +30,13 @@ function GoogleAuth(props: Props) {
     return unsubscribe;
   }, [connectedUser]);
 
-  const signInWithGoogle = () => {
+  const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    // signInWithPopup(auth, provider);
-    signInWithRedirect(auth, provider);
+    try {
+      await signInWithRedirect(auth, provider);
+    } catch (err) {
+      await signInWithPopup(auth, provider);
+    }
   };
 
   const logOut = async () => {

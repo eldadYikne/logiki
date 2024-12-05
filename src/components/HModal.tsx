@@ -1,8 +1,9 @@
 import { AutoComplete, Button, DatePicker, Modal } from "rsuite";
-import { DetailsItem } from "../types/soldier";
+import { DetailsItem, Soldier } from "../types/soldier";
 import { useState } from "react";
 import Signature from "./Signature";
 import { Item } from "../types/table";
+import { getCurrentDate } from "../utils";
 export default function HModal({
   isOpen,
   onCloseModal,
@@ -88,6 +89,11 @@ export default function HModal({
               soldierId: selectedOption?.id,
               owner: selectedOption?.name,
               pdfFileSignature: signatureUrl,
+              signtureDate: getCurrentDate(),
+              soldierPersonalNumber:
+                selectedOption && selectedOption
+                  ? (selectedOption as Soldier)?.personalNumber
+                  : 0,
               status: "signed",
             } as Item);
             onCloseModal();

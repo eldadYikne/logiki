@@ -66,3 +66,39 @@ body {
     url("http://fonts.gstatic.com/s/alef/v6/gzq6OSepdeZ1VdycsVw6Vg.ttf")
       format("truetype");
 }
+@media screen and (max-width: 600px) {
+  .responsiveTable td .tdBefore {
+    left: 10rem;
+    text-align: right !important ;
+  }
+  .responsiveTable td.pivoted {
+    padding-left: 10px !important;
+  }
+  .pivoted span {
+    /* position: absolute; */
+    left: 1rem;
+    margin-right: 30px;
+    text-align: right !important ;
+  }
+  .pivoted {
+    /* position: absolute; */
+    width: 100%;
+  }
+  .pivoted .profile-image {
+    position: absolute;
+    right: 0rem;
+    top: -17px;
+    text-align: right !important ;
+    margin-bottom: 10px;
+  }
+  .pivoted.profile-image img {
+    height: 45px;
+    width: 45px;
+  }
+  .pivoted.profile-image .tdBefore {
+    display: none;
+  }
+  .responsiveTable tbody tr {
+    padding: 20px;
+  }
+}

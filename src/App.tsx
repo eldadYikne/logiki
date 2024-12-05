@@ -11,6 +11,8 @@ import { Route, Routes } from "react-router-dom";
 import DetailsPreview from "./components/DetailsPreview";
 import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
+import AdminPage from "./components/AdminPage";
+import Navbar from "./components/Navbar";
 
 // TODO: Add SDKs for Firebase products that you want to use
 
@@ -35,19 +37,21 @@ export default function App() {
   myImage.resize(fill().width(250).height(250));
 
   return (
-    <div>
+    <div dir="rtl">
+      {user && <Navbar setUser={setUser} user={user} />}
       <Routes>
         <Route
           path="/"
           element={
-            user && user.email === "hapakmaog162@gmail.com" ? (
-              <MaiEquipment setUser={setUser} user={user} />
-            ) : (
+            !user ? (
               <Login userConnected={""} setConnectedUser={setUser} />
+            ) : (
+              <MaiEquipment setUser={setUser} user={user} />
             )
           }
         />
-        <Route path="/soldier/:id" element={<DetailsPreview />} />
+        {user && <Route path="/soldier/:id" element={<DetailsPreview />} />}
+        {user && <Route path="/admin" element={<AdminPage user={user} />} />}
       </Routes>
     </div>
   );

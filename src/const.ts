@@ -1,5 +1,11 @@
 import { Soldier } from "./types/soldier";
-import { CombinedKeys, Item, Status, TableHeaders } from "./types/table";
+import {
+  CombinedKeys,
+  Item,
+  ItemHistory,
+  Status,
+  TableHeaders,
+} from "./types/table";
 
 export const ItemTranslate: { [key in CombinedKeys]: string } = {
   id: "מזהה", // Translate to Hebrew or any language you prefer
@@ -19,6 +25,8 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   profileImage: "תמונת פרופיל",
   pdfFileSignature: "טופס חתימה",
   status: "סטטוס",
+  signtureDate: "תאריך חתימה",
+  soldierPersonalNumber: "מספר אישי",
 };
 
 export const itemsKeys = Object.keys({
@@ -31,6 +39,8 @@ export const itemsKeys = Object.keys({
   id: "",
   pdfFileSignature: "",
   status: "stored",
+  soldierPersonalNumber: 0,
+  signtureDate: "",
 } as Item) as (keyof Item)[];
 
 export const headerTranslate: { [key in keyof TableHeaders]: string } = {
@@ -43,6 +53,13 @@ export const statusTranslate: Record<Status, string> = {
   broken: "שבור",
   signed: "חתום",
   stored: "מאופסן",
+};
+export const historyTranslate: { [key in keyof ItemHistory]: string } = {
+  dateReturn: "תאריך הזדכות",
+  dateTaken: "תאריך החתמה",
+  ownerName: "שם חותם",
+  representative: "רס״פ מזכה",
+  soldierId: "מזהה חייל",
 };
 export const soldierKeys = Object.keys({
   profileImage: "",
@@ -57,3 +74,8 @@ export const soldierKeys = Object.keys({
 // export const nightVisionDevices :Item[]= [{
 
 // }]
+export const statusColors: Record<Status, string> = {
+  broken: "red",
+  signed: "#a1a5ac",
+  stored: "#269d26",
+};

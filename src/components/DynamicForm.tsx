@@ -65,6 +65,8 @@ const DynamicForm: React.FC<Props> = ({
           itemType,
           pdfFileSignature: "",
           status: "stored",
+          soldierPersonalNumber: 0,
+          signtureDate: "",
         } as Item)
       : ({
           id: uuidv4(),
@@ -110,7 +112,7 @@ const DynamicForm: React.FC<Props> = ({
     >
       {fields.map((field) => {
         return field === "profileImage" ? (
-          <div className="">
+          <div key={field} className="">
             <UploadWidget
               text="העלה תמונה"
               previewType="button"

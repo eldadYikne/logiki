@@ -2,7 +2,6 @@ import { Item, TableData, TableHeaders, itemType } from "../types/table";
 import { Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
 import { useEffect, useState } from "react";
-import Navbar from "./Navbar";
 import DynamicForm from "./DynamicForm";
 import { headerTranslate, itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
@@ -108,9 +107,24 @@ function MaiEquipment(props: Props) {
     setItemToEdit(item);
     setIsFormOpen(true);
   };
+  if (
+    props.user.email &&
+    props.user.email !== "hapakmaog162@gmail.com" &&
+    !data?.admins.includes(props.user.email)
+  ) {
+    return (
+      <div
+        dir="rtl"
+        className="flex flex-col h-screen justify-center items-center bg-blue-950   w-full"
+      >
+        <span className="flex p-10 text-2xl bg-white justify-center items-center rounded-lg text-center">
+          {`למשתמש ${props.user.email} אין הרשאה לגשת לאתר זה בפקודה!`}
+        </span>
+      </div>
+    );
+  }
   return (
     <div dir="rtl" className="flex flex-col bg-blue-950   w-full">
-      <Navbar setUser={props.setUser} user={props.user} />
       <div className="p-12">
         <div className="flex ">
           {!itemToEdit &&
@@ -127,7 +141,7 @@ function MaiEquipment(props: Props) {
                     ? "bg-blue-900 text-white"
                     : "bg-gray-200"
                 } 
-               p-3  rounded-t-3xl shadow-md   cursor-pointer m-[1px]`}
+               p-3  rounded-t-3xl shadow-md sm:text-md text-sm   cursor-pointer m-[1px]`}
               >
                 {" "}
                 {headerTranslate[header as keyof TableHeaders]}

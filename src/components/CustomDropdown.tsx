@@ -5,7 +5,7 @@ export default function CustomDropdown(props: Props) {
   return (
     <Dropdown title={props.placeholder}>
       {props.options.map((option) => {
-        return <Dropdown.Item>{option.name}</Dropdown.Item>;
+        return <Dropdown.Item key={option.id}>{option.name}</Dropdown.Item>;
       })}
     </Dropdown>
   );

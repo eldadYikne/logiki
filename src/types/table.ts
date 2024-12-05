@@ -6,14 +6,16 @@ export interface Item {
   serialNumber: string;
   owner: string;
   soldierId: string;
-  history: History[];
+  signtureDate: string;
+  history: ItemHistory[];
   itemType: itemType;
   pdfFileSignature: string;
   status: Status;
+  soldierPersonalNumber: number;
 }
 export type Status = "stored" | "signed" | "broken";
 
-interface History {
+export interface ItemHistory {
   ownerName: string;
   soldierId: string;
   representative: string;
@@ -37,6 +39,7 @@ export interface TableData {
   nightVisionDevice: Item[];
   combatEquipment: Item[];
   weaponAccessories: Item[];
+  admins: string[];
 }
 
 export type CombinedKeys = keyof Item | keyof Soldier | itemType; // Union of keys from both Item and Soldier

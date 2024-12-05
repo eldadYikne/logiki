@@ -2,8 +2,13 @@ import { useState } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { Soldier } from "../types/soldier";
-import { Item, Status, TableHeaders } from "../types/table";
-import { ItemTranslate, headerTranslate, statusTranslate } from "../const";
+import { Item, TableHeaders } from "../types/table";
+import {
+  ItemTranslate,
+  headerTranslate,
+  statusColors,
+  statusTranslate,
+} from "../const";
 import { Button } from "rsuite";
 import { TypeAttributes } from "rsuite/esm/internals/types";
 import SortDownIcon from "@rsuite/icons/SortDown";
@@ -76,6 +81,7 @@ export default function HTable(props: Props) {
           {props.headers.map((header, index) => {
             return (
               header !== "id" &&
+              header !== "history" &&
               header !== "soldierId" && (
                 <Th
                   key={index}
@@ -100,9 +106,12 @@ export default function HTable(props: Props) {
             {props.headers.map((header, colIndex) => {
               return (
                 header !== "id" &&
+                header !== "history" &&
                 header !== "soldierId" && (
                   <Td
-                    className="cursor-pointer"
+                    className={`cursor-pointer ${
+                      header === "profileImage" ? "profile-image" : ""
+                    }`}
                     onClick={() => {
                       navigate(`/soldier/${row.id}`);
                     }}
@@ -151,21 +160,23 @@ function renderCellData(header: string, row: Soldier | Item) {
         ));
       } else if (header === "status") {
         return (
-          <button
-            className={`bg-${
-              statusColors[(row as Item).status]
-            }-300 p-1 rounded`}
-            style={{ background: statusColors[(row as Item).status] }}
-          >
-            {" "}
-            {statusTranslate[(row as Item).status]}
-          </button>
+          <span>
+            <button
+              className={`bg-${
+                statusColors[(row as Item).status]
+              }-300 p-1 rounded`}
+              style={{ background: statusColors[(row as Item).status] }}
+            >
+              {" "}
+              {statusTranslate[(row as Item).status]}
+            </button>
+          </span>
         );
       } else if (header === "itemType") {
-        return headerTranslate[value as keyof TableHeaders];
+        return <span>{headerTranslate[value as keyof TableHeaders]}</span>;
       } else if (header === "profileImage") {
         return (
-          <span className="flex w-full justify-center">
+          <span className="profile-image">
             <img
               className="h-8 w-8 bg-white rounded-full"
               src={
@@ -177,9 +188,9 @@ function renderCellData(header: string, row: Soldier | Item) {
           </span>
         );
       } else if (header === "id" || header === "pdfFileSignature") {
-        return "x";
+        return <span>x</span>;
       } else {
-        return value;
+        return <span>{value}</span>;
       }
     } else {
       return ""; // If the property doesn't exist in the row, return an empty string
@@ -187,11 +198,7 @@ function renderCellData(header: string, row: Soldier | Item) {
   }
   return ""; // Default case if the row isn't a Soldier or Item
 }
-const statusColors: Record<Status, string> = {
-  broken: "red",
-  signed: "#a1a5ac",
-  stored: "#269d26",
-};
+
 interface Props {
   headers: string[];
   data: (Soldier | Item)[];

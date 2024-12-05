@@ -7,9 +7,9 @@ import DynamicForm from "./DynamicForm";
 import { headerTranslate, itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../App";
 import { User } from "firebase/auth";
 import { updateBoard } from "../service/board";
+import { db } from "../main";
 
 function MaiEquipment(props: Props) {
   const [selecteTable, setSelectedTable] =

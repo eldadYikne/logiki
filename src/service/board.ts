@@ -1,5 +1,5 @@
 import { collection, doc, updateDoc } from "firebase/firestore";
-import { db } from "../App";
+import { db } from "../main";
 
 export const updateBoard = async (boardId: string, boardData: any) => {
   boardId;

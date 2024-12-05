@@ -2,12 +2,12 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CombinedKeys, Item, TableData, TableHeaders } from "../types/table";
-import { db } from "../App";
 import { DetailsItem, Soldier } from "../types/soldier";
 import { ItemTranslate, headerTranslate } from "../const";
 import { Button } from "rsuite";
 import HModal from "./HModal";
 import { updateBoard } from "../service/board";
+import { db } from "../main";
 
 export default function DetailsPreview() {
   const { id } = useParams();

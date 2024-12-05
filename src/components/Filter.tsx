@@ -11,10 +11,12 @@ export default function Filter(props: Props) {
     combatEquipment: [
       { key: "serialNumber", type: "string" },
       { key: "name", type: "string" },
+      { key: "owner", type: "string" },
     ],
     nightVisionDevice: [
       { key: "serialNumber", type: "string" },
       { key: "name", type: "string" },
+      { key: "owner", type: "string" },
     ],
     soldiers: [
       { key: "personalNumber", type: "string" },
@@ -24,6 +26,7 @@ export default function Filter(props: Props) {
     weaponAccessories: [
       { key: "serialNumber", type: "string" },
       { key: "name", type: "string" },
+      { key: "owner", type: "string" },
     ],
   };
   return (

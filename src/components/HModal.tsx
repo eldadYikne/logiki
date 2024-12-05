@@ -88,6 +88,7 @@ export default function HModal({
               soldierId: selectedOption?.id,
               owner: selectedOption?.name,
               pdfFileSignature: signatureUrl,
+              status: "signed",
             } as Item);
             onCloseModal();
           }}

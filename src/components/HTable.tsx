@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { Soldier } from "../types/soldier";
-import { Item, TableHeaders } from "../types/table";
-import { ItemTranslate, headerTranslate } from "../const";
+import { Item, Status, TableHeaders } from "../types/table";
+import { ItemTranslate, headerTranslate, statusTranslate } from "../const";
 import { Button } from "rsuite";
 import { TypeAttributes } from "rsuite/esm/internals/types";
 import SortDownIcon from "@rsuite/icons/SortDown";
@@ -149,6 +149,18 @@ function renderCellData(header: string, row: Soldier | Item) {
             {typeof item === "object" ? JSON.stringify(item) : item}
           </div>
         ));
+      } else if (header === "status") {
+        return (
+          <button
+            className={`bg-${
+              statusColors[(row as Item).status]
+            }-300 p-1 rounded`}
+            style={{ background: statusColors[(row as Item).status] }}
+          >
+            {" "}
+            {statusTranslate[(row as Item).status]}
+          </button>
+        );
       } else if (header === "itemType") {
         return headerTranslate[value as keyof TableHeaders];
       } else if (header === "profileImage") {
@@ -175,7 +187,11 @@ function renderCellData(header: string, row: Soldier | Item) {
   }
   return ""; // Default case if the row isn't a Soldier or Item
 }
-
+const statusColors: Record<Status, string> = {
+  broken: "red",
+  signed: "#a1a5ac",
+  stored: "#269d26",
+};
 interface Props {
   headers: string[];
   data: (Soldier | Item)[];

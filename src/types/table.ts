@@ -9,7 +9,9 @@ export interface Item {
   history: History[];
   itemType: itemType;
   pdfFileSignature: string;
+  status: Status;
 }
+export type Status = "stored" | "signed" | "broken";
 
 interface History {
   ownerName: string;

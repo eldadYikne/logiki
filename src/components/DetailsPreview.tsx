@@ -14,7 +14,7 @@ export default function DetailsPreview() {
   const [data, setData] = useState<TableData>();
   const [item, setItem] = useState<DetailsItem>();
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [soldierItems, setSoldierItems] = useState<Item[]>();
   useEffect(() => {
     async function fetchData() {
       // await updateBoard("hapak", newData);
@@ -41,7 +41,17 @@ export default function DetailsPreview() {
         ...data.weaponAccessories,
       ];
       console.log("allArrays", allArrays);
-      return allArrays.find((item) => item.id === id);
+      const currentItem = allArrays.find((item) => item.id === id);
+
+      if ((currentItem as Soldier).personalNumber) {
+        const soldItems: Item[] = allArrays.filter((item) => {
+          if ((item as Item).soldierId) {
+            return (item as Item).soldierId === currentItem?.id;
+          }
+        }) as Item[];
+        setSoldierItems(soldItems);
+      }
+      return currentItem;
     }
   };
   const getBoardByIdSnap = async () => {
@@ -73,6 +83,7 @@ export default function DetailsPreview() {
       throw error; // Rethrow the error to handle it where the function is called
     }
   };
+
   const onSignature = async (item: Item) => {
     console.log("onSignature item", item);
     if (data) {
@@ -84,60 +95,74 @@ export default function DetailsPreview() {
   };
   return (
     <div className="h-screen w-full justify-center items-center sm:p-24 p-4 bg-blue-950 flex ">
-      <div className="border border-white shadow-lg flex flex-col justify-center items-center w-full h-full rounded-xl ">
-        <div className="flex sm:flex-row flex-col-reverse gap-3">
-          {item && (
-            <div dir="rtl" className="flex p-5 flex-col gap-4 text-white">
-              <span className="text-3xl shadow-sm">{item.name}</span>
-              {Object.keys(item).map((newItem) => {
+      {item && (
+        <div className="border border-white shadow-lg flex flex-col justify-center items-center w-full h-full rounded-xl ">
+          <div className="flex sm:flex-row flex-col-reverse gap-3">
+            {item && (
+              <div dir="rtl" className="flex p-5 flex-col gap-4 text-white">
+                <span className="text-3xl shadow-sm">{item.name}</span>
+                {Object.keys(item).map((newItem) => {
+                  return (
+                    newItem !== "id" &&
+                    newItem !== "profileImage" &&
+                    newItem !== "pdfFileSignature" &&
+                    newItem !== "items" &&
+                    newItem !== "name" && (
+                      <div>
+                        {" "}
+                        {ItemTranslate[newItem as CombinedKeys]} :
+                        {newItem === "itemType"
+                          ? headerTranslate[
+                              item[
+                                newItem as keyof DetailsItem
+                              ] as keyof TableHeaders
+                            ]
+                          : item[newItem as keyof DetailsItem]}
+                      </div>
+                    )
+                  );
+                })}
+              </div>
+            )}
+
+            <img
+              className="w-56 h-56 rounded-md"
+              src={
+                (item as Soldier)?.profileImage
+                  ? (item as Soldier).profileImage
+                  : "https://eaassets-a.akamaihd.net/battlelog/prod/emblems/320/894/2832655391561586894.jpeg?v=1332981487.09"
+              }
+            />
+          </div>
+          {soldierItems && soldierItems.length > 1 && (
+            <div dir="rtl" className="flex flex-col gap-2 text-white ">
+              {soldierItems?.map((item) => {
                 return (
-                  newItem !== "id" &&
-                  newItem !== "profileImage" &&
-                  newItem !== "pdfFileSignature" &&
-                  newItem !== "name" && (
-                    <div>
-                      {" "}
-                      {ItemTranslate[newItem as CombinedKeys]} :
-                      {newItem === "itemType"
-                        ? headerTranslate[
-                            item[
-                              newItem as keyof DetailsItem
-                            ] as keyof TableHeaders
-                          ]
-                        : item[newItem as keyof DetailsItem]}
-                    </div>
-                  )
+                  <div className="flex justify-between">
+                    <span>{item.name}</span>
+                    <span>{item.serialNumber}</span>
+                  </div>
                 );
               })}
             </div>
           )}
-
-          <img
-            className="w-56 h-56 rounded-md"
-            src={
-              (item as Soldier)?.profileImage
-                ? (item as Soldier).profileImage
-                : "https://eaassets-a.akamaihd.net/battlelog/prod/emblems/320/894/2832655391561586894.jpeg?v=1332981487.09"
-            }
-          />
+          <div>
+            {(item as Item)?.serialNumber && (
+              <div>
+                <Button
+                  onClick={() => {
+                    setModalOpen(true);
+                  }}
+                  color="green"
+                  appearance="primary"
+                >
+                  החתמה
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-
-        <div>
-          {(item as Item)?.serialNumber && (
-            <div>
-              <Button
-                onClick={() => {
-                  setModalOpen(true);
-                }}
-                color="green"
-                appearance="primary"
-              >
-                החתמה
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
       {modalOpen && item && (
         <HModal
           dropdownTitle="בחר חייל"

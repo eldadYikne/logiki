@@ -55,7 +55,7 @@ const DynamicForm: React.FC<Props> = ({
 
   const defaultObjectTosubmit =
     type === "Item"
-      ? {
+      ? ({
           id: uuidv4(),
           serialNumber: newForm.serialNumber ?? "",
           name: newForm.name ?? "",
@@ -63,8 +63,10 @@ const DynamicForm: React.FC<Props> = ({
           soldierId: "",
           history: [],
           itemType,
-        }
-      : {
+          pdfFileSignature: "",
+          status: "stored",
+        } as Item)
+      : ({
           id: uuidv4(),
           personalNumber: newForm.personalNumber ?? 0,
           name: newForm.name,
@@ -72,7 +74,7 @@ const DynamicForm: React.FC<Props> = ({
           notes: "",
           profileImage: newForm.profileImage,
           items: [],
-        };
+        } as Soldier);
   const handleSubmit = (isValid: boolean) => {
     console.log(isValid, newForm);
 

@@ -125,7 +125,7 @@ function MaiEquipment(props: Props) {
   }
   return (
     <div dir="rtl" className="flex flex-col bg-blue-950   w-full">
-      <div className="p-12">
+      <div className="sm:p-12 py-5">
         <div className="flex ">
           {!itemToEdit &&
             Object.keys(headers).map((header) => (

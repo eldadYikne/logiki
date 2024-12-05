@@ -6,7 +6,7 @@ import { Button } from "rsuite";
 export default function Navbar(props: Props) {
   const navigat = useNavigate();
   return (
-    <div className="h-16 bg-blue-950 cursor-pointer shadow-md shadow-blue-50 justify-between items-center flex p-4 px-6">
+    <div className="h-16 bg-blue-950 cursor-pointer shadow-md shadow-blue-50 justify-between items-center flex sm:p-4 px-1 sm:px-6">
       <span
         onClick={() => navigat("/")}
         className="text-white font-mono  flex items-center justify-center"

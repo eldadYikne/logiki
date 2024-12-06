@@ -152,6 +152,7 @@ export default function DetailsPreview() {
       } as Item;
       try {
         await onSignature(ItemToUpdate);
+        setIsModalConfirmOpen(false);
       } catch (err) {
         console.log(err);
       }
@@ -268,7 +269,7 @@ export default function DetailsPreview() {
           )}
         </div>
       )}
-      {isModalConfirmOpen && item && (
+      {isModalConfirmOpen && (item as Item).owner && (
         <ModalConfirm
           title={` נציג לוגיסטי - ${user?.displayName}`}
           description={`אתה בטוח שאתה רוצה לזכות את ${

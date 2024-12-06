@@ -19,9 +19,11 @@ import {
 import { Button } from "rsuite";
 import HModal from "./HModal";
 import { updateBoard } from "../service/board";
-import { db } from "../main";
+import { auth, db } from "../main";
 import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
+import { User } from "@firebase/auth";
+import ModalConfirm from "./ModalConfirm";
 
 export default function DetailsPreview() {
   const { id } = useParams();
@@ -29,6 +31,8 @@ export default function DetailsPreview() {
   const [item, setItem] = useState<DetailsItem>();
   const [modalOpen, setModalOpen] = useState(false);
   const [soldierItems, setSoldierItems] = useState<Item[]>();
+  const [user, setUser] = useState<User>();
+  const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
   useEffect(() => {
     async function fetchData() {
       // await updateBoard("hapak", newData);
@@ -39,12 +43,17 @@ export default function DetailsPreview() {
   }, [id]);
   useEffect(() => {
     if (data && id) {
-      console.log("data", data);
-      console.log("id", id);
+      //   console.log("data", data);
+      //   console.log("id", id);
       const newItem: Item | Soldier | undefined = findObjectById(id);
       console.log("newItem", newItem);
       if (newItem) setItem(newItem);
     }
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
   }, [id, item, data]);
   const findObjectById = (id: string) => {
     if (data) {
@@ -116,40 +125,40 @@ export default function DetailsPreview() {
   };
   const onOpenSignatureModal = async () => {
     if ((item as Item).owner) {
-      let text = `אתה בטוח שאתה רוצה לזכות את ${(item as Item).owner} על ${
-        (item as Item).name
-      } ${(item as Item).serialNumber}`;
-      if (confirm(text)) {
-        const ItemToUpdate: Item = {
-          ...item,
-          owner: "",
-          soldierId: "",
-          pdfFileSignature: "",
-          soldierPersonalNumber: 0,
-          status: "stored",
-          history: [
-            ...(item as Item).history,
-            {
-              dateReturn: String(new Date()),
-              dateTaken: (item as Item).signtureDate ?? "",
-              ownerName: (item as Item).owner,
-              soldierId: (item as Item).soldierId,
-              representative: "",
-            },
-          ],
-        } as Item;
-        try {
-          await onSignature(ItemToUpdate);
-        } catch (err) {
-          console.log(err);
-        }
-      }
+      setIsModalConfirmOpen(true);
     } else {
       setModalOpen(true);
     }
   };
+  const onConfirmItemBack = async () => {
+    if ((item as Item).owner) {
+      const ItemToUpdate: Item = {
+        ...item,
+        owner: "",
+        soldierId: "",
+        pdfFileSignature: "",
+        soldierPersonalNumber: 0,
+        status: "stored",
+        history: [
+          ...(item as Item).history,
+          {
+            dateReturn: String(new Date()),
+            dateTaken: (item as Item).signtureDate ?? "",
+            ownerName: (item as Item).owner,
+            soldierId: (item as Item).soldierId,
+            representative: user ? user.displayName : "",
+          },
+        ],
+      } as Item;
+      try {
+        await onSignature(ItemToUpdate);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
   return (
-    <div className="h-screen w-full justify-center items-center sm:p-24 p-4 bg-blue-950 flex ">
+    <div className=" w-full justify-center items-center sm:p-24 p-4 bg-blue-950 flex ">
       {item && (
         <div className="flex flex-col gap-3">
           <div className="border border-white shadow-lg flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
@@ -179,7 +188,6 @@ export default function DetailsPreview() {
                       key !== "name" && (
                         <div key={key}>
                           {" "}
-                          {ItemTranslate[key as CombinedKeys]} :
                           {renderFileds(key as CombinedKeys, item)}
                         </div>
                       )
@@ -226,28 +234,52 @@ export default function DetailsPreview() {
             </div>
           </div>
           {(item as Item).history && (item as Item).history.length > 0 && (
-            <Table>
-              <Thead>
-                <Tr>
-                  {Object.keys((item as Item).history[0]).map((historyKey) => {
-                    return (
-                      historyKey !== "soldierId" && (
-                        <Th key={historyKey}>
-                          {historyTranslate[historyKey as keyof ItemHistory]}
-                        </Th>
-                      )
-                    );
+            <div className="flex flex-col  items-center">
+              <span className="text-xl text-blue-950 p-2 w-full text-center shadow-md bg-white">
+                היסטוריה
+              </span>
+              <Table>
+                <Thead>
+                  <Tr>
+                    {Object.keys((item as Item).history[0]).map(
+                      (historyKey) => {
+                        return (
+                          historyKey !== "soldierId" && (
+                            <Th key={historyKey}>
+                              {
+                                historyTranslate[
+                                  historyKey as keyof ItemHistory
+                                ]
+                              }
+                            </Th>
+                          )
+                        );
+                      }
+                    )}
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {(item as Item).history.map((history, i) => {
+                    return <HistoryItem key={i} history={history} />;
                   })}
-                </Tr>
-              </Thead>
-              <Tbody>
-                {(item as Item).history.map((history, i) => {
-                  return <HistoryItem key={i} history={history} />;
-                })}
-              </Tbody>
-            </Table>
+                </Tbody>
+              </Table>
+            </div>
           )}
         </div>
+      )}
+      {isModalConfirmOpen && item && (
+        <ModalConfirm
+          title={` נציג לוגיסטי - ${user?.displayName}`}
+          description={`אתה בטוח שאתה רוצה לזכות את ${
+            (item as Item).owner
+          } על ${(item as Item).name} ${(item as Item).serialNumber}`}
+          onConfirm={onConfirmItemBack}
+          isOpen={isModalConfirmOpen}
+          onCancel={() => setIsModalConfirmOpen(false)}
+          confirmText="אישור"
+          cancelText="ביטול"
+        />
       )}
       {modalOpen && item && (
         <HModal
@@ -269,12 +301,29 @@ export default function DetailsPreview() {
 }
 const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
   if (key === "itemType") {
-    return headerTranslate[
-      item[key as keyof DetailsItem] as keyof TableHeaders
-    ];
+    return (
+      ItemTranslate[key as CombinedKeys] +
+      " : " +
+      headerTranslate[item[key as keyof DetailsItem] as keyof TableHeaders]
+    );
+  } else if (
+    (key === "signtureDate" ||
+      key === "soldierPersonalNumber" ||
+      key === "owner") &&
+    (item as Item).soldierPersonalNumber === 0
+  ) {
+    return;
   } else if (key === "status") {
-    return statusTranslate[(item as Item).status];
+    return (
+      ItemTranslate[key as CombinedKeys] +
+      " : " +
+      statusTranslate[(item as Item).status]
+    );
   } else {
-    return item[key as keyof DetailsItem];
+    return (
+      ItemTranslate[key as CombinedKeys] +
+      " : " +
+      item[key as keyof DetailsItem]
+    );
   }
 };

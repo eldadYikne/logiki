@@ -28,7 +28,7 @@ const renderHistory = (key: keyof ItemHistory, history: ItemHistory) => {
   if (key === "dateReturn" || key === "dateTaken") {
     return value ? getCurrentDateFromDate(value) : getCurrentDate();
   } else if (key === "representative") {
-    return "יובל";
+    return value ?? "-";
   } else {
     return value ?? "-";
   }

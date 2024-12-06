@@ -7,8 +7,8 @@ export function getCurrentDate(): string {
   // Ensure month and day are formatted as two digits if less than 10
   month = month < 10 ? `0${month}` : month;
   day = day < 10 ? `0${day}` : day;
-  console.log(`${day}-${month}-${year}`);
-  console.log(new Date(`${day}.${month}.${year}`));
+  //   console.log(`${day}-${month}-${year}`);
+  //   console.log(new Date(`${day}.${month}.${year}`));
   return `${day}.${month}.${year}`;
 }
 export function getCurrentDateFromDate(date: string): string {
@@ -20,7 +20,7 @@ export function getCurrentDateFromDate(date: string): string {
   // Ensure month and day are formatted as two digits if less than 10
   month = month < 10 ? `0${month}` : month;
   day = day < 10 ? `0${day}` : day;
-  console.log(`${day}-${month}-${year}`);
-  console.log(new Date(`${day}.${month}.${year}`));
+  //   console.log(`${day}-${month}-${year}`);
+  //   console.log(new Date(`${day}.${month}.${year}`));
   return `${day}.${month}.${year}`;
 }

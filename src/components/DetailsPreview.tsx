@@ -1,12 +1,13 @@
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   CombinedKeys,
   Item,
   ItemHistory,
   TableData,
   TableHeaders,
+  itemType,
 } from "../types/table";
 import { DetailsItem, Soldier } from "../types/soldier";
 import {
@@ -33,6 +34,12 @@ export default function DetailsPreview() {
   const [soldierItems, setSoldierItems] = useState<Item[]>();
   const [user, setUser] = useState<User>();
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
+  const naigate = useNavigate();
+  const types: itemType[] = [
+    "nightVisionDevice",
+    "combatEquipment",
+    "weaponAccessories",
+  ];
   useEffect(() => {
     async function fetchData() {
       // await updateBoard("hapak", newData);
@@ -55,6 +62,18 @@ export default function DetailsPreview() {
       }
     });
   }, [id, item, data]);
+
+  //   const sortedHistories = () => {
+  //     if ((item as Item).history && (item as Item).history.length > 0) {
+  //       return (item as Item)?.history.sort(
+  //         (a, b) =>
+  //           new Date(a.dateReturn).getTime() - new Date(b.dateReturn).getTime()
+  //       );
+  //     } else {
+  //       return [];
+  //     }
+  //   };
+
   const findObjectById = (id: string) => {
     if (data) {
       const allArrays = [
@@ -72,8 +91,12 @@ export default function DetailsPreview() {
             return (item as Item).soldierId === currentItem?.id;
           }
         }) as Item[];
+        console.log("soldItems", soldItems);
         setSoldierItems(soldItems);
+      } else {
+        setSoldierItems([]);
       }
+
       return currentItem;
     }
   };
@@ -206,18 +229,7 @@ export default function DetailsPreview() {
                 }
               />
             </div>
-            {soldierItems && soldierItems.length > 1 && (
-              <div dir="rtl" className="flex flex-col gap-2 text-white ">
-                {soldierItems?.map((item) => {
-                  return (
-                    <div key={item.id} className="flex justify-between">
-                      <span>{item.name}</span>
-                      <span>{item.serialNumber}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+
             <div>
               {(item as Item)?.serialNumber && (
                 <div>
@@ -234,6 +246,46 @@ export default function DetailsPreview() {
               )}
             </div>
           </div>
+          {soldierItems && soldierItems.length > 0 && (
+            <div
+              dir="rtl"
+              className="flex border border-white p-3 rounded-lg flex-col gap-2 text-white "
+            >
+              {types.map((itemType) => {
+                return (
+                  <div className="flex flex-col gap-2">
+                    {soldierItems.find(
+                      (item) => item.itemType === itemType
+                    ) && (
+                      <span className="w-full border-white border-b-2 text-xl">
+                        {headerTranslate[itemType]}
+                      </span>
+                    )}
+                    {soldierItems?.map((item) => {
+                      return (
+                        item.itemType === itemType && (
+                          <div
+                            key={item.id}
+                            className="flex justify-between items-center gap-5 w-full"
+                          >
+                            <span>{item.name}</span>
+                            <span>{item.serialNumber}</span>
+                            <Button
+                              size="xs"
+                              onClick={() => naigate(`/soldier/${item.id}`)}
+                            >
+                              הצג
+                            </Button>
+                          </div>
+                        )
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {(item as Item).history && (item as Item).history.length > 0 && (
             <div className="flex flex-col  items-center">
               <span className="text-xl text-blue-950 p-2 w-full text-center shadow-md bg-white">

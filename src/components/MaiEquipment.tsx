@@ -57,9 +57,9 @@ function MaiEquipment(props: Props) {
     try {
       const boardRef = doc(db, "boards", "hapak");
       // Listen to changes in the board document
-      console.log("try newBoard");
+      // console.log("try newBoard");
       const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        console.log("try newBoard boardDoc", boardDoc);
+        // console.log("try newBoard boardDoc", boardDoc);
         if (boardDoc.exists()) {
           // Document exists, return its data along with the ID
           const newBoard = { ...boardDoc.data(), id: boardDoc.id };

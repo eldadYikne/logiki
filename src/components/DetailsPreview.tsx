@@ -19,12 +19,14 @@ import {
 } from "../const";
 import { Button } from "rsuite";
 import HModal from "./HModal";
-import { updateBoard } from "../service/board";
+import { updateBoaedSpesificKey } from "../service/board";
 import { auth, db } from "../main";
 import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
 import { User } from "@firebase/auth";
 import ModalConfirm from "./ModalConfirm";
+import { getCurrentDate } from "../utils";
+import ImproveSignature from "./ImproveSignature";
 
 export default function DetailsPreview() {
   const { id } = useParams();
@@ -34,6 +36,7 @@ export default function DetailsPreview() {
   const [soldierItems, setSoldierItems] = useState<Item[]>();
   const [user, setUser] = useState<User>();
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
+  const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
   const naigate = useNavigate();
   const types: itemType[] = [
     "nightVisionDevice",
@@ -42,7 +45,6 @@ export default function DetailsPreview() {
   ];
   useEffect(() => {
     async function fetchData() {
-      // await updateBoard("hapak", newData);
       await getBoardByIdSnap();
     }
 
@@ -137,10 +139,14 @@ export default function DetailsPreview() {
         (itemType) => itemType.id !== item.id
       );
       try {
-        await updateBoard("hapak", {
-          ...data,
-          [item.itemType]: [...newItems, item],
-        });
+        // await updateBoard("hapak", {
+        //   ...data,
+        //   [item.itemType]: [...newItems, item],
+        // });
+        await updateBoaedSpesificKey("hapak", item.itemType, [
+          ...newItems,
+          item,
+        ]);
       } catch (err) {
         console.log(err);
       }
@@ -165,11 +171,12 @@ export default function DetailsPreview() {
         history: [
           ...(item as Item).history,
           {
-            dateReturn: String(new Date()),
+            dateReturn: getCurrentDate(),
             dateTaken: (item as Item).signtureDate ?? "",
             ownerName: (item as Item).owner,
             soldierId: (item as Item).soldierId,
             representative: user ? user.displayName : "",
+            pdfFileSignature: (item as Item).pdfFileSignature ?? "",
           },
         ],
       } as Item;
@@ -182,7 +189,7 @@ export default function DetailsPreview() {
     }
   };
   return (
-    <div className=" w-full justify-center items-center sm:p-24 p-4 bg-blue-950 flex ">
+    <div className=" w-full min-h-screen justify-center items-start  sm:p-24 p-4  pt-10 bg-blue-950 flex ">
       {item && (
         <div className="flex flex-col gap-3">
           <div className="border border-white shadow-lg flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
@@ -232,7 +239,7 @@ export default function DetailsPreview() {
 
             <div>
               {(item as Item)?.serialNumber && (
-                <div>
+                <div className="flex justify-between gap-3">
                   <Button
                     onClick={() => {
                       onOpenSignatureModal();
@@ -242,6 +249,24 @@ export default function DetailsPreview() {
                   >
                     {(item as Item).owner ? "זיכוי" : "החתמה"}
                   </Button>
+                  {(item as Item).owner && (
+                    <Button
+                      onClick={() => {
+                        setIsModalImprovalOpen(true);
+                      }}
+                      color="violet"
+                      appearance="primary"
+                    >
+                      הפק טופס
+                    </Button>
+                  )}
+                  {(item as Item).owner && (
+                    <ImproveSignature
+                      onCloseModal={() => setIsModalImprovalOpen(false)}
+                      isOpen={isModalImprovalOpen}
+                      data={item as Item}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -313,7 +338,13 @@ export default function DetailsPreview() {
                 </Thead>
                 <Tbody>
                   {(item as Item).history.map((history, i) => {
-                    return <HistoryItem key={i} history={history} />;
+                    return (
+                      <HistoryItem
+                        item={item as Item}
+                        key={i}
+                        history={history}
+                      />
+                    );
                   })}
                 </Tbody>
               </Table>
@@ -334,11 +365,12 @@ export default function DetailsPreview() {
           cancelText="ביטול"
         />
       )}
-      {modalOpen && item && (
+      {modalOpen && item && user && (
         <HModal
           dropdownTitle="בחר חייל"
           dropdownOptions={data?.soldiers ?? []}
           item={item}
+          user={user}
           mode={"signature"}
           isOpen={modalOpen}
           onCloseModal={() => {

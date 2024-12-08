@@ -12,6 +12,7 @@ export interface Item {
   pdfFileSignature: string;
   status: Status;
   soldierPersonalNumber: number;
+  representative: string;
 }
 export type Status = "stored" | "signed" | "broken";
 
@@ -21,6 +22,7 @@ export interface ItemHistory {
   representative: string;
   dateTaken: string;
   dateReturn: string;
+  pdfFileSignature: string;
 }
 export type itemType =
   | "nightVisionDevice"

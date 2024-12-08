@@ -1,8 +1,41 @@
 import { Td, Tr } from "react-super-responsive-table";
-import { ItemHistory } from "../types/table";
-import { getCurrentDate, getCurrentDateFromDate } from "../utils";
+import { Item, ItemHistory } from "../types/table";
+import { getCurrentDate } from "../utils";
+import ImproveSignature from "./ImproveSignature";
+import { useState } from "react";
+import { Button } from "rsuite";
 
 export default function HistoryItem(props: Props) {
+  const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
+
+  const renderHistory = (key: keyof ItemHistory, history: ItemHistory) => {
+    const value = history[key];
+    if (key === "dateReturn" || key === "dateTaken") {
+      return value ? value : getCurrentDate();
+    } else if (key === "pdfFileSignature") {
+      return (
+        <span>
+          <Button
+            color="violet"
+            appearance="primary"
+            onClick={() => setIsModalImprovalOpen(true)}
+          >
+            הפק טופס
+          </Button>
+          <ImproveSignature
+            onCloseModal={() => setIsModalImprovalOpen(false)}
+            isOpen={isModalImprovalOpen}
+            data={props.item}
+            history={props.history}
+          />
+        </span>
+      );
+    } else if (key === "representative") {
+      return value ?? "-";
+    } else {
+      return value ?? "-";
+    }
+  };
   return (
     <Tr>
       {Object.keys(props.history).map((key) => {
@@ -22,14 +55,5 @@ export default function HistoryItem(props: Props) {
 }
 interface Props {
   history: ItemHistory;
+  item: Item;
 }
-const renderHistory = (key: keyof ItemHistory, history: ItemHistory) => {
-  const value = history[key];
-  if (key === "dateReturn" || key === "dateTaken") {
-    return value ? getCurrentDateFromDate(value) : getCurrentDate();
-  } else if (key === "representative") {
-    return value ?? "-";
-  } else {
-    return value ?? "-";
-  }
-};

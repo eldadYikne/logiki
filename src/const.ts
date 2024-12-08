@@ -23,10 +23,11 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   combatEquipment: "ציוד קרבי",
   weaponAccessories: "אביזרי נשק",
   profileImage: "תמונת פרופיל",
-  pdfFileSignature: "טופס חתימה",
+  pdfFileSignature: " חתימה",
   status: "סטטוס",
   signtureDate: "תאריך חתימה",
   soldierPersonalNumber: "מספר אישי",
+  representative: "רס״פ מחתים",
 };
 
 export const itemsKeys = Object.keys({
@@ -41,6 +42,7 @@ export const itemsKeys = Object.keys({
   status: "stored",
   soldierPersonalNumber: 0,
   signtureDate: "",
+  representative: "",
 } as Item) as (keyof Item)[];
 
 export const headerTranslate: { [key in keyof TableHeaders]: string } = {
@@ -60,6 +62,7 @@ export const historyTranslate: { [key in keyof ItemHistory]: string } = {
   ownerName: "שם חותם",
   representative: "רס״פ מזכה",
   soldierId: "מזהה חייל",
+  pdfFileSignature: "טופס חתימה",
 };
 export const soldierKeys = Object.keys({
   profileImage: "",

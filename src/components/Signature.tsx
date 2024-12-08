@@ -1,14 +1,7 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Item } from "../types/table";
-import {
-  PDFDownloadLink,
-  Document,
-  Page,
-  Font,
-  StyleSheet,
-} from "@react-pdf/renderer";
-import ImproveSignature from "./ImproveSignature";
+
 import { Button } from "rsuite";
 export default function Signature(props: Props) {
   const sigCanvasRef = useRef<SignatureCanvas>(null);
@@ -46,22 +39,6 @@ export default function Signature(props: Props) {
         <Button onClick={handleClear} className="mr-2">
           נקה חתימה
         </Button>
-        {signatureDataURL && (
-          <PDFDownloadLink
-            document={
-              <SignaturePDF item={props.item} signature={signatureDataURL} />
-            }
-            fileName="signature.pdf"
-            className="cursor-pointer"
-          >
-            {/* {({ loading }) => {
-              return <button className="mr-2">
-                {loading ? "יוצר PDF..." : "הורד PDF"}
-              </button>
-            }} */}
-            <Button>הורד</Button>
-          </PDFDownloadLink>
-        )}
       </div>
     </div>
   );
@@ -71,31 +48,3 @@ interface Props {
   item: Item;
   onEnd: Function;
 }
-
-interface PDFProps {
-  item: Item;
-  signature: string;
-}
-
-// Generate PDF Document
-const SignaturePDF: React.FC<PDFProps> = ({ item, signature }) => {
-  Font.register({
-    family: "Alef",
-    src: "http://fonts.gstatic.com/s/alef/v6/gzq6OSepdeZ1VdycsVw6Vg.ttf",
-  });
-
-  return (
-    <Document>
-      <Page style={styles.body} size="A4">
-        <ImproveSignature item={item as Item} signature={signature} />
-      </Page>
-    </Document>
-  );
-};
-const styles = StyleSheet.create({
-  body: {
-    fontSize: 12,
-    fontFamily: "Alef", // Apply the registered font here
-    padding: 20,
-  },
-});

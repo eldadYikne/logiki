@@ -4,6 +4,7 @@ import { useState } from "react";
 import Signature from "./Signature";
 import { Item } from "../types/table";
 import { getCurrentDate } from "../utils";
+import { User } from "firebase/auth";
 export default function HModal({
   isOpen,
   onCloseModal,
@@ -11,6 +12,7 @@ export default function HModal({
   mode,
   dropdownOptions,
   onConfirm,
+  user,
 }: Props) {
   const modalOptions = {
     signature: {
@@ -95,6 +97,7 @@ export default function HModal({
                   ? (selectedOption as Soldier)?.personalNumber
                   : 0,
               status: "signed",
+              representative: user.displayName,
             } as Item);
             onCloseModal();
           }}
@@ -123,4 +126,5 @@ interface Props {
   dropdownOptions: DetailsItem[];
   dropdownTitle: string;
   onConfirm: Function;
+  user: User;
 }

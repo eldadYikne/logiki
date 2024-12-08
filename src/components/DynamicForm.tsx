@@ -67,6 +67,7 @@ const DynamicForm: React.FC<Props> = ({
           status: "stored",
           soldierPersonalNumber: 0,
           signtureDate: "",
+          representative: "",
         } as Item)
       : ({
           id: uuidv4(),

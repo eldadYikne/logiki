@@ -7,7 +7,7 @@ import { headerTranslate, itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
 import { doc, onSnapshot } from "firebase/firestore";
 import { User } from "firebase/auth";
-import { updateBoard } from "../service/board";
+import { updateBoaedSpesificKey } from "../service/board";
 import { db } from "../main";
 
 function MaiEquipment(props: Props) {
@@ -17,7 +17,6 @@ function MaiEquipment(props: Props) {
 
   useEffect(() => {
     async function fetchData() {
-      // await updateBoard("hapak", newData);
       await getBoardByIdSnap();
     }
     fetchData();
@@ -86,20 +85,19 @@ function MaiEquipment(props: Props) {
   const onAddItem = async (item: Item | Soldier) => {
     if (data) {
       if (!data[selecteTable].find((existItem) => item.id === existItem.id)) {
-        const newBoard = {
-          ...data,
-          [selecteTable]: [...data[selecteTable], item],
-        };
-        await updateBoard("hapak162", newBoard);
+        await updateBoaedSpesificKey("hapak", selecteTable, [
+          ...data[selecteTable],
+          item,
+        ]);
       } else {
         const newArrayItems = data[selecteTable].filter(
           (existItem) => item.id !== existItem.id
         );
-        const newBoard = {
-          ...data,
-          [selecteTable]: [...newArrayItems, item],
-        };
-        await updateBoard("hapak162", newBoard);
+
+        await updateBoaedSpesificKey("hapak", selecteTable, [
+          ...newArrayItems,
+          item,
+        ]);
       }
     }
   };

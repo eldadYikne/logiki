@@ -102,3 +102,9 @@ body {
     padding: 20px;
   }
 }
+.signature-imporve-modal .rs-modal-content {
+  padding: 25px 3px 25px 3px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

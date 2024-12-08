@@ -19,6 +19,14 @@ export default function HTable(props: Props) {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const navigate = useNavigate();
 
+  const notRenderKeys: Array<keyof Item | keyof Soldier> = [
+    "history",
+    "id",
+    "soldierId",
+    "notes",
+    "items",
+  ];
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       // Toggle sort order
@@ -80,9 +88,7 @@ export default function HTable(props: Props) {
         <Tr>
           {props.headers.map((header, index) => {
             return (
-              header !== "id" &&
-              header !== "history" &&
-              header !== "soldierId" && (
+              !notRenderKeys.includes(header as keyof Item) && (
                 <Th
                   key={index}
                   onClick={() => handleSort(header)}
@@ -105,9 +111,7 @@ export default function HTable(props: Props) {
           <Tr key={rowIndex}>
             {props.headers.map((header, colIndex) => {
               return (
-                header !== "id" &&
-                header !== "history" &&
-                header !== "soldierId" && (
+                !notRenderKeys.includes(header as keyof Item) && (
                   <Td
                     className={`cursor-pointer ${
                       header === "profileImage" ? "profile-image" : ""

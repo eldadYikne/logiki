@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { TableData } from "../types/table";
 import { db } from "../main";
 import { Button, Input } from "rsuite";
-import { updateBoard } from "../service/board";
+import { updateBoaedSpesificKey } from "../service/board";
 import { User } from "@firebase/auth";
 
 export default function AdminPage(props: Props) {
@@ -48,10 +48,14 @@ export default function AdminPage(props: Props) {
   const AddNewAdmin = async () => {
     if (data) {
       try {
-        await updateBoard("hapak", {
-          ...data,
-          admins: [...data?.admins, newAdmin],
-        } as TableData);
+        // await updateBoard("hapak", {
+        //   ...data,
+        //   admins: [...data?.admins, newAdmin],
+        // } as TableData);
+        await updateBoaedSpesificKey("hapak", "admins", [
+          ...data?.admins,
+          newAdmin,
+        ]);
       } catch (err) {
         console.log(err);
       }
@@ -63,10 +67,11 @@ export default function AdminPage(props: Props) {
         const newAdmins = data.admins.filter(
           (admin) => admin !== adminToRemove
         );
-        await updateBoard("hapak", {
-          ...data,
-          admins: newAdmins,
-        } as TableData);
+        // await updateBoard("hapak", {
+        //   ...data,
+        //   admins: newAdmins,
+        // } as TableData);
+        await updateBoaedSpesificKey("hapak", "admins", newAdmins);
       } catch (err) {
         console.log(err);
       }

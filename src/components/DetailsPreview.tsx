@@ -216,6 +216,7 @@ export default function DetailsPreview() {
                       key !== "soldierId" &&
                       key !== "items" &&
                       key !== "history" &&
+                      key !== "notes" &&
                       key !== "name" && (
                         <div key={key}>
                           {" "}

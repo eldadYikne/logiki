@@ -180,9 +180,9 @@ function renderCellData(header: string, row: Soldier | Item) {
         return <span>{headerTranslate[value as keyof TableHeaders]}</span>;
       } else if (header === "profileImage") {
         return (
-          <span className="profile-image">
+          <span className=" sm:flex justify-center profile-image  ">
             <img
-              className="h-8 w-8 bg-white rounded-full"
+              className="sm:h-10 sm:w-10 w-24 h-24  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1
                   ? (row as Soldier).profileImage

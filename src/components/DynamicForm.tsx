@@ -111,17 +111,33 @@ const DynamicForm: React.FC<Props> = ({
       // }}
       className="flex flex-col gap-2 justify-center items-center"
     >
-      {fields.map((field) => {
-        return field === "profileImage" ? (
-          <div key={field} className="">
+      {newForm.profileImage ? (
+        <div className="py-3 relative">
+          <img className="h-24 w-24 rounded-full" src={newForm.profileImage} />
+          <div className="absolute top-10 opacity-0">
             <UploadWidget
-              text="העלה תמונה"
+              text="החלף תמונה"
               previewType="button"
               onSetImageUrl={(e: string) => {
                 setNewForm((prev) => ({ ...prev, profileImage: e }));
               }}
             />
           </div>
+        </div>
+      ) : (
+        <div>
+          <UploadWidget
+            text="העלה תמונה"
+            previewType="button"
+            onSetImageUrl={(e: string) => {
+              setNewForm((prev) => ({ ...prev, profileImage: e }));
+            }}
+          />
+        </div>
+      )}
+      {fields.map((field) => {
+        return field === "profileImage" ? (
+          <div key={field} className=""></div>
         ) : (
           field !== "id" &&
             field !== "notes" &&

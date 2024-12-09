@@ -68,7 +68,7 @@ body {
 }
 @media screen and (max-width: 600px) {
   .responsiveTable td .tdBefore {
-    left: 10rem;
+    left: 3rem;
     text-align: right !important ;
   }
   .responsiveTable td.pivoted {
@@ -86,20 +86,21 @@ body {
   }
   .pivoted .profile-image {
     position: absolute;
-    right: 0rem;
-    top: -17px;
+    right: -1rem;
+    top: 31px;
     text-align: right !important ;
     margin-bottom: 10px;
   }
   .pivoted.profile-image img {
-    height: 45px;
-    width: 45px;
+    /* height: 45px;
+      width: 45px; */
   }
   .pivoted.profile-image .tdBefore {
     display: none;
   }
   .responsiveTable tbody tr {
     padding: 20px;
+    margin: 15px 0 15px 0;
   }
 }
 .signature-imporve-modal .rs-modal-content {

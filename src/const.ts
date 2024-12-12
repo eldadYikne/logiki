@@ -1,4 +1,4 @@
-import { Soldier } from "./types/soldier";
+import { Size, Soldier } from "./types/soldier";
 import {
   CombinedKeys,
   Item,
@@ -28,6 +28,7 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   signtureDate: "תאריך חתימה",
   soldierPersonalNumber: "מספר אישי",
   representative: "רס״פ מחתים",
+  size: "מידות",
 };
 
 export const itemsKeys = Object.keys({
@@ -51,6 +52,11 @@ export const headerTranslate: { [key in keyof TableHeaders]: string } = {
   combatEquipment: "ציוד קרבי",
   weaponAccessories: "אביזרי נשק",
 };
+export const sizeTranslate: { [key in keyof Size]: string } = {
+  pance: "מכנסיים",
+  shoes: "נעליים",
+  short: "חולצות",
+};
 export const statusTranslate: Record<Status, string> = {
   broken: "שבור",
   signed: "חתום",
@@ -66,12 +72,13 @@ export const historyTranslate: { [key in keyof ItemHistory]: string } = {
 };
 export const soldierKeys = Object.keys({
   profileImage: "",
-  personalNumber: 0,
   name: "",
+  personalNumber: 0,
   items: [],
   notes: "",
   id: "",
   phoneNumber: 0,
+  size: { pance: "", shoes: "", short: "" },
 } as Soldier) as (keyof Soldier)[];
 
 // export const nightVisionDevices :Item[]= [{

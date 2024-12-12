@@ -18,27 +18,29 @@ export default function Navbar(props: Props) {
         <span className="sm:text-2xl text-md">יחידת חפ״ק מאו״ג 162</span>
       </span>
 
-      <span className="flex gap-3">
-        {props.user.email === "hapakmaog162@gmail.com" && (
-          <Button
-            onClick={() => {
-              navigat("/admin");
-            }}
-          >
-            איזור מנהל
-          </Button>
-        )}
-        <span onClick={() => navigat("/")}>
-          <GoogleAuth
-            setUser={props.setUser}
-            userConnected={props.user?.displayName ?? ""}
-          />
+      {props.user && props.user?.email && (
+        <span className="flex gap-3">
+          {props.user.email === "hapakmaog162@gmail.com" && (
+            <Button
+              onClick={() => {
+                navigat("/admin");
+              }}
+            >
+              איזור מנהל
+            </Button>
+          )}
+          <span onClick={() => navigat("/")}>
+            <GoogleAuth
+              setUser={props.setUser}
+              userConnected={props.user?.displayName ?? ""}
+            />
+          </span>
         </span>
-      </span>
+      )}
     </div>
   );
 }
 interface Props {
-  user: User;
+  user?: User;
   setUser: Function;
 }

@@ -71,8 +71,12 @@ body {
     left: 3rem;
     text-align: right !important ;
   }
+  .soldier-table.responsiveTable td .tdBefore {
+    display: none;
+  }
   .responsiveTable td.pivoted {
     padding-left: 10px !important;
+    display: flex;
   }
   .pivoted span {
     /* position: absolute; */
@@ -87,7 +91,7 @@ body {
   .pivoted .profile-image {
     position: absolute;
     right: -1rem;
-    top: 31px;
+    top: 1px;
     text-align: right !important ;
     margin-bottom: 10px;
   }
@@ -98,9 +102,13 @@ body {
   .pivoted.profile-image .tdBefore {
     display: none;
   }
-  .responsiveTable tbody tr {
+  .soldier-table.responsiveTable tbody tr {
     padding: 20px;
-    margin: 15px 0 15px 0;
+    /* margin: 15px 0 15px 0; */
+    display: flex;
+  }
+  .Soldier .rs-form-control.rs-form-control-wrapper {
+    width: 350px;
   }
 }
 .signature-imporve-modal .rs-modal-content {

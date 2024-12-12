@@ -7,7 +7,7 @@ import { Button, Modal } from "rsuite";
 
 // Define the type for the props
 type DynamicTableProps = {
-  data: Item;
+  data: Item | Item[];
   isOpen: boolean;
   onCloseModal: Function;
   history?: ItemHistory;
@@ -28,9 +28,11 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
 }) => {
   const tableRef = React.useRef<HTMLTableElement>(null);
   const [item, setItem] = useState<Item>();
+  const [items, setItems] = useState<Item[]>();
   const [historyItem, setHitoryItem] = useState<ItemHistory>();
+
   useEffect(() => {
-    if (data) {
+    if (data && !Array.isArray(data)) {
       if ((data as Item).id) {
         setItem({
           id: (data as Item).id,
@@ -71,8 +73,28 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
           representative: history.representative,
         } as Item);
       }
+    } else if (data && Array.isArray(data)) {
+      const newItems = data.map(
+        (data) =>
+          ({
+            id: (data as Item).id,
+            name: (data as Item).name,
+            serialNumber: (data as Item).serialNumber,
+            owner: (data as Item).owner,
+            soldierPersonalNumber: (data as Item).soldierPersonalNumber,
+            soldierId: (data as Item).soldierId,
+            signtureDate: (data as Item).signtureDate,
+            history: (data as Item).history,
+            itemType: (data as Item).itemType,
+            pdfFileSignature: (data as Item).pdfFileSignature,
+            status: (data as Item).status,
+            representative: (data as Item).representative,
+          } as Item)
+      );
+      setItems(newItems);
     }
-  }, [data?.soldierId, data.pdfFileSignature]);
+  }, []);
+  // }, [data?.soldierId, data.pdfFileSignature]);
   const handleDownloadImage = async () => {
     if (tableRef.current) {
       try {
@@ -112,6 +134,7 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
               : `הנפקת טופס החתמה ${(historyItem as ItemHistory).ownerName}`}
           </span>
         )}
+        {items && items.length > 0 && <span>הנפקת טופס החתמה</span>}
         {item && (
           <div ref={tableRef} className="p-4">
             <div className="border-2  border-black">
@@ -192,6 +215,7 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
             </div>
           </div>
         )}
+
         <Button
           className="m-4"
           onClick={handleDownloadImage}

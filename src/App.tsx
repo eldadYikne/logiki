@@ -13,6 +13,7 @@ import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
 import AdminPage from "./components/AdminPage";
 import Navbar from "./components/Navbar";
+import CreateSoldier from "./components/CreateSoldier";
 
 // TODO: Add SDKs for Firebase products that you want to use
 
@@ -38,7 +39,7 @@ export default function App() {
 
   return (
     <div dir="rtl">
-      {user && <Navbar setUser={setUser} user={user} />}
+      <Navbar setUser={setUser} user={user} />
       <Routes>
         <Route
           path="/"
@@ -50,6 +51,8 @@ export default function App() {
             )
           }
         />
+        <Route path="/add-soldier" element={<CreateSoldier />} />
+
         {user && <Route path="/soldier/:id" element={<DetailsPreview />} />}
         {user && <Route path="/admin" element={<AdminPage user={user} />} />}
       </Routes>

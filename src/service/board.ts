@@ -37,3 +37,30 @@ export const updateBoaedSpesificKey = async (
     console.error("Error updating board:", error);
   }
 };
+
+export const updateBoardOneValua = async (
+  boardId: string,
+  key: keyof TableData,
+  data: any
+) => {
+  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
+
+  try {
+    const boardDoc = await getDoc(boardRef);
+
+    if (boardDoc.exists()) {
+      const boardData = boardDoc.data();
+      // Update the board document with the updated data, including preserving "users"
+      await updateDoc(boardRef, {
+        ...boardData,
+        [key]: [...boardData[key], data],
+      });
+
+      console.log("Board updated successfully!");
+    } else {
+      console.error("Board not found!");
+    }
+  } catch (error) {
+    console.error("Error updating board:", error);
+  }
+};

@@ -160,6 +160,7 @@ function MaiEquipment(props: Props) {
               data={dataToTable ? dataToTable[selecteTable] : []}
               headers={headers[selecteTable]}
               onAction={onActionClickInTable}
+              dataType={selecteTable === "soldiers" ? "soldier" : "item"}
             />
           </>
         )}

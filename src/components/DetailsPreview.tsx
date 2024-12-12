@@ -17,6 +17,7 @@ import {
   statusColors,
   statusTranslate,
 } from "../const";
+import PhoneFillIcon from "@rsuite/icons/PhoneFill";
 import { Button } from "rsuite";
 import HModal from "./HModal";
 import { updateBoaedSpesificKey } from "../service/board";
@@ -168,6 +169,8 @@ export default function DetailsPreview() {
         pdfFileSignature: "",
         soldierPersonalNumber: 0,
         status: "stored",
+        representative: "",
+        signtureDate: "",
         history: [
           ...(item as Item).history,
           {
@@ -191,9 +194,9 @@ export default function DetailsPreview() {
   return (
     <div className=" w-full min-h-screen justify-center items-start  sm:p-24 p-4  pt-10 bg-blue-950 flex ">
       {item && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 w-full">
           <div className="border border-white shadow-lg flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
-            <div className="flex sm:flex-row flex-col-reverse gap-3">
+            <div className="flex sm:flex-row  gap-3">
               {item && (
                 <div dir="rtl" className="flex p-5 flex-col gap-4 text-white">
                   <div className="flex w-full justify-between">
@@ -216,6 +219,7 @@ export default function DetailsPreview() {
                       key !== "soldierId" &&
                       key !== "items" &&
                       key !== "history" &&
+                      key !== "size" &&
                       key !== "notes" &&
                       key !== "name" && (
                         <div key={key}>
@@ -309,6 +313,22 @@ export default function DetailsPreview() {
                   </div>
                 );
               })}
+              <Button
+                onClick={() => {
+                  setIsModalImprovalOpen(true);
+                }}
+                color="violet"
+                appearance="primary"
+              >
+                הפק טופס
+              </Button>
+              {(item as Soldier).personalNumber && (
+                <ImproveSignature
+                  onCloseModal={() => setIsModalImprovalOpen(false)}
+                  isOpen={isModalImprovalOpen}
+                  data={soldierItems as Item[]}
+                />
+              )}
             </div>
           )}
 
@@ -399,6 +419,15 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
     (item as Item).soldierPersonalNumber === 0
   ) {
     return;
+  } else if (key === "phoneNumber") {
+    return (
+      <span className="flex gap-2 items-center">
+        {(item as Soldier).phoneNumber}
+        <a href={`tel:${(item as Soldier).phoneNumber}`}>
+          <PhoneFillIcon />
+        </a>
+      </span>
+    );
   } else if (key === "status") {
     return (
       ItemTranslate[key as CombinedKeys] +

@@ -8,6 +8,12 @@ export interface Soldier {
   notes: string;
   phoneNumber: number;
   profileImage: string;
+  size: Size;
+}
+export interface Size {
+  short: string;
+  pance: string;
+  shoes: string;
 }
 export type SoldierItem = Item | Soldier;
 export type DetailsItem = Item | Soldier;

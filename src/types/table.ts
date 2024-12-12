@@ -35,6 +35,7 @@ export interface TableHeaders {
   combatEquipment: (keyof Item)[];
   weaponAccessories: (keyof Item)[];
 }
+
 export interface TableData {
   id: string;
   soldiers: Soldier[];

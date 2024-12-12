@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Form, Button, Schema, Message, useToaster } from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
 import { CombinedKeys, Item } from "../types/table";
-import { ItemTranslate } from "../const";
-import { Soldier } from "../types/soldier";
+import { ItemTranslate, sizeTranslate } from "../const";
+import { Size, Soldier } from "../types/soldier";
 import { v4 as uuidv4 } from "uuid";
 import { UploadWidget } from "./UploadWidget";
 export type itemType =
@@ -34,7 +34,13 @@ const DynamicForm: React.FC<Props> = ({
   const defaultFormValues: NewForm =
     type === "Item"
       ? { name: "", serialNumber: "" }
-      : { name: "", personalNumber: 0, phoneNumber: 0, profileImage: "" };
+      : {
+          name: "",
+          personalNumber: 0,
+          phoneNumber: 0,
+          profileImage: "",
+          size: { pance: "", shoes: "", short: "" },
+        };
   const [newForm, setNewForm] = useState<NewForm>(
     itemToEdit ?? defaultFormValues
   );
@@ -46,12 +52,13 @@ const DynamicForm: React.FC<Props> = ({
     phoneNumber?: number;
     serialNumber?: string;
     profileImage?: string;
+    size?: Size;
   }
   const fields = itemToEdit
     ? Object.keys(itemToEdit)
     : type === "Item"
     ? ["name", "serialNumber"] // Item fields
-    : ["name", "personalNumber", "phoneNumber", "profileImage"]; // Soldier fields
+    : ["name", "personalNumber", "phoneNumber", "profileImage", "size"]; // Soldier fields
 
   const defaultObjectTosubmit =
     type === "Item"
@@ -75,8 +82,9 @@ const DynamicForm: React.FC<Props> = ({
           name: newForm.name,
           phoneNumber: newForm.phoneNumber ?? 0,
           notes: "",
-          profileImage: newForm.profileImage,
           items: [],
+          profileImage: newForm.profileImage,
+          size: newForm.size,
         } as Soldier);
   const handleSubmit = (isValid: boolean) => {
     console.log(isValid, newForm);
@@ -147,19 +155,69 @@ const DynamicForm: React.FC<Props> = ({
             field !== "soldierId" &&
             field !== "profileImage" &&
             field !== "items" && (
-              <div className="">
+              <div className={type}>
                 <FormGroup key={field}>
-                  <Form.ControlLabel className="text-white">
+                  <Form.ControlLabel className="text-black">
                     {ItemTranslate[field as CombinedKeys] || field}:
                   </Form.ControlLabel>
-                  <Form.Control
-                    value={newForm[field as keyof NewForm]}
-                    name={field}
-                    accept={field === "personalNumber" ? "number" : "text"}
-                    onChange={(e) => {
-                      setNewForm((value) => ({ ...value, [field]: e }));
-                    }}
-                  />
+                  {field !== "size" && (
+                    <Form.Control
+                      value={newForm[field as keyof NewForm] as string}
+                      name={field}
+                      accept={field === "personalNumber" ? "number" : "text"}
+                      onChange={(e) => {
+                        setNewForm((value) => ({ ...value, [field]: e }));
+                      }}
+                    />
+                  )}
+                  {field === "size" &&
+                    (newForm as Soldier).size &&
+                    Object.keys((newForm as Soldier).size).map((key) => {
+                      return (
+                        <div className="flex flex-col gap-3 w-full">
+                          <span className="text-black text-xl">
+                            {sizeTranslate[key as keyof Size]}:
+                          </span>
+                          <div className="grid grid-cols-6 gap-3 ">
+                            {sizePickersOptions[key as keyof Size].map(
+                              (sizeOption) => {
+                                const currentValua = (newForm as Soldier).size[
+                                  key as keyof Size
+                                ];
+                                return (
+                                  <div
+                                    key={key}
+                                    onClick={() => {
+                                      setNewForm((value) => ({
+                                        ...value,
+                                        size: {
+                                          ...(value as Soldier).size,
+                                          [key]: sizeOption,
+                                        },
+                                      }));
+                                    }}
+                                    style={{
+                                      background:
+                                        sizeOption === currentValua
+                                          ? "green"
+                                          : "",
+                                      color:
+                                        sizeOption === currentValua
+                                          ? "white"
+                                          : "",
+                                    }}
+                                    className="flex  cursor-pointer justify-center items-center  p-1 bg-gray-300 shadow-md rounded-lg w-12"
+                                  >
+                                    {" "}
+                                    {sizeOption}
+                                  </div>
+                                );
+                              }
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                 </FormGroup>
               </div>
             )
@@ -191,6 +249,11 @@ const DynamicForm: React.FC<Props> = ({
 
 export default DynamicForm;
 
+const sizePickersOptions: { [key in keyof Size]: string[] } = {
+  pance: ["38", "40", "42", "44", "46", "48"],
+  short: ["S", "M", "L", "XL", "2XL", "3XL"],
+  shoes: ["39", "40", "41", "42", "43", "44", "45", "46", "47", "48"],
+};
 interface Props {
   type: "Item" | "Soldier";
   onSubmit: (data: FormData) => void;

@@ -9,8 +9,7 @@ import {
   statusColors,
   statusTranslate,
 } from "../const";
-import { Button } from "rsuite";
-import { TypeAttributes } from "rsuite/esm/internals/types";
+
 import SortDownIcon from "@rsuite/icons/SortDown";
 import SortUpIcon from "@rsuite/icons/SortUp";
 import { useNavigate } from "react-router-dom";
@@ -18,13 +17,16 @@ export default function HTable(props: Props) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const navigate = useNavigate();
-
+  // const [dataType, setDataType] = useState<"soldier" | "item">();
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "history",
     "id",
     "soldierId",
     "notes",
     "items",
+    "phoneNumber",
+    "pdfFileSignature",
+    "size",
   ];
 
   const handleSort = (column: string) => {
@@ -75,15 +77,19 @@ export default function HTable(props: Props) {
     });
   };
 
-  const actions = [
-    { key: "edit", text: "עריכה", color: "blue" },
-    // { key: "delete", text: "מחיקה", color: "red" },
-  ];
+  // const actions = [
+  //   { key: "edit", text: "עריכה", color: "blue" },
+  //   // { key: "delete", text: "מחיקה", color: "red" },
+  // ];
 
   const sortedData = getSortedData();
 
   return (
-    <Table>
+    <Table
+      className={`${
+        props.dataType === "soldier" ? "soldier-table" : "item-table"
+      }`}
+    >
       <Thead>
         <Tr>
           {props.headers.map((header, index) => {
@@ -103,7 +109,7 @@ export default function HTable(props: Props) {
               )
             );
           })}
-          <Th>פעולות</Th>
+          {/* <Th>פעולות</Th> */}
         </Tr>
       </Thead>
       <Tbody>
@@ -126,7 +132,7 @@ export default function HTable(props: Props) {
                 )
               );
             })}
-            <Td>
+            {/* <Td>
               {actions.map((action) => {
                 return (
                   <Button
@@ -140,7 +146,7 @@ export default function HTable(props: Props) {
                   </Button>
                 );
               })}
-            </Td>
+            </Td> */}
           </Tr>
         ))}
       </Tbody>
@@ -182,7 +188,7 @@ function renderCellData(header: string, row: Soldier | Item) {
         return (
           <span className=" sm:flex justify-center profile-image  ">
             <img
-              className="sm:h-10 sm:w-10 w-24 h-24  bg-white rounded-full"
+              className="sm:h-10 sm:w-10 w-14 h-14  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1
                   ? (row as Soldier).profileImage
@@ -192,7 +198,7 @@ function renderCellData(header: string, row: Soldier | Item) {
           </span>
         );
       } else if (header === "id" || header === "pdfFileSignature") {
-        return <span>x</span>;
+        return;
       } else {
         return <span>{value}</span>;
       }
@@ -207,4 +213,5 @@ interface Props {
   headers: string[];
   data: (Soldier | Item)[];
   onAction: (row: Soldier | Item) => void;
+  dataType: "soldier" | "item";
 }

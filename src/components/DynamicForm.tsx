@@ -25,6 +25,7 @@ const DynamicForm: React.FC<Props> = ({
   closeForm,
   itemToEdit,
 }) => {
+  const [tryConfirm, setTryConfirm] = useState<boolean>(false);
   const toaster = useToaster();
   const formRef = useRef<any>();
   const model = getValidationModel(type);
@@ -98,6 +99,7 @@ const DynamicForm: React.FC<Props> = ({
     console.log(isValid, newForm);
 
     if (!isValid) {
+      setTryConfirm(true);
       toaster.push(
         <Message type="error" showIcon>
           !מלא את כל השדות כראוי
@@ -105,6 +107,13 @@ const DynamicForm: React.FC<Props> = ({
         { placement: "topCenter" }
       );
       return;
+    } else {
+      toaster.push(
+        <Message type="success" showIcon>
+          הפעולה בוצעה בהצלחה!
+        </Message>,
+        { placement: "topCenter" }
+      );
     }
     console.log(newForm);
     const toSubmit = itemToEdit
@@ -112,6 +121,7 @@ const DynamicForm: React.FC<Props> = ({
       : defaultObjectTosubmit;
 
     onSubmit(toSubmit as FormData);
+    setTryConfirm(false);
     closeForm();
   };
 
@@ -141,7 +151,7 @@ const DynamicForm: React.FC<Props> = ({
           </div>
         </div>
       ) : (
-        <div>
+        <div className="relative">
           <UploadWidget
             text="העלה תמונה"
             previewType="addPhoto"
@@ -149,6 +159,14 @@ const DynamicForm: React.FC<Props> = ({
               setNewForm((prev) => ({ ...prev, profileImage: e }));
             }}
           />
+          {formRef.current &&
+            !formRef.current.profileImage &&
+            !(newForm as Soldier).profileImage &&
+            tryConfirm && (
+              <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 right-14">
+                הוסף תמונה
+              </span>
+            )}
         </div>
       )}
       {fields.map((field) => {
@@ -253,6 +271,14 @@ const DynamicForm: React.FC<Props> = ({
                           );
                         })}
                       </Dropdown>
+                      {formRef.current &&
+                        !formRef.current.team &&
+                        !(newForm as Soldier).team &&
+                        tryConfirm && (
+                          <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 left-0">
+                            בחר צוות
+                          </span>
+                        )}
                     </div>
                   )}
                 </FormGroup>

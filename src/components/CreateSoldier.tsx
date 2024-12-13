@@ -19,18 +19,23 @@ export default function CreateSoldier() {
   };
 
   return (
-    <div className="flex p-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col justify-center items-center">
+    <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col justify-center items-center">
       <div>
         {isFormOpen && (
-          <DynamicForm
-            itemType={"combatEquipment"}
-            type={"Soldier"}
-            onSubmit={(e) => {
-              onAddItem(e as Soldier);
-              console.log("data", e);
-            }}
-            closeForm={() => {}}
-          />
+          <div className="w-full flex flex-col items-center justify-center">
+            <div className="w-full flex justify-center font-serif text-2xl py-2">
+              טופס הרשמה
+            </div>
+            <DynamicForm
+              itemType={"combatEquipment"}
+              type={"Soldier"}
+              onSubmit={(e) => {
+                onAddItem(e as Soldier);
+                console.log("data", e);
+              }}
+              closeForm={() => {}}
+            />
+          </div>
         )}{" "}
         {!isFormOpen && (
           <div className="flex flex-col justify-center items-center">

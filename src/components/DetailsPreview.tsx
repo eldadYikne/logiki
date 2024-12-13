@@ -233,7 +233,7 @@ export default function DetailsPreview() {
               )}
 
               <img
-                className="w-56 h-56 rounded-md"
+                className="w-24 h-24 rounded-md"
                 src={
                   (item as Soldier)?.profileImage
                     ? (item as Soldier).profileImage

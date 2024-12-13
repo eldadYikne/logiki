@@ -95,8 +95,7 @@ body {
     text-align: right !important ;
     margin-bottom: 10px;
   }
-
-  .pivoted.profile-image .tdBefore {
+  x .pivoted.profile-image .tdBefore {
     display: none;
   }
   .soldier-table.responsiveTable tbody tr {

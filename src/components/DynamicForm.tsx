@@ -194,7 +194,7 @@ const DynamicForm: React.FC<Props> = ({
                           <span className="text-black text-xl">
                             {sizeTranslate[key as keyof Size]}:
                           </span>
-                          <div className="grid grid-cols-4 gap-3 ">
+                          <div className="grid grid-cols-4 gap-2 ">
                             {sizePickersOptions[key as keyof Size].map(
                               (sizeOption, idx) => {
                                 const currentValua = (newForm as Soldier).size[
@@ -257,7 +257,11 @@ const DynamicForm: React.FC<Props> = ({
                             selected,
                             value,
                             teamTranslate[selected as Team]
-                          ); // Logs the full object
+                          );
+                          setNewForm((value) => ({
+                            ...value,
+                            team: selected,
+                          }));
                         }
                       }}
                     />

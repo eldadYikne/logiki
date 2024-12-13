@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-import { Soldier } from "../types/soldier";
-import { Item, TableHeaders } from "../types/table";
+import { Soldier, Team } from "../types/soldier";
+import { Item } from "../types/table";
 import {
   ItemTranslate,
-  headerTranslate,
   statusColors,
   statusTranslate,
+  teamTranslate,
 } from "../const";
 
 import SortDownIcon from "@rsuite/icons/SortDown";
@@ -183,12 +183,13 @@ function renderCellData(header: string, row: Soldier | Item) {
           </span>
         );
       } else if (header === "itemType") {
-        return <span>{headerTranslate[value as keyof TableHeaders]}</span>;
+      } else if (header === "team") {
+        return <span>{teamTranslate[value as Team]}</span>;
       } else if (header === "profileImage") {
         return (
           <span className=" sm:flex justify-center profile-image  ">
             <img
-              className="sm:h-10 sm:w-10 w-14 h-14  bg-white rounded-full"
+              className="sm:h-10 sm:w-10 w-14 h-14 max-w-14  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1
                   ? (row as Soldier).profileImage

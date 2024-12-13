@@ -1,13 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Form,
-  Button,
-  Schema,
-  Message,
-  useToaster,
-  AutoComplete,
-  Dropdown,
-} from "rsuite";
+import { Form, Button, Schema, Message, useToaster, Dropdown } from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
 import { CombinedKeys, Item } from "../types/table";
 import {
@@ -19,7 +11,6 @@ import {
 import { Size, Soldier, Team } from "../types/soldier";
 import { v4 as uuidv4 } from "uuid";
 import { UploadWidget } from "./UploadWidget";
-import CustomDropdown from "./CustomDropdown";
 export type itemType =
   | "nightVisionDevice"
   | "combatEquipment"
@@ -59,7 +50,6 @@ const DynamicForm: React.FC<Props> = ({
   const [newForm, setNewForm] = useState<NewForm>(
     itemToEdit ?? defaultFormValues
   );
-  const [inputValue, setInputValue] = useState(""); // Manages input value for di
 
   console.log("newForm", newForm);
   interface NewForm {
@@ -237,36 +227,6 @@ const DynamicForm: React.FC<Props> = ({
                       );
                     })}
                   {field === "team" && (
-                    // <AutoComplete
-                    //   className="w-full"
-                    //   placeholder="בחר צוות"
-                    //   style={{ width: "100%" }}
-                    //   data={teamOptions.map((option) => ({
-                    //     label: teamTranslate[option as Team],
-                    //     value: option,
-                    //   }))}
-                    //   value={inputValue}
-                    //   onChange={(value) => {
-                    //     setInputValue(value); // Update input field display
-                    //   }}
-                    //   onSelect={(value) => {
-                    //     const selected = teamOptions.find(
-                    //       (option) => option === value
-                    //     );
-                    //     if (selected) {
-                    //       setInputValue(teamTranslate[selected as Team]); // Display name in the input field
-                    //       console.log(
-                    //         selected,
-                    //         value,
-                    //         teamTranslate[selected as Team]
-                    //       );
-                    //       setNewForm((value) => ({
-                    //         ...value,
-                    //         team: selected,
-                    //       }));
-                    //     }
-                    //   }}
-                    // />
                     <div className="w-full add-soldier-dropdown">
                       <Dropdown
                         title={

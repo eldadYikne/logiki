@@ -9,6 +9,7 @@ export interface Soldier {
   phoneNumber: number;
   profileImage: string;
   size: Size;
+  team: Team;
 }
 export interface Size {
   short: string;
@@ -17,3 +18,16 @@ export interface Size {
 }
 export type SoldierItem = Item | Soldier;
 export type DetailsItem = Item | Soldier;
+export type Team =
+  | "contact"
+  | "logistics"
+  | "agam"
+  | "medical"
+  | "yoni"
+  | "adiel"
+  | "ben-shooshan"
+  | "eden"
+  | "command"
+  | "asaf"
+  | "mobility"
+  | "nemerim";

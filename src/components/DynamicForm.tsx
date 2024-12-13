@@ -1,9 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Form, Button, Schema, Message, useToaster } from "rsuite";
+import {
+  Form,
+  Button,
+  Schema,
+  Message,
+  useToaster,
+  AutoComplete,
+} from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
 import { CombinedKeys, Item } from "../types/table";
-import { ItemTranslate, sizeTranslate } from "../const";
-import { Size, Soldier } from "../types/soldier";
+import {
+  ItemTranslate,
+  sizeTranslate,
+  teamOptions,
+  teamTranslate,
+} from "../const";
+import { Size, Soldier, Team } from "../types/soldier";
 import { v4 as uuidv4 } from "uuid";
 import { UploadWidget } from "./UploadWidget";
 export type itemType =
@@ -39,11 +51,13 @@ const DynamicForm: React.FC<Props> = ({
           personalNumber: 0,
           phoneNumber: 0,
           profileImage: "",
-          size: { pance: "", shoes: "", short: "" },
+          size: { short: "", pance: "", shoes: "" },
+          team: "",
         };
   const [newForm, setNewForm] = useState<NewForm>(
     itemToEdit ?? defaultFormValues
   );
+  const [inputValue, setInputValue] = useState(""); // Manages input value for di
 
   console.log("newForm", newForm);
   interface NewForm {
@@ -53,12 +67,13 @@ const DynamicForm: React.FC<Props> = ({
     serialNumber?: string;
     profileImage?: string;
     size?: Size;
+    team?: Team | "";
   }
   const fields = itemToEdit
     ? Object.keys(itemToEdit)
     : type === "Item"
     ? ["name", "serialNumber"] // Item fields
-    : ["name", "personalNumber", "phoneNumber", "profileImage", "size"]; // Soldier fields
+    : ["name", "personalNumber", "team", "phoneNumber", "profileImage", "size"]; // Soldier fields
 
   const defaultObjectTosubmit =
     type === "Item"
@@ -85,6 +100,7 @@ const DynamicForm: React.FC<Props> = ({
           items: [],
           profileImage: newForm.profileImage,
           size: newForm.size,
+          team: newForm.team,
         } as Soldier);
   const handleSubmit = (isValid: boolean) => {
     console.log(isValid, newForm);
@@ -136,7 +152,7 @@ const DynamicForm: React.FC<Props> = ({
         <div>
           <UploadWidget
             text="העלה תמונה"
-            previewType="button"
+            previewType="addPhoto"
             onSetImageUrl={(e: string) => {
               setNewForm((prev) => ({ ...prev, profileImage: e }));
             }}
@@ -155,12 +171,12 @@ const DynamicForm: React.FC<Props> = ({
             field !== "soldierId" &&
             field !== "profileImage" &&
             field !== "items" && (
-              <div className={type}>
+              <div className={`w-full ${type} `}>
                 <FormGroup key={field}>
                   <Form.ControlLabel className="text-black">
                     {ItemTranslate[field as CombinedKeys] || field}:
                   </Form.ControlLabel>
-                  {field !== "size" && (
+                  {field !== "size" && field !== "team" && (
                     <Form.Control
                       value={newForm[field as keyof NewForm] as string}
                       name={field}
@@ -174,19 +190,19 @@ const DynamicForm: React.FC<Props> = ({
                     (newForm as Soldier).size &&
                     Object.keys((newForm as Soldier).size).map((key) => {
                       return (
-                        <div className="flex flex-col gap-3 w-full">
+                        <div key={key} className="flex flex-col gap-3 w-full">
                           <span className="text-black text-xl">
                             {sizeTranslate[key as keyof Size]}:
                           </span>
-                          <div className="grid grid-cols-6 gap-3 ">
+                          <div className="grid grid-cols-4 gap-3 ">
                             {sizePickersOptions[key as keyof Size].map(
-                              (sizeOption) => {
+                              (sizeOption, idx) => {
                                 const currentValua = (newForm as Soldier).size[
                                   key as keyof Size
                                 ];
                                 return (
                                   <div
-                                    key={key}
+                                    key={idx}
                                     onClick={() => {
                                       setNewForm((value) => ({
                                         ...value,
@@ -218,6 +234,34 @@ const DynamicForm: React.FC<Props> = ({
                         </div>
                       );
                     })}
+                  {field === "team" && (
+                    <AutoComplete
+                      className="w-full"
+                      placeholder="בחר צוות"
+                      style={{ width: "100%" }}
+                      data={teamOptions.map((option) => ({
+                        label: teamTranslate[option as Team],
+                        value: option,
+                      }))}
+                      value={inputValue}
+                      onChange={(value) => {
+                        setInputValue(value); // Update input field display
+                      }}
+                      onSelect={(value) => {
+                        const selected = teamOptions.find(
+                          (option) => option === value
+                        );
+                        if (selected) {
+                          setInputValue(teamTranslate[selected as Team]); // Display name in the input field
+                          console.log(
+                            selected,
+                            value,
+                            teamTranslate[selected as Team]
+                          ); // Logs the full object
+                        }
+                      }}
+                    />
+                  )}
                 </FormGroup>
               </div>
             )

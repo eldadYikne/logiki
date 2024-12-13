@@ -1,4 +1,4 @@
-import { Size, Soldier } from "./types/soldier";
+import { Size, Soldier, Team } from "./types/soldier";
 import {
   CombinedKeys,
   Item,
@@ -29,6 +29,7 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   soldierPersonalNumber: "מספר אישי",
   representative: "רס״פ מחתים",
   size: "מידות",
+  team: "צוות",
 };
 
 export const itemsKeys = Object.keys({
@@ -70,6 +71,20 @@ export const historyTranslate: { [key in keyof ItemHistory]: string } = {
   soldierId: "מזהה חייל",
   pdfFileSignature: "טופס חתימה",
 };
+export const teamTranslate: { [key in Team]: string } = {
+  "ben-shooshan": "בן שושן",
+  adiel: "עדיאל",
+  agam: "אג״מ",
+  asaf: "אסף",
+  command: "פיקוד",
+  contact: "ניווט-קשר",
+  eden: "עדן",
+  medical: "רפואה",
+  mobility: "ניוד",
+  nemerim: "נמרים",
+  yoni: "יוני",
+  logistics: "רספי״ם",
+};
 export const soldierKeys = Object.keys({
   profileImage: "",
   name: "",
@@ -78,6 +93,7 @@ export const soldierKeys = Object.keys({
   notes: "",
   id: "",
   phoneNumber: 0,
+  team: "adiel",
   size: { pance: "", shoes: "", short: "" },
 } as Soldier) as (keyof Soldier)[];
 
@@ -89,3 +105,17 @@ export const statusColors: Record<Status, string> = {
   signed: "#a1a5ac",
   stored: "#269d26",
 };
+export const teamOptions: Team[] = [
+  "contact",
+  "logistics",
+  "agam",
+  "medical",
+  "yoni",
+  "adiel",
+  "ben-shooshan",
+  "eden",
+  "command",
+  "asaf",
+  "mobility",
+  "nemerim",
+];

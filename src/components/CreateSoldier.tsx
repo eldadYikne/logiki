@@ -19,7 +19,7 @@ export default function CreateSoldier() {
   };
 
   return (
-    <div className="flex bg-gradient-to-r from-white to-slate-100  w-full pt-24 flex-col justify-center items-center">
+    <div className="flex p-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col justify-center items-center">
       <div>
         {isFormOpen && (
           <DynamicForm

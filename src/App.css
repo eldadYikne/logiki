@@ -95,10 +95,7 @@ body {
     text-align: right !important ;
     margin-bottom: 10px;
   }
-  .pivoted.profile-image img {
-    /* height: 45px;
-      width: 45px; */
-  }
+
   .pivoted.profile-image .tdBefore {
     display: none;
   }

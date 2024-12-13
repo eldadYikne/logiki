@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { CloudinaryUploadEvent } from "../types/clodinary";
 import { Button } from "rsuite";
-
-import FileUploadIcon from "@rsuite/icons/FileUpload";
+import PlusRoundIcon from "@rsuite/icons/PlusRound";
+import ImageIcon from "@rsuite/icons/Image";
 export function UploadWidget(props: Props) {
   const cloudinaryRef = useRef<any>();
   const widgetRef = useRef<any>();
@@ -37,7 +37,13 @@ export function UploadWidget(props: Props) {
         </Button>
       )}
       {props.previewType === "addPhoto" && (
-        <FileUploadIcon onClick={() => widgetRef.current.open()} />
+        <div
+          className="bg-gray-300  justify-center cursor-pointer items-center relative rounded-full p-5"
+          onClick={() => widgetRef.current.open()}
+        >
+          <ImageIcon style={{ fontSize: "2em" }} className="" />
+          <PlusRoundIcon className="absolute top-[13px] left-[11px] " />
+        </div>
       )}
     </div>
   );

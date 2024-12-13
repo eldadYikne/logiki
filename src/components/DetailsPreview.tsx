@@ -200,7 +200,9 @@ export default function DetailsPreview() {
               {item && (
                 <div dir="rtl" className="flex p-5 flex-col gap-4 text-white">
                   <div className="flex w-full justify-between">
-                    <span className="text-3xl shadow-sm">{item.name}</span>
+                    <span className="text-3xl shadow-sm">
+                      {(item as Item).name}
+                    </span>
                     <div
                       style={{
                         background: statusColors[(item as Item).status],
@@ -224,7 +226,7 @@ export default function DetailsPreview() {
                       key !== "name" && (
                         <div key={key}>
                           {" "}
-                          {renderFileds(key as CombinedKeys, item)}
+                          {renderFileds(key as CombinedKeys, item as Item)}
                         </div>
                       )
                     );

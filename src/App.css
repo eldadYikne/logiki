@@ -106,6 +106,13 @@ body {
   .Soldier .rs-form-control.rs-form-control-wrapper {
     width: 350px;
   }
+  .add-soldier-dropdown button,
+  ul,
+  li {
+    width: 100%;
+
+    text-align: start;
+  }
 }
 .signature-imporve-modal .rs-modal-content {
   padding: 25px 3px 25px 3px !important;

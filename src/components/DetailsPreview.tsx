@@ -18,7 +18,7 @@ import {
   statusTranslate,
 } from "../const";
 import PhoneFillIcon from "@rsuite/icons/PhoneFill";
-import { Button } from "rsuite";
+import { Button, Dropdown, IconButton } from "rsuite";
 import HModal from "./HModal";
 import { updateBoaedSpesificKey } from "../service/board";
 import { auth, db } from "../main";
@@ -28,7 +28,9 @@ import { User } from "@firebase/auth";
 import ModalConfirm from "./ModalConfirm";
 import { getCurrentDate } from "../utils";
 import ImproveSignature from "./ImproveSignature";
-
+import ListIcon from "@rsuite/icons/List";
+import EditIcon from "@rsuite/icons/Edit";
+import TrashIcon from "@rsuite/icons/Trash";
 export default function DetailsPreview() {
   const { id } = useParams();
   const [data, setData] = useState<TableData>();
@@ -191,14 +193,43 @@ export default function DetailsPreview() {
       }
     }
   };
+  const renderIconButton = (props: any, ref: any) => {
+    return (
+      <IconButton
+        {...props}
+        ref={ref}
+        icon={<ListIcon style={{ color: "balck" }} />}
+        circle
+        color=""
+        appearance="ghost"
+        style={{
+          color: "black",
+          background: "white",
+          border: "1px white solid",
+        }}
+      />
+    );
+  };
   return (
     <div className=" w-full min-h-screen justify-center items-start  sm:p-24 p-4  pt-10 bg-blue-950 flex ">
       {item && (
         <div className="flex flex-col gap-3 w-full">
-          <div className="border border-white shadow-lg flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
-            <div className="flex sm:flex-row  gap-3">
+          <div className="border relative border-white shadow-lg flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
+            <div className="flex sm:flex-row   gap-3">
               {item && (
                 <div dir="rtl" className="flex p-5 flex-col gap-4 text-white">
+                  {(item as Soldier).personalNumber && (
+                    <div className="absolute top-2 right-2">
+                      <Dropdown renderToggle={renderIconButton}>
+                        <Dropdown.Item className="z-50" icon={<TrashIcon />}>
+                          מחק חייל
+                        </Dropdown.Item>
+                        <Dropdown.Item icon={<EditIcon />}>
+                          ערוך חייל
+                        </Dropdown.Item>
+                      </Dropdown>
+                    </div>
+                  )}
                   <div className="flex w-full justify-between">
                     <span className="text-3xl shadow-sm">
                       {(item as Item).name}

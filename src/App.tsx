@@ -14,6 +14,7 @@ import { auth } from "./main";
 import AdminPage from "./components/AdminPage";
 import Navbar from "./components/Navbar";
 import CreateSoldier from "./components/CreateSoldier";
+import Footer from "./components/Footer";
 
 // TODO: Add SDKs for Firebase products that you want to use
 
@@ -38,24 +39,27 @@ export default function App() {
   myImage.resize(fill().width(250).height(250));
 
   return (
-    <div dir="rtl">
-      <Navbar setUser={setUser} user={user} />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            !user ? (
-              <Login userConnected={""} setConnectedUser={setUser} />
-            ) : (
-              <MaiEquipment setUser={setUser} user={user} />
-            )
-          }
-        />
-        <Route path="/add-soldier" element={<CreateSoldier />} />
+    <div className="site-container" dir="rtl">
+      <div className="content-wrap">
+        <Navbar setUser={setUser} user={user} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              !user ? (
+                <Login userConnected={""} setConnectedUser={setUser} />
+              ) : (
+                <MaiEquipment setUser={setUser} user={user} />
+              )
+            }
+          />
+          <Route path="/add-soldier" element={<CreateSoldier />} />
 
-        {user && <Route path="/soldier/:id" element={<DetailsPreview />} />}
-        {user && <Route path="/admin" element={<AdminPage user={user} />} />}
-      </Routes>
+          {user && <Route path="/soldier/:id" element={<DetailsPreview />} />}
+          {user && <Route path="/admin" element={<AdminPage user={user} />} />}
+        </Routes>
+      </div>
+      <Footer />
     </div>
   );
 }

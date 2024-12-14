@@ -173,6 +173,7 @@ function MaiEquipment(props: Props) {
             <DynamicForm
               itemType={selecteTable as itemType}
               type={selecteTable === "soldiers" ? "Soldier" : "Item"}
+              isCancelButtonShown={true}
               onSubmit={(e) => {
                 if (data) {
                   onAddItem(e);

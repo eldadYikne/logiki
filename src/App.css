@@ -120,3 +120,18 @@ body {
   flex-direction: column;
   justify-content: center;
 }
+.site-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrap {
+  flex: 1;
+  background-color: #ffffff;
+  /* background-image: url("https://weirdoz.co.il/wp-content/uploads/2021/02/background-stars.png") !important; */
+  background-position: left top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}

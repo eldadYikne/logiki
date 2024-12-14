@@ -24,6 +24,7 @@ const DynamicForm: React.FC<Props> = ({
   onSubmit,
   closeForm,
   itemToEdit,
+  isCancelButtonShown,
 }) => {
   const [tryConfirm, setTryConfirm] = useState<boolean>(false);
   const toaster = useToaster();
@@ -294,17 +295,19 @@ const DynamicForm: React.FC<Props> = ({
         >
           {itemToEdit ? "ערוך" : "הוסף"}
         </Button>
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            closeForm();
-          }}
-          className="button"
-          color="red"
-          appearance="primary"
-        >
-          בטל
-        </Button>
+        {isCancelButtonShown && (
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              closeForm();
+            }}
+            className="button"
+            color="red"
+            appearance="primary"
+          >
+            בטל
+          </Button>
+        )}
       </div>
     </Form>
   );
@@ -323,6 +326,7 @@ interface Props {
   itemType: itemType;
   closeForm: Function;
   itemToEdit?: FormData;
+  isCancelButtonShown: boolean;
 }
 
 const getValidationModel = (type: "Item" | "Soldier") => {
@@ -335,6 +339,8 @@ const getValidationModel = (type: "Item" | "Soldier") => {
       })
     : Schema.Model({
         name: StringType().isRequired("שדה חובה"),
+        team: StringType().isRequired("שדה חובה"),
+        profileImage: StringType().isRequired("שדה חובה"),
         personalNumber: NumberType("רשום מספרים בלבד")
           .isRequired("שדה חובה")
           .min(6, "מינימום 6 ספרות"),

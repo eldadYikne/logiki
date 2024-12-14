@@ -19,8 +19,8 @@ export default function CreateSoldier() {
   };
 
   return (
-    <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col justify-center items-center">
-      <div>
+    <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col justify-center items-center h-screens ">
+      <div className="flex flex-col justify-center items-center">
         {isFormOpen && (
           <div className="w-full flex flex-col items-center justify-center">
             <div className="w-full flex justify-center font-serif text-2xl py-2">
@@ -34,6 +34,7 @@ export default function CreateSoldier() {
                 console.log("data", e);
               }}
               closeForm={() => {}}
+              isCancelButtonShown={false}
             />
           </div>
         )}{" "}

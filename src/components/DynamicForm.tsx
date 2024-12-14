@@ -318,7 +318,26 @@ export default DynamicForm;
 const sizePickersOptions: { [key in keyof Size]: string[] } = {
   pance: ["38", "40", "42", "44", "46", "48"],
   short: ["S", "M", "L", "XL", "2XL", "3XL"],
-  shoes: ["39", "40", "41", "42", "43", "44", "45", "46", "47", "48"],
+  shoes: [
+    "38",
+    "39",
+    "40",
+    "40.5",
+    "41",
+    "41.5",
+    "42",
+    "42.5",
+    "43",
+    "43.5",
+    "44",
+    "44.5",
+    "45",
+    "45.5",
+    "46",
+    "46.5",
+    "47",
+    "48",
+  ],
 };
 interface Props {
   type: "Item" | "Soldier";

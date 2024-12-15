@@ -9,19 +9,24 @@ import {
   TableHeaders,
   itemType,
 } from "../types/table";
-import { DetailsItem, Soldier, Team } from "../types/soldier";
+import { DetailsItem, Size, Soldier, Team } from "../types/soldier";
 import {
   ItemTranslate,
   headerTranslate,
   historyTranslate,
+  sizeIcons,
   statusColors,
   statusTranslate,
   teamTranslate,
 } from "../const";
 import PhoneFillIcon from "@rsuite/icons/PhoneFill";
-import { Button, Dropdown, IconButton } from "rsuite";
+import { Button, Dropdown, IconButton, Message, useToaster } from "rsuite";
 import HModal from "./HModal";
-import { updateBoaedSpesificKey } from "../service/board";
+import {
+  boardOneValuaDelete,
+  putBoardOneValuaEdit,
+  updateBoaedSpesificKey,
+} from "../service/board";
 import { auth, db } from "../main";
 import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
@@ -31,16 +36,32 @@ import { getCurrentDate } from "../utils";
 import ImproveSignature from "./ImproveSignature";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
+import DynamicForm from "./DynamicForm";
 export default function DetailsPreview() {
   const { id } = useParams();
   const [data, setData] = useState<TableData>();
   const [item, setItem] = useState<DetailsItem>();
   const [modalOpen, setModalOpen] = useState(false);
+  const [editSoldier, setEditSoldier] = useState<boolean>(false);
   const [soldierItems, setSoldierItems] = useState<Item[]>();
   const [user, setUser] = useState<User>();
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
   const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
   const naigate = useNavigate();
+  const toaster = useToaster();
+
+  const notRenderKeys: Array<keyof Item | keyof Soldier> = [
+    "id",
+    "profileImage",
+    "pdfFileSignature",
+    "status",
+    "soldierId",
+    "items",
+    "history",
+    "size",
+    "notes",
+    "name",
+  ];
   const types: itemType[] = [
     "nightVisionDevice",
     "combatEquipment",
@@ -108,12 +129,8 @@ export default function DetailsPreview() {
   const getBoardByIdSnap = async () => {
     try {
       const boardRef = doc(db, "boards", "hapak");
-      // Listen to changes in the board document
-      //   console.log("try newBoard");
       const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        // console.log("try newBoard boardDoc", boardDoc);
         if (boardDoc.exists()) {
-          // Document exists, return its data along with the ID
           const newBoard = { ...boardDoc.data(), id: boardDoc.id };
           if (newBoard) {
             setData(newBoard as TableData);
@@ -121,13 +138,10 @@ export default function DetailsPreview() {
           console.log("newBoard", newBoard);
           return newBoard;
         } else {
-          // Document does not exist
           console.log("Board not found");
-          // setDbBoard(null); // or however you handle this case in your application
         }
       });
 
-      // Return the unsubscribe function to stop listening when needed
       return unsubscribe;
     } catch (error) {
       console.error("Error fetching board:", error);
@@ -142,10 +156,6 @@ export default function DetailsPreview() {
         (itemType) => itemType.id !== item.id
       );
       try {
-        // await updateBoard("hapak", {
-        //   ...data,
-        //   [item.itemType]: [...newItems, item],
-        // });
         await updateBoaedSpesificKey("hapak", item.itemType, [
           ...newItems,
           item,
@@ -198,9 +208,8 @@ export default function DetailsPreview() {
       <IconButton
         {...props}
         ref={ref}
-        icon={<span className="font-bold"> ⋮ </span>}
+        icon={<span className="font-bold "> ⋮ </span>}
         color=""
-        appearance="ghost"
         style={{
           color: "black",
           background: "white",
@@ -209,26 +218,84 @@ export default function DetailsPreview() {
       />
     );
   };
+  const onEditSoldier = async (item: Soldier | Item) => {
+    console.log("item", item);
+    const key: keyof TableData = (item as Item).itemType
+      ? (item as Item).itemType
+      : "soldiers";
+    await putBoardOneValuaEdit("hapak", key, item);
+  };
+  const getItemToEdit = () => {
+    return (item as Item).serialNumber
+      ? item
+      : ({
+          ...item,
+          size: (item as Soldier).size ?? { pance: "", short: "", shoes: "" },
+          team: (item as Soldier).team ?? "",
+        } as Soldier);
+  };
+  const onDelteSoldier = async () => {
+    try {
+      if ((item as Item).id) {
+        const key: keyof TableData = (item as Item).itemType
+          ? (item as Item).itemType
+          : "soldiers";
+        if (user?.email === "hapakmaog162@gmail.com") {
+          if (confirm(`אתה בטוח רוצה למחוק את ${item?.name}`)) {
+            toaster.push(
+              <Message type="success" showIcon>
+                הפעולה בוצעה בהצלחה!
+              </Message>,
+              { placement: "topCenter" }
+            );
+            naigate("/");
+            await boardOneValuaDelete("hapak", key, item as Item);
+          }
+        } else {
+          toaster.push(
+            <Message type="error" showIcon>
+              אין לך הרשאה לבצע מחיקה
+            </Message>,
+            { placement: "topCenter" }
+          );
+        }
+      }
+    } catch (err) {}
+  };
   return (
-    <div className=" w-full min-h-screen justify-center items-start  sm:p-24 p-4  pt-10 flex ">
-      {item && (
+    <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex details-preview ">
+      {item && !editSoldier && (
         <div className="flex flex-col gap-3 w-full">
           <div className="border relative border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
             <div className="flex sm:flex-row p-4  gap-3">
               {item && (
                 <div dir="rtl" className="flex flex-col gap-4 ">
-                  {(item as Soldier).personalNumber && (
-                    <div className="absolute top-2 right-2">
-                      <Dropdown renderToggle={renderIconButton}>
-                        <Dropdown.Item className="" icon={<TrashIcon />}>
-                          מחק חייל
+                  {
+                    <div className="absolute top-2 right-2 edit-dropdown">
+                      <Dropdown
+                        placement="leftStart"
+                        renderToggle={renderIconButton}
+                      >
+                        <Dropdown.Item
+                          onClick={() => {
+                            onDelteSoldier();
+                          }}
+                          icon={<TrashIcon color="red" />}
+                        >
+                          מחק
                         </Dropdown.Item>
-                        <Dropdown.Item icon={<EditIcon />}>
-                          ערוך חייל
+                        <Dropdown.Item
+                          onClick={() => {
+                            setEditSoldier(true);
+                          }}
+                          icon={<EditIcon color="blue" />}
+                        >
+                          ערוך
                         </Dropdown.Item>
                       </Dropdown>
                     </div>
-                  )}
+                  }
+
                   <div className="flex w-full justify-between">
                     <span className="text-3xl ">{(item as Item).name}</span>
                     {(item as Item).status && (
@@ -244,34 +311,39 @@ export default function DetailsPreview() {
                   </div>
                   {Object.keys(item).map((key) => {
                     return (
-                      key !== "id" &&
-                      key !== "profileImage" &&
-                      key !== "pdfFileSignature" &&
-                      key !== "status" &&
-                      key !== "soldierId" &&
-                      key !== "items" &&
-                      key !== "history" &&
-                      key !== "size" &&
-                      key !== "notes" &&
-                      key !== "name" && (
+                      !notRenderKeys.includes(key as keyof Item) && (
                         <div key={key}>
-                          {" "}
                           {renderFileds(key as CombinedKeys, item as Item)}
                         </div>
                       )
                     );
                   })}
+                  {(item as Soldier).size && (
+                    <div className="flex gap-1">
+                      {Object.keys((item as Soldier).size).map((size) => {
+                        return (
+                          <div>
+                            <span>{sizeIcons[size as keyof Size]}</span>
+                            <span>
+                              {(item as Soldier).size[size as keyof Size]}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
-
-              <img
-                className="w-36 h-40 rounded-md"
-                src={
-                  (item as Soldier)?.profileImage
-                    ? (item as Soldier).profileImage
-                    : "https://eaassets-a.akamaihd.net/battlelog/prod/emblems/320/894/2832655391561586894.jpeg?v=1332981487.09"
-                }
-              />
+              <div>
+                <img
+                  className="w-full sm:h-64 h-44 rounded-md"
+                  src={
+                    (item as Soldier)?.profileImage
+                      ? (item as Soldier).profileImage
+                      : "https://eaassets-a.akamaihd.net/battlelog/prod/emblems/320/894/2832655391561586894.jpeg?v=1332981487.09"
+                  }
+                />
+              </div>
             </div>
 
             <div>
@@ -434,6 +506,26 @@ export default function DetailsPreview() {
           }}
         />
       )}
+      {editSoldier && (
+        <div className="w-full flex flex-col items-center justify-center">
+          <div className="w-full flex justify-center font-serif text-2xl py-2">
+            עריכה
+          </div>
+          <DynamicForm
+            itemType={"combatEquipment"}
+            type={"Soldier"}
+            itemToEdit={{ ...getItemToEdit() } as DetailsItem}
+            onSubmit={(e) => {
+              onEditSoldier(e as Soldier);
+              console.log("data", e);
+            }}
+            closeForm={() => {
+              setEditSoldier(false);
+            }}
+            isCancelButtonShown={true}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -460,6 +552,12 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
         <a href={`tel:${(item as Soldier).phoneNumber}`}>
           <PhoneFillIcon />
         </a>
+      </span>
+    );
+  } else if (key === "personalNumber") {
+    return (
+      <span className="text-gray-500 font-semibold">
+        {item[key as keyof DetailsItem]}
       </span>
     );
   } else if (key === "status") {

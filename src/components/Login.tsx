@@ -3,7 +3,7 @@ import Logo from "../assets/logo.png";
 
 function Login(props: Props) {
   return (
-    <div className="min-h-screen  flex items-center justify-center font-['Nachlieli'] bg-gradient-to-r from-blue-800 via-blue-900 to-black">
+    <div className="p-10 h-[1000px]  flex items-center justify-center font-['Nachlieli'] bg-gradient-to-r from-slate-100 via-black-500 to-slate-800">
       <div className="bg-white mx-3  p-8 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           ברוכים הבאים

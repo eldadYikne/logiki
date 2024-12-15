@@ -15,7 +15,9 @@ export default defineConfig({
       manifest: {
         name: "חפ״ק 162",
         short_name: "חפ״ק 162",
-        description: "My React App",
+        description: "ניהול לוגיסטי",
+        display: "standalone",
+        background_color: "transparent",
         theme_color: "#ffffff",
         icons: [
           {

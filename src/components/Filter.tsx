@@ -21,7 +21,8 @@ export default function Filter(props: Props) {
     soldiers: [
       { key: "personalNumber", type: "string" },
       { key: "name", type: "string" },
-      { key: "nightVisionDevice", type: "dropdown", options: [] },
+      { key: "team", type: "string" },
+      // { key: "nightVisionDevice", type: "dropdown", options: [] },
     ],
     weaponAccessories: [
       { key: "serialNumber", type: "string" },

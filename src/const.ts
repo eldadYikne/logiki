@@ -58,6 +58,11 @@ export const sizeTranslate: { [key in keyof Size]: string } = {
   shoes: "נעליים",
   short: "חולצות",
 };
+export const sizeIcons: { [key in keyof Size]: string } = {
+  pance: "👖",
+  shoes: "🥾",
+  short: "👕",
+};
 export const statusTranslate: Record<Status, string> = {
   broken: "שבור",
   signed: "חתום",
@@ -73,17 +78,17 @@ export const historyTranslate: { [key in keyof ItemHistory]: string } = {
 };
 export const teamTranslate: { [key in Team]: string } = {
   "ben-shooshan": "בן שושן",
-  adiel: "עדיאל",
-  agam: "אג״מ",
-  asaf: "אסף",
-  command: "פיקוד",
-  contact: "ניווט-קשר",
-  eden: "עדן",
-  medical: "רפואה",
-  mobility: "ניוד",
-  nemerim: "נמרים",
-  yoni: "יוני",
-  logistics: "רספי״ם",
+  adiel: "עדיאל ⚔️",
+  eden: " עדן ⚔️",
+  asaf: "אסף ⚔️",
+  yoni: "יוני ⚔️",
+  agam: "אג״מ 🎯",
+  command: "פיקוד 🎖️",
+  contact: "ניווט-קשר 📞",
+  medical: "רפואה 🩺",
+  mobility: "ניוד 🚗",
+  nemerim: "נמרים 🐅",
+  logistics: "רספי״ם 📦",
 };
 export const soldierKeys = Object.keys({
   profileImage: "",

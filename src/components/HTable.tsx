@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { Soldier, Team } from "../types/soldier";
@@ -32,7 +32,10 @@ export default function HTable(props: Props) {
     "itemType",
     "soldierPersonalNumber",
   ];
-
+  useEffect(() => {
+    setSortColumn("name");
+    setSortOrder("asc");
+  }, []);
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       // Toggle sort order

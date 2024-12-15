@@ -68,7 +68,21 @@ const DynamicForm: React.FC<Props> = ({
     : type === "Item"
     ? ["name", "serialNumber"] // Item fields
     : ["name", "personalNumber", "phoneNumber", "team", "profileImage", "size"]; // Soldier fields
-
+  const notRenderKeys: Array<keyof Item | keyof Soldier> = [
+    "id",
+    "notes",
+    "owner",
+    "itemType",
+    "history",
+    "soldierId",
+    "status",
+    "profileImage",
+    "signtureDate",
+    "pdfFileSignature",
+    "soldierPersonalNumber",
+    "representative",
+    "items",
+  ];
   const defaultObjectTosubmit =
     type === "Item"
       ? ({
@@ -174,117 +188,110 @@ const DynamicForm: React.FC<Props> = ({
         return field === "profileImage" ? (
           <div key={field} className=""></div>
         ) : (
-          field !== "id" &&
-            field !== "notes" &&
-            field !== "owner" &&
-            field !== "itemType" &&
-            field !== "history" &&
-            field !== "soldierId" &&
-            field !== "profileImage" &&
-            field !== "items" && (
-              <div className={`w-full ${type} `}>
-                <FormGroup key={field}>
-                  <Form.ControlLabel className="text-black">
-                    {ItemTranslate[field as CombinedKeys] || field}:
-                  </Form.ControlLabel>
-                  {field !== "size" && field !== "team" && (
-                    <Form.Control
-                      value={newForm[field as keyof NewForm] as string}
-                      name={field}
-                      accept={field === "personalNumber" ? "number" : "text"}
-                      onChange={(e) => {
-                        setNewForm((value) => ({ ...value, [field]: e }));
-                      }}
-                    />
-                  )}
-                  {field === "size" &&
-                    (newForm as Soldier).size &&
-                    Object.keys((newForm as Soldier).size).map((key) => {
-                      return (
-                        <div key={key} className="flex flex-col gap-3 w-full">
-                          <span className="text-black text-xl">
-                            {sizeTranslate[key as keyof Size]}:
-                          </span>
-                          <div className="grid grid-cols-4 gap-2 ">
-                            {sizePickersOptions[key as keyof Size].map(
-                              (sizeOption, idx) => {
-                                const currentValua = (newForm as Soldier).size[
-                                  key as keyof Size
-                                ];
-                                return (
-                                  <div
-                                    key={idx}
-                                    onClick={() => {
-                                      setNewForm((value) => ({
-                                        ...value,
-                                        size: {
-                                          ...(value as Soldier).size,
-                                          [key]: sizeOption,
-                                        },
-                                      }));
-                                    }}
-                                    style={{
-                                      background:
-                                        sizeOption === currentValua
-                                          ? "green"
-                                          : "",
-                                      color:
-                                        sizeOption === currentValua
-                                          ? "white"
-                                          : "",
-                                    }}
-                                    className="flex  cursor-pointer justify-center items-center  p-1 bg-gray-300 shadow-md rounded-lg w-12"
-                                  >
-                                    {" "}
-                                    {sizeOption}
-                                  </div>
-                                );
-                              }
-                            )}
-                          </div>
+          !notRenderKeys.includes(field as keyof Item) && (
+            <div className={`w-full ${type} `}>
+              <FormGroup key={field}>
+                <Form.ControlLabel className="text-black">
+                  {ItemTranslate[field as CombinedKeys] || field}:
+                </Form.ControlLabel>
+                {field !== "size" && field !== "team" && (
+                  <Form.Control
+                    value={newForm[field as keyof NewForm] as string}
+                    name={field}
+                    accept={field === "personalNumber" ? "number" : "text"}
+                    onChange={(e) => {
+                      setNewForm((value) => ({ ...value, [field]: e }));
+                    }}
+                  />
+                )}
+                {field === "size" &&
+                  (newForm as Soldier).size &&
+                  Object.keys((newForm as Soldier).size).map((key) => {
+                    return (
+                      <div key={key} className="flex flex-col gap-3 w-full">
+                        <span className="text-black text-xl">
+                          {sizeTranslate[key as keyof Size]}:
+                        </span>
+                        <div className="grid grid-cols-4 gap-2 ">
+                          {sizePickersOptions[key as keyof Size].map(
+                            (sizeOption, idx) => {
+                              const currentValua = (newForm as Soldier).size[
+                                key as keyof Size
+                              ];
+                              return (
+                                <div
+                                  key={idx}
+                                  onClick={() => {
+                                    setNewForm((value) => ({
+                                      ...value,
+                                      size: {
+                                        ...(value as Soldier).size,
+                                        [key]: sizeOption,
+                                      },
+                                    }));
+                                  }}
+                                  style={{
+                                    background:
+                                      sizeOption === currentValua
+                                        ? "green"
+                                        : "",
+                                    color:
+                                      sizeOption === currentValua
+                                        ? "white"
+                                        : "",
+                                  }}
+                                  className="flex  cursor-pointer justify-center items-center  p-1 bg-gray-300 shadow-md rounded-lg w-12"
+                                >
+                                  {" "}
+                                  {sizeOption}
+                                </div>
+                              );
+                            }
+                          )}
                         </div>
-                      );
-                    })}
-                  {field === "team" && (
-                    <div className="w-full add-soldier-dropdown">
-                      <Dropdown
-                        title={
-                          teamTranslate[(newForm as Soldier).team] ?? "בחר צוות"
-                        }
-                        style={{ width: "100%" }}
-                      >
-                        {teamOptions.map((team) => {
-                          return (
-                            <Dropdown.Item
-                              style={{ width: "100%" }}
-                              key={team}
-                              onSelect={() => {
-                                console.log(team);
-                                setNewForm((value) => ({
-                                  ...value,
-                                  team,
-                                }));
-                              }}
-                              value={team}
-                            >
-                              {teamTranslate[team as Team]}
-                            </Dropdown.Item>
-                          );
-                        })}
-                      </Dropdown>
-                      {formRef.current &&
-                        !formRef.current.team &&
-                        !(newForm as Soldier).team &&
-                        tryConfirm && (
-                          <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 left-0">
-                            בחר צוות
-                          </span>
-                        )}
-                    </div>
-                  )}
-                </FormGroup>
-              </div>
-            )
+                      </div>
+                    );
+                  })}
+                {field === "team" && (
+                  <div className="w-full add-soldier-dropdown">
+                    <Dropdown
+                      title={
+                        teamTranslate[(newForm as Soldier).team] ?? "בחר צוות"
+                      }
+                      style={{ width: "100%" }}
+                    >
+                      {teamOptions.map((team) => {
+                        return (
+                          <Dropdown.Item
+                            style={{ width: "100%" }}
+                            key={team}
+                            onSelect={() => {
+                              console.log(team);
+                              setNewForm((value) => ({
+                                ...value,
+                                team,
+                              }));
+                            }}
+                            value={team}
+                          >
+                            {teamTranslate[team as Team]}
+                          </Dropdown.Item>
+                        );
+                      })}
+                    </Dropdown>
+                    {formRef.current &&
+                      !formRef.current.team &&
+                      !(newForm as Soldier).team &&
+                      tryConfirm && (
+                        <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 left-0">
+                          בחר צוות
+                        </span>
+                      )}
+                  </div>
+                )}
+              </FormGroup>
+            </div>
+          )
         );
       })}
       <div className="flex gap-2">

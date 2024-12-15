@@ -27,6 +27,10 @@ export default function HTable(props: Props) {
     "phoneNumber",
     "pdfFileSignature",
     "size",
+    "representative",
+    "signtureDate",
+    "itemType",
+    "soldierPersonalNumber",
   ];
 
   const handleSort = (column: string) => {
@@ -87,7 +91,9 @@ export default function HTable(props: Props) {
   return (
     <Table
       className={`${
-        props.dataType === "soldier" ? "soldier-table" : "item-table"
+        props.dataType === "soldier"
+          ? "table soldier-table"
+          : "table item-table"
       }`}
     >
       <Thead>
@@ -119,9 +125,10 @@ export default function HTable(props: Props) {
               return (
                 !notRenderKeys.includes(header as keyof Item) && (
                   <Td
-                    className={`cursor-pointer ${
+                    id="td-card"
+                    className={`cursor-pointer  ${
                       header === "profileImage" ? "profile-image" : ""
-                    }`}
+                    } ${header}`}
                     onClick={() => {
                       navigate(`/soldier/${row.id}`);
                     }}
@@ -189,7 +196,7 @@ function renderCellData(header: string, row: Soldier | Item) {
         return (
           <span className=" sm:flex justify-center profile-image  ">
             <img
-              className="sm:h-10 sm:w-10 w-14 h-14 max-w-14  bg-white rounded-full"
+              className="sm:h-10 sm:w-10 w-20 h-20 max-w-20  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1
                   ? (row as Soldier).profileImage

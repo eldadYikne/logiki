@@ -1,5 +1,5 @@
 import MaiEquipment from "./components/MaiEquipment";
-import "./App.css";
+import "./App.scss";
 import "rsuite/dist/rsuite-no-reset.min.css";
 
 import { fill } from "@cloudinary/url-gen/actions/resize";

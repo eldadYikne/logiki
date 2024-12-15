@@ -44,6 +44,17 @@ export default defineConfig({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        clientsClaim: true,
+        skipWaiting: true,
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/hapak162.onrender\.com\/.*$/,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "v0.00.1",
+            },
+          },
+        ],
       },
     }),
   ],

@@ -9,6 +9,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { updateBoaedSpesificKey } from "../service/board";
 import { db } from "../main";
+import { Placeholder } from "rsuite";
 
 function MaiEquipment(props: Props) {
   const [selecteTable, setSelectedTable] =
@@ -113,7 +114,7 @@ function MaiEquipment(props: Props) {
     return (
       <div
         dir="rtl"
-        className="flex flex-col h-screen justify-center items-center bg-blue-950   w-full"
+        className="flex flex-col h-screen justify-center items-center   w-full"
       >
         <span className="flex p-10 text-2xl bg-white justify-center items-center rounded-lg text-center">
           {`למשתמש ${props.user.email} אין הרשאה לגשת לאתר זה בפקודה!`}
@@ -122,7 +123,7 @@ function MaiEquipment(props: Props) {
     );
   }
   return (
-    <div dir="rtl" className="flex flex-col bg-blue-950   w-full">
+    <div dir="rtl" className="flex flex-col    w-full">
       <div className="sm:p-12 py-5">
         <div className="flex ">
           {!itemToEdit &&
@@ -156,12 +157,37 @@ function MaiEquipment(props: Props) {
                 setItemToEdit(undefined);
               }}
             />
-            <HTable
-              data={dataToTable ? dataToTable[selecteTable] : []}
-              headers={headers[selecteTable]}
-              onAction={onActionClickInTable}
-              dataType={selecteTable === "soldiers" ? "soldier" : "item"}
-            />
+            {dataToTable ? (
+              <HTable
+                data={dataToTable ? dataToTable[selecteTable] : []}
+                headers={headers[selecteTable]}
+                onAction={onActionClickInTable}
+                dataType={selecteTable === "soldiers" ? "soldier" : "item"}
+              />
+            ) : (
+              <div className="table soldier-table responsiveTable">
+                <tbody>
+                  <tr>
+                    <Placeholder.Paragraph graph="circle" active />
+                  </tr>
+                  <tr>
+                    <Placeholder.Paragraph graph="circle" active />
+                  </tr>
+                  <tr>
+                    <Placeholder.Paragraph graph="circle" active />
+                  </tr>
+                  <tr>
+                    <Placeholder.Paragraph graph="circle" active />
+                  </tr>
+                  <tr>
+                    <Placeholder.Paragraph graph="circle" active />
+                  </tr>
+                  <tr>
+                    <Placeholder.Paragraph graph="circle" active />
+                  </tr>
+                </tbody>
+              </div>
+            )}
           </>
         )}
         {isFormOpen && (

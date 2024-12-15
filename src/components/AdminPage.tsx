@@ -85,7 +85,7 @@ export default function AdminPage(props: Props) {
     return (
       <div
         dir="rtl"
-        className="flex flex-col h-screen justify-center items-center bg-blue-950   w-full"
+        className="flex flex-col h-screen justify-center items-center    w-full"
       >
         <span className="flex sm:p-10 p-3 mx-3 text-2xl bg-white justify-center items-center rounded-lg text-center">
           {`למשתמש ${props.user.email} אין הרשאה לגשת לאתר זה בפקודה!`}

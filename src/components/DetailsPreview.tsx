@@ -211,13 +211,13 @@ export default function DetailsPreview() {
     );
   };
   return (
-    <div className=" w-full min-h-screen justify-center items-start  sm:p-24 p-4  pt-10 bg-blue-950 flex ">
+    <div className=" w-full min-h-screen justify-center items-start  sm:p-24 p-4  pt-10 flex ">
       {item && (
         <div className="flex flex-col gap-3 w-full">
-          <div className="border relative border-white shadow-lg flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
+          <div className="border relative border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
             <div className="flex sm:flex-row   gap-3">
               {item && (
-                <div dir="rtl" className="flex p-5 flex-col gap-4 text-white">
+                <div dir="rtl" className="flex p-5 flex-col gap-4 ">
                   {(item as Soldier).personalNumber && (
                     <div className="absolute top-2 right-2">
                       <Dropdown renderToggle={renderIconButton}>
@@ -238,7 +238,7 @@ export default function DetailsPreview() {
                       style={{
                         background: statusColors[(item as Item).status],
                       }}
-                      className="text-xl p-2  rounded-lg shadow-sm"
+                      className="text-xl p-2 text-white font-thin rounded-lg shadow-sm"
                     >
                       {statusTranslate[(item as Item).status]}
                     </div>
@@ -312,7 +312,7 @@ export default function DetailsPreview() {
           {soldierItems && soldierItems.length > 0 && (
             <div
               dir="rtl"
-              className="flex border border-white p-3 rounded-lg flex-col gap-2 text-white "
+              className="flex border  shadow-xl border-none p-3 rounded-lg flex-col gap-2  "
             >
               {types.map((itemType) => {
                 return (
@@ -320,7 +320,7 @@ export default function DetailsPreview() {
                     {soldierItems.find(
                       (item) => item.itemType === itemType
                     ) && (
-                      <span className="w-full border-white border-b-2 text-xl">
+                      <span className="w-full  border-b-2 text-xl">
                         {headerTranslate[itemType]}
                       </span>
                     )}

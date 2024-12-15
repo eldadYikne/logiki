@@ -1,0 +1,185 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table caption {
+  font-size: 1.5em;
+  margin: 0.5em 0 0.75em;
+}
+
+table tr {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 0.35em;
+}
+
+table th,
+table td {
+  padding: 0.625em;
+  text-align: center;
+}
+
+table th {
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mobile-sort {
+  display: none;
+}
+
+/* general styling */
+body {
+  font-family: "Open Sans", sans-serif;
+  line-height: 1.25;
+}
+
+/* CSS */
+
+.rs-form-error-message-inner {
+  color: red;
+}
+@font-face {
+  font-family: "Alef";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Alef Regular"), local("Alef-Regular"),
+    url("http://fonts.gstatic.com/s/alef/v6/gzq6OSepdeZ1VdycsVw6Vg.ttf")
+      format("truetype");
+}
+
+.signature-imporve-modal .rs-modal-content {
+  padding: 25px 3px 25px 3px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.site-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrap {
+  flex: 1;
+  background-color: #ffffff;
+  /* background-image: url("https://weirdoz.co.il/wp-content/uploads/2021/02/background-stars.png") !important; */
+  background-position: left top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+@media screen and (max-width: 640px) {
+  .responsiveTable td .tdBefore {
+    // left: 3rem;
+    // text-align: right !important ;
+  }
+  .item-table.responsiveTable tr {
+    // background-color: red;
+    justify-content: space-around;
+  }
+  .responsiveTable td .tdBefore {
+    display: none;
+  }
+  .responsiveTable td.pivoted {
+    // padding-left: 10px !important;
+    display: flex;
+    width: 100%;
+  }
+  .pivoted span {
+    /* position: absolute; */
+    // left: 1rem;
+
+    // margin-right: 30px;
+    // text-align: right !important ;
+  }
+  .pivoted {
+    /* position: absolute; */
+    width: 100%;
+  }
+  .pivoted#td-card {
+    padding-left: 0px !important;
+  }
+  .pivoted.profile-image#td-card {
+    // position: absolute;
+    // right: -1rem;
+    // top: 1px;
+    display: grid !important;
+    justify-items: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 5px;
+    padding-top: 15px;
+    border-radius: 15px 15px 0px 0px;
+    background: linear-gradient(180deg, #b9b4b5 55%, #fcf9f9 45%);
+  }
+  x .pivoted.profile-image .tdBefore {
+    display: none;
+  }
+  .soldier-table.responsiveTable tbody tr {
+    // padding: 20px;
+    /* margin: 15px 0 15px 0; */
+    // display: flex;
+  }
+  .Soldier .rs-form-control.rs-form-control-wrapper {
+    width: 350px;
+  }
+  .add-soldier-dropdown button,
+  ul,
+  li {
+    width: 100%;
+    text-align: start;
+  }
+  .table {
+    tbody {
+      display: grid;
+      padding: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      tr {
+        height: 200px;
+        border-radius: 15px;
+        background-color: #fcf9f9;
+        border: none;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0px;
+        padding-bottom: 15px;
+        td {
+          text-align: center;
+          display: grid;
+          justify-content: center;
+          padding: 0;
+          font-size: 15px;
+          &.name {
+            font-size: 18px;
+            text-align: center !important;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}

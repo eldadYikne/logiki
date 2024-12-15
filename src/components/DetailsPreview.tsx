@@ -9,13 +9,14 @@ import {
   TableHeaders,
   itemType,
 } from "../types/table";
-import { DetailsItem, Soldier } from "../types/soldier";
+import { DetailsItem, Soldier, Team } from "../types/soldier";
 import {
   ItemTranslate,
   headerTranslate,
   historyTranslate,
   statusColors,
   statusTranslate,
+  teamTranslate,
 } from "../const";
 import PhoneFillIcon from "@rsuite/icons/PhoneFill";
 import { Button, Dropdown, IconButton } from "rsuite";
@@ -28,7 +29,6 @@ import { User } from "@firebase/auth";
 import ModalConfirm from "./ModalConfirm";
 import { getCurrentDate } from "../utils";
 import ImproveSignature from "./ImproveSignature";
-import ListIcon from "@rsuite/icons/List";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
 export default function DetailsPreview() {
@@ -198,14 +198,13 @@ export default function DetailsPreview() {
       <IconButton
         {...props}
         ref={ref}
-        icon={<ListIcon style={{ color: "balck" }} />}
-        circle
+        icon={<span className="font-bold"> ⋮ </span>}
         color=""
         appearance="ghost"
         style={{
           color: "black",
           background: "white",
-          border: "1px white solid",
+          border: "0px white solid",
         }}
       />
     );
@@ -215,13 +214,13 @@ export default function DetailsPreview() {
       {item && (
         <div className="flex flex-col gap-3 w-full">
           <div className="border relative border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
-            <div className="flex sm:flex-row   gap-3">
+            <div className="flex sm:flex-row p-4  gap-3">
               {item && (
-                <div dir="rtl" className="flex p-5 flex-col gap-4 ">
+                <div dir="rtl" className="flex flex-col gap-4 ">
                   {(item as Soldier).personalNumber && (
                     <div className="absolute top-2 right-2">
                       <Dropdown renderToggle={renderIconButton}>
-                        <Dropdown.Item className="z-50" icon={<TrashIcon />}>
+                        <Dropdown.Item className="" icon={<TrashIcon />}>
                           מחק חייל
                         </Dropdown.Item>
                         <Dropdown.Item icon={<EditIcon />}>
@@ -231,17 +230,17 @@ export default function DetailsPreview() {
                     </div>
                   )}
                   <div className="flex w-full justify-between">
-                    <span className="text-3xl shadow-sm">
-                      {(item as Item).name}
-                    </span>
-                    <div
-                      style={{
-                        background: statusColors[(item as Item).status],
-                      }}
-                      className="text-xl p-2 text-white font-thin rounded-lg shadow-sm"
-                    >
-                      {statusTranslate[(item as Item).status]}
-                    </div>
+                    <span className="text-3xl ">{(item as Item).name}</span>
+                    {(item as Item).status && (
+                      <div
+                        style={{
+                          background: statusColors[(item as Item).status],
+                        }}
+                        className="text-xl p-2 text-white font-thin rounded-lg shadow-sm"
+                      >
+                        {statusTranslate[(item as Item).status]}
+                      </div>
+                    )}
                   </div>
                   {Object.keys(item).map((key) => {
                     return (
@@ -266,7 +265,7 @@ export default function DetailsPreview() {
               )}
 
               <img
-                className="w-24 h-24 rounded-md"
+                className="w-36 h-40 rounded-md"
                 src={
                   (item as Soldier)?.profileImage
                     ? (item as Soldier).profileImage
@@ -452,6 +451,8 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
     (item as Item).soldierPersonalNumber === 0
   ) {
     return;
+  } else if (key === "team") {
+    return teamTranslate[(item as Soldier).team as Team];
   } else if (key === "phoneNumber") {
     return (
       <span className="flex gap-2 items-center">

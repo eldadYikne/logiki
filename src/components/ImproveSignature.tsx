@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import { saveAs } from "file-saver";
-import { Item, ItemHistory, TableHeaders } from "../types/table";
-import { ItemTranslate, headerTranslate } from "../const";
+import { Item, ItemHistory } from "../types/table";
 import { Button, Modal } from "rsuite";
+import HeadTableSignature from "./HeadTableSignature";
+import RowTableSignature from "./RowTableSignature";
 
 // Define the type for the props
 type DynamicTableProps = {
@@ -92,6 +93,8 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
           } as Item)
       );
       setItems(newItems);
+      setItem(newItems[0]);
+      console.log("newItems", newItems);
     }
   }, []);
   // }, [data?.soldierId, data.pdfFileSignature]);
@@ -125,7 +128,7 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
         overflow={false}
         open={isOpen}
       >
-        {item && (
+        {item && !items && (
           <span>
             {(item as Item).name
               ? `הנפקת טופס החתמה עבור ${(item as Item)?.name} ${
@@ -168,42 +171,25 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
                 }}
               >
                 <thead>
-                  <tr>
-                    {Object.keys(item).map((key) => {
-                      return (
-                        !notRenderKeys.includes(key as keyof Item) && (
-                          <th
-                            key={key}
-                            style={{
-                              border: "1px solid black",
-
-                              textAlign: "center",
-                            }}
-                            className="sm:p-2 p-1 sm:text-sm text-[9px]"
-                          >
-                            {ItemTranslate[key as keyof Item]}
-                          </th>
-                        )
-                      );
-                    })}
-                  </tr>
+                  <HeadTableSignature
+                    item={item}
+                    notRenderKeys={notRenderKeys}
+                  />
                 </thead>
                 <tbody>
-                  <tr>
-                    {Object.keys(item).map((key) => {
-                      return (
-                        !notRenderKeys.includes(key as keyof Item) && (
-                          <td
-                            key={key}
-                            style={{ border: "1px solid black" }}
-                            className="sm:p-2 p-1 sm:text-sm text-[9px] "
-                          >
-                            {renderFileds(key as keyof Item, item)}
-                          </td>
-                        )
-                      );
-                    })}
-                  </tr>
+                  {items && items?.length > 0 ? (
+                    items?.map((mapItem) => (
+                      <RowTableSignature
+                        item={mapItem}
+                        notRenderKeys={notRenderKeys}
+                      />
+                    ))
+                  ) : (
+                    <RowTableSignature
+                      item={item}
+                      notRenderKeys={notRenderKeys}
+                    />
+                  )}
                 </tbody>
               </table>
               {historyItem?.dateReturn && (
@@ -228,29 +214,5 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
     </div>
   );
 };
-const renderFileds = (
-  key: keyof Item | keyof ItemHistory,
-  item: Item | ItemHistory
-) => {
-  if (key === "history") {
-    return;
-  } else if (key === "pdfFileSignature") {
-    const value = (item as Item)[key as keyof Item];
-    return (
-      <img
-        src={value as string}
-        alt="Signature"
-        style={{ maxWidth: "100px", maxHeight: "50px" }}
-      />
-    );
-  } else if (key === "soldierId") {
-    return (item as Item).soldierPersonalNumber;
-  } else if (key === "itemType") {
-    const value = (item as Item)[key as keyof Item];
-    return headerTranslate[value as keyof TableHeaders];
-  } else {
-    const value = (item as Item)[key as keyof Item];
-    return String(value);
-  }
-};
+
 export default ImproveSignature;

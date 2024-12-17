@@ -1,7 +1,7 @@
 import { Item, TableData, TableHeaders, itemType } from "../types/table";
 import { Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DynamicForm from "./DynamicForm";
 import { headerTranslate, itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
@@ -15,14 +15,21 @@ function MaiEquipment(props: Props) {
   const [selecteTable, setSelectedTable] =
     useState<keyof TableHeaders>("soldiers");
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-
+  const formRef = useRef<any>();
   useEffect(() => {
     async function fetchData() {
       await getBoardByIdSnap();
     }
     fetchData();
   }, []);
-
+  useEffect(() => {
+    if (formRef.current) {
+      formRef?.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [isFormOpen]);
   const headers: TableHeaders = {
     soldiers: soldierKeys,
     nightVisionDevice: itemsKeys,
@@ -123,10 +130,11 @@ function MaiEquipment(props: Props) {
     );
   }
   return (
-    <div dir="rtl" className="flex flex-col    w-full">
+    <div dir="rtl" className="flex flex-col w-full">
       <div className="sm:p-12 py-5">
         <div className="flex ">
           {!itemToEdit &&
+            !isFormOpen &&
             Object.keys(headers).map((header) => (
               <div
                 key={header}
@@ -191,8 +199,11 @@ function MaiEquipment(props: Props) {
           </>
         )}
         {isFormOpen && (
-          <div className="w-full flex flex-col justify-center items-center">
-            <span className="text-white text-xl">
+          <div
+            ref={formRef}
+            className="w-full flex flex-col justify-center items-center"
+          >
+            <span className="text-black text-xl">
               {itemToEdit ? "ערוך" : "הוסף"}{" "}
               {itemToEdit ? itemToEdit.name : headerTranslate[selecteTable]}
             </span>

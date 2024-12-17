@@ -77,7 +77,7 @@ export const historyTranslate: { [key in keyof ItemHistory]: string } = {
   pdfFileSignature: "טופס חתימה",
 };
 export const teamTranslate: { [key in Team]: string } = {
-  "ben-shooshan": "בן שושן",
+  "ben-shooshan": "בן שושן ⚔️",
   adiel: "עדיאל ⚔️",
   eden: " עדן ⚔️",
   asaf: "אסף ⚔️",

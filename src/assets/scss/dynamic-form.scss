@@ -1,0 +1,10 @@
+.rs-dropdown {
+  &.rs-dropdown-placement-bottom-start {
+    button {
+      width: 100%;
+    }
+  }
+  & .rs-dropdown-menu {
+    width: 100%;
+  }
+}

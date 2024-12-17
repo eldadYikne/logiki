@@ -146,10 +146,6 @@ const DynamicForm: React.FC<Props> = ({
       ref={formRef}
       fluid
       formValue={newForm}
-      // onSubmit={(checkStatus) => {
-      //   console.log(newForm);
-      //   handleSubmit(!!checkStatus);
-      // }}
       className="flex flex-col gap-2 justify-center items-center"
     >
       {newForm.profileImage ? (

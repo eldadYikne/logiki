@@ -27,4 +27,5 @@ export interface FilterObject {
   items?: Item[];
   notes?: string;
   phoneNumber?: number;
+  team?: string;
 }

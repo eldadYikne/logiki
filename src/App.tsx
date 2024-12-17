@@ -40,8 +40,8 @@ export default function App() {
 
   return (
     <div className="site-container" dir="rtl">
+      <Navbar setUser={setUser} user={user} />
       <div className="content-wrap">
-        <Navbar setUser={setUser} user={user} />
         <Routes>
           <Route
             path="/"

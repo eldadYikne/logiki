@@ -10,6 +10,8 @@ import {
   itemType,
 } from "../types/table";
 import { DetailsItem, Size, Soldier, Team } from "../types/soldier";
+import FileDownloadIcon from "@rsuite/icons/FileDownload";
+
 import {
   ItemTranslate,
   headerTranslate,
@@ -385,6 +387,14 @@ export default function DetailsPreview() {
               dir="rtl"
               className="flex border  shadow-xl border-none p-3 rounded-lg flex-col gap-2  "
             >
+              <div className="w-full flex justify-end">
+                <FileDownloadIcon
+                  style={{ fontSize: "20px" }}
+                  onClick={() => {
+                    setIsModalImprovalOpen(true);
+                  }}
+                />
+              </div>
               {types.map((itemType) => {
                 return (
                   <div className="flex flex-col gap-2">
@@ -417,15 +427,7 @@ export default function DetailsPreview() {
                   </div>
                 );
               })}
-              <Button
-                onClick={() => {
-                  setIsModalImprovalOpen(true);
-                }}
-                color="violet"
-                appearance="primary"
-              >
-                הפק טופס
-              </Button>
+
               {(item as Soldier).personalNumber && (
                 <ImproveSignature
                   onCloseModal={() => setIsModalImprovalOpen(false)}

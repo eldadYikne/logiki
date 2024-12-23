@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DynamicForm from "./DynamicForm";
 import { Soldier } from "../types/soldier";
-import { updateBoardOneValua } from "../service/board";
+import { addBoardValueByKey } from "../service/board";
 import CheckRoundIcon from "@rsuite/icons/CheckRound";
 export default function CreateSoldier() {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(true);
@@ -10,7 +10,7 @@ export default function CreateSoldier() {
     console.log("soldier", soldier);
     try {
       if (soldier.name) {
-        await updateBoardOneValua("hapak", "soldiers", soldier);
+        await addBoardValueByKey("hapak", "soldiers", soldier);
         setIsFormOpen(false);
       }
     } catch (err) {

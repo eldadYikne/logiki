@@ -25,8 +25,8 @@ import PhoneFillIcon from "@rsuite/icons/PhoneFill";
 import { Button, Dropdown, IconButton, Message, useToaster } from "rsuite";
 import HModal from "./HModal";
 import {
-  boardOneValuaDelete,
-  putBoardOneValuaEdit,
+  deleteBoardValueByKey,
+  putBoardValueByKey,
   updateBoaedSpesificKey,
 } from "../service/board";
 import { auth, db } from "../main";
@@ -69,6 +69,14 @@ export default function DetailsPreview() {
     "combatEquipment",
     "weaponAccessories",
   ];
+  const historyTh = [
+    "dateTaken",
+    "dateReturn",
+    "ownerName",
+    "soldierId",
+    "representative",
+    "pdfFileSignature",
+  ];
   useEffect(() => {
     async function fetchData() {
       await getBoardByIdSnap();
@@ -110,7 +118,6 @@ export default function DetailsPreview() {
         ...data.soldiers,
         ...data.weaponAccessories,
       ];
-      console.log("allArrays", allArrays);
       const currentItem = allArrays.find((item) => item.id === id);
 
       if ((currentItem as Soldier).personalNumber) {
@@ -119,7 +126,7 @@ export default function DetailsPreview() {
             return (item as Item).soldierId === currentItem?.id;
           }
         }) as Item[];
-        console.log("soldItems", soldItems);
+        // console.log("soldItems", soldItems);
         setSoldierItems(soldItems);
       } else {
         setSoldierItems([]);
@@ -152,7 +159,7 @@ export default function DetailsPreview() {
   };
 
   const onSignature = async (item: Item) => {
-    console.log("onSignature item", item);
+    // console.log("onSignature item", item);
     if (data) {
       const newItems = data[item.itemType].filter(
         (itemType) => itemType.id !== item.id
@@ -188,8 +195,8 @@ export default function DetailsPreview() {
         history: [
           ...(item as Item).history,
           {
-            dateReturn: getCurrentDate(),
             dateTaken: (item as Item).signtureDate ?? "",
+            dateReturn: getCurrentDate(),
             ownerName: (item as Item).owner,
             soldierId: (item as Item).soldierId,
             representative: user ? user.displayName : "",
@@ -225,7 +232,7 @@ export default function DetailsPreview() {
     const key: keyof TableData = (item as Item).itemType
       ? (item as Item).itemType
       : "soldiers";
-    await putBoardOneValuaEdit("hapak", key, item);
+    await putBoardValueByKey("hapak", key, item);
   };
   const getItemToEdit = () => {
     return (item as Item).serialNumber
@@ -251,7 +258,7 @@ export default function DetailsPreview() {
               { placement: "topCenter" }
             );
             naigate("/");
-            await boardOneValuaDelete("hapak", key, item as Item);
+            await deleteBoardValueByKey("hapak", key, item as Item);
           }
         } else {
           toaster.push(
@@ -299,13 +306,15 @@ export default function DetailsPreview() {
                   }
 
                   <div className="flex w-full justify-between">
-                    <span className="text-3xl ">{(item as Item).name}</span>
+                    <span className="text-3xl select-none">
+                      {(item as Item).name}
+                    </span>
                     {(item as Item).status && (
                       <div
                         style={{
                           background: statusColors[(item as Item).status],
                         }}
-                        className="text-xl p-2 text-white font-thin rounded-lg shadow-sm"
+                        className="text-xl p-2 text-white font-thin rounded-lg shadow-sm max-h-12"
                       >
                         {statusTranslate[(item as Item).status]}
                       </div>
@@ -322,9 +331,9 @@ export default function DetailsPreview() {
                   })}
                   {(item as Soldier).size && (
                     <div className="flex gap-1">
-                      {Object.keys((item as Soldier).size).map((size) => {
+                      {Object.keys((item as Soldier).size).map((size, i) => {
                         return (
-                          <div>
+                          <div key={i}>
                             <span>{sizeIcons[size as keyof Size]}</span>
                             <span>
                               {(item as Soldier).size[size as keyof Size]}
@@ -397,7 +406,7 @@ export default function DetailsPreview() {
               </div>
               {types.map((itemType) => {
                 return (
-                  <div className="flex flex-col gap-2">
+                  <div key={itemType} className="flex flex-col gap-2">
                     {soldierItems.find(
                       (item) => item.itemType === itemType
                     ) && (
@@ -446,21 +455,15 @@ export default function DetailsPreview() {
               <Table>
                 <Thead>
                   <Tr>
-                    {Object.keys((item as Item).history[0]).map(
-                      (historyKey) => {
-                        return (
-                          historyKey !== "soldierId" && (
-                            <Th key={historyKey}>
-                              {
-                                historyTranslate[
-                                  historyKey as keyof ItemHistory
-                                ]
-                              }
-                            </Th>
-                          )
-                        );
-                      }
-                    )}
+                    {historyTh.map((historyKey) => {
+                      return (
+                        historyKey !== "soldierId" && (
+                          <Th key={historyKey}>
+                            {historyTranslate[historyKey as keyof ItemHistory]}
+                          </Th>
+                        )
+                      );
+                    })}
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -515,7 +518,7 @@ export default function DetailsPreview() {
           </div>
           <DynamicForm
             itemType={"combatEquipment"}
-            type={"Soldier"}
+            type={(item as Soldier).phoneNumber ? "Soldier" : "Item"}
             itemToEdit={{ ...getItemToEdit() } as DetailsItem}
             onSubmit={(e) => {
               onEditSoldier(e as Soldier);

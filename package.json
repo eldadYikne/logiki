@@ -20,9 +20,11 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-pdf-html": "^2.1.2",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.0.2",
     "react-signature-canvas": "^1.0.6",
     "react-super-responsive-table": "^6.0.0",
+    "redux": "^5.0.1",
     "rsuite": "^5.74.2",
     "sass": "^1.83.0",
     "uuid": "^11.0.3"

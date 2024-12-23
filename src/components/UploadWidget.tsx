@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { CloudinaryUploadEvent } from "../types/clodinary";
-import { Button } from "rsuite";
+import { Button, Message, useToaster } from "rsuite";
 import PlusRoundIcon from "@rsuite/icons/PlusRound";
 import ImageIcon from "@rsuite/icons/Image";
 export function UploadWidget(props: Props) {
   const cloudinaryRef = useRef<any>();
   const widgetRef = useRef<any>();
   const [imageUrl, setImageUrl] = useState("");
+  const allowedFormats = ["jpg", "png", "jpeg"];
   imageUrl;
+  const toaster = useToaster();
+
   const secureUri = "http://res.cloudinary.com/dfsknqfnh/image/upload/";
   useEffect(() => {
     cloudinaryRef.current = (window as any).cloudinary;
@@ -20,6 +23,15 @@ export function UploadWidget(props: Props) {
       (error: any, result: CloudinaryUploadEvent) => {
         if (!error && result && result.event === "success") {
           console.log("Done! Here is the image info: ", result.info);
+          if (!allowedFormats.includes(result.info.format)) {
+            toaster.push(
+              <Message type="error" showIcon>
+                יש להעלות קובץ PNG בלבד
+              </Message>,
+              { placement: "topCenter" }
+            );
+            return;
+          }
           setImageUrl(`${secureUri}${result.info.path}`);
           props.onSetImageUrl(`${secureUri}${result.info.path}`);
           console.log("result", result);

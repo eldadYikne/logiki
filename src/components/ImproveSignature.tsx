@@ -181,6 +181,7 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
                     items?.map((mapItem) => (
                       <RowTableSignature
                         item={mapItem}
+                        key={mapItem.id}
                         notRenderKeys={notRenderKeys}
                       />
                     ))

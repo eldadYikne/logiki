@@ -84,11 +84,6 @@ export default function HTable(props: Props) {
     });
   };
 
-  // const actions = [
-  //   { key: "edit", text: "עריכה", color: "blue" },
-  //   // { key: "delete", text: "מחיקה", color: "red" },
-  // ];
-
   const sortedData = getSortedData();
 
   return (
@@ -129,9 +124,9 @@ export default function HTable(props: Props) {
                 !notRenderKeys.includes(header as keyof Item) && (
                   <Td
                     id="td-card"
-                    className={`cursor-pointer  ${
+                    className={`select-none cursor-pointer  ${
                       header === "profileImage" ? "profile-image" : ""
-                    } ${header}`}
+                    } ${header} `}
                     onClick={() => {
                       navigate(`/soldier/${row.id}`);
                     }}
@@ -142,21 +137,6 @@ export default function HTable(props: Props) {
                 )
               );
             })}
-            {/* <Td>
-              {actions.map((action) => {
-                return (
-                  <Button
-                    appearance="primary"
-                    color={action.color as TypeAttributes.Color}
-                    className="sm:m-2 m-1"
-                    onClick={() => props.onAction(row)}
-                    key={action.key}
-                  >
-                    {action.text}
-                  </Button>
-                );
-              })}
-            </Td> */}
           </Tr>
         ))}
       </Tbody>
@@ -174,9 +154,9 @@ function renderCellData(header: string, row: Soldier | Item) {
       }
       if (Array.isArray(value)) {
         return value.map((item, index) => (
-          <div key={index}>
+          <span key={index}>
             {typeof item === "object" ? JSON.stringify(item) : item}
-          </div>
+          </span>
         ));
       } else if (header === "status") {
         return (

@@ -89,6 +89,17 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+.modal-signature-must {
+  & .rs-modal-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
 @media screen and (max-width: 640px) {
   .responsiveTable td .tdBefore {
     // left: 3rem;
@@ -96,7 +107,7 @@ body {
   }
   .item-table.responsiveTable tr {
     // background-color: red;
-    justify-content: space-around;
+    justify-content: space-between;
   }
   .responsiveTable td .tdBefore {
     display: none;

@@ -2,6 +2,7 @@ import { Soldier } from "./soldier";
 
 export interface Item {
   id: string;
+  profileImage: string;
   name: string;
   serialNumber: string;
   owner: string;
@@ -42,7 +43,15 @@ export interface TableData {
   nightVisionDevice: Item[];
   combatEquipment: Item[];
   weaponAccessories: Item[];
-  admins: string[];
+  admins: Admin[];
 }
-
+export interface Admin {
+  email: string;
+  signature: string;
+  dateFirstSignIn: string;
+  name: string;
+  phone: string;
+  personalNumber: number;
+  rank: string;
+}
 export type CombinedKeys = keyof Item | keyof Soldier | itemType; // Union of keys from both Item and Soldier

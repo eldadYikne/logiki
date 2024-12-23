@@ -53,7 +53,14 @@ const DynamicForm: React.FC<Props> = ({
     itemToEdit ?? defaultFormValues
   );
 
-  console.log("newForm", newForm);
+  const firstInputRef = useRef<any>();
+  const seconedInputRef = useRef<any>();
+  useEffect(() => {
+    // if (firstInputRef.current) {
+    //   firstInputRef.current.focus();
+    // }
+  }, [newForm]);
+
   interface NewForm {
     name: string;
     personalNumber?: number;
@@ -66,7 +73,7 @@ const DynamicForm: React.FC<Props> = ({
   const fields = itemToEdit
     ? Object.keys(itemToEdit)
     : type === "Item"
-    ? ["name", "serialNumber"] // Item fields
+    ? ["profileImage", "name", "serialNumber"] // Item fields
     : ["name", "personalNumber", "phoneNumber", "team", "profileImage", "size"]; // Soldier fields
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
@@ -87,6 +94,7 @@ const DynamicForm: React.FC<Props> = ({
     type === "Item"
       ? ({
           id: uuidv4(),
+          profileImage: newForm.profileImage ?? "",
           serialNumber: newForm.serialNumber ?? "",
           name: newForm.name ?? "",
           owner: "",
@@ -146,8 +154,9 @@ const DynamicForm: React.FC<Props> = ({
       ref={formRef}
       fluid
       formValue={newForm}
-      className="flex flex-col gap-2 justify-center items-center"
+      className="flex flex-col w-2/3 max-w-96 gap-2 justify-center items-center"
     >
+      {type}
       {newForm.profileImage ? (
         <div className="py-3 relative">
           <img className="h-24 w-24 rounded-full" src={newForm.profileImage} />
@@ -180,12 +189,12 @@ const DynamicForm: React.FC<Props> = ({
             )}
         </div>
       )}
-      {fields.map((field) => {
+      {fields.map((field, i) => {
         return field === "profileImage" ? (
           <div key={field} className=""></div>
         ) : (
           !notRenderKeys.includes(field as keyof Item) && (
-            <div className={`w-full ${type} `}>
+            <div key={field} className={`w-full ${type} `}>
               <FormGroup key={field}>
                 <Form.ControlLabel className="text-black">
                   {ItemTranslate[field as CombinedKeys] || field}:
@@ -198,6 +207,7 @@ const DynamicForm: React.FC<Props> = ({
                     onChange={(e) => {
                       setNewForm((value) => ({ ...value, [field]: e }));
                     }}
+                    ref={i === 0 ? firstInputRef : seconedInputRef}
                   />
                 )}
                 {field === "size" &&

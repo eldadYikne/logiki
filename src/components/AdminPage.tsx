@@ -1,6 +1,6 @@
 import { doc, onSnapshot } from "@firebase/firestore";
 import { useEffect, useState } from "react";
-import { TableData } from "../types/table";
+import { Admin, TableData } from "../types/table";
 import { db } from "../main";
 import { Button, Input } from "rsuite";
 import { updateBoaedSpesificKey } from "../service/board";
@@ -8,7 +8,16 @@ import { User } from "@firebase/auth";
 
 export default function AdminPage(props: Props) {
   const [data, setData] = useState<TableData>();
-  const [newAdmin, setNewAdmin] = useState<string>("");
+  const [newAdmin, setNewAdmin] = useState<Admin>();
+  const admin: Admin = {
+    name: "",
+    email: "",
+    personalNumber: 0,
+    dateFirstSignIn: "",
+    phone: "",
+    signature: "",
+    rank: "",
+  };
   useEffect(() => {
     async function fetchData() {
       // await updateBoard("hapak", newData);
@@ -48,10 +57,6 @@ export default function AdminPage(props: Props) {
   const AddNewAdmin = async () => {
     if (data) {
       try {
-        // await updateBoard("hapak", {
-        //   ...data,
-        //   admins: [...data?.admins, newAdmin],
-        // } as TableData);
         await updateBoaedSpesificKey("hapak", "admins", [
           ...data?.admins,
           newAdmin,
@@ -61,16 +66,13 @@ export default function AdminPage(props: Props) {
       }
     }
   };
-  const removeAdmin = async (adminToRemove: string) => {
+  const removeAdmin = async (adminToRemove: Admin) => {
     if (data) {
       try {
         const newAdmins = data.admins.filter(
-          (admin) => admin !== adminToRemove
+          (admin) => admin.email !== adminToRemove.email
         );
-        // await updateBoard("hapak", {
-        //   ...data,
-        //   admins: newAdmins,
-        // } as TableData);
+
         await updateBoaedSpesificKey("hapak", "admins", newAdmins);
       } catch (err) {
         console.log(err);
@@ -80,7 +82,7 @@ export default function AdminPage(props: Props) {
   if (
     props.user.email &&
     props.user.email !== "hapakmaog162@gmail.com" &&
-    !data?.admins.includes(props.user.email)
+    !data?.admins.map((admin) => admin.email).includes(props.user.email)
   ) {
     return (
       <div
@@ -102,8 +104,11 @@ export default function AdminPage(props: Props) {
             <div className="flex flex-col gap-2 ">
               {data.admins.map((admin) => {
                 return (
-                  <div className="flex items-center justify-between gap-2">
-                    <span>{admin}</span>
+                  <div
+                    key={admin.email}
+                    className="flex items-center justify-between gap-2"
+                  >
+                    <span>{admin.email}</span>
                     <Button onClick={() => removeAdmin(admin)} color="red">
                       מחק
                     </Button>
@@ -114,8 +119,13 @@ export default function AdminPage(props: Props) {
           )}
           <div className="flex flex-col gap-3">
             <Input
-              onChange={setNewAdmin}
-              value={newAdmin}
+              onChange={(e) => {
+                setNewAdmin({
+                  ...admin,
+                  email: e,
+                });
+              }}
+              value={newAdmin?.email}
               placeholder="הכנס אימייל חדש להרשאה"
             />
             <Button onClick={AddNewAdmin}>אשר מנהל</Button>

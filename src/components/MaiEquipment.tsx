@@ -10,6 +10,8 @@ import { User } from "firebase/auth";
 import { updateBoaedSpesificKey } from "../service/board";
 import { db } from "../main";
 import { Placeholder } from "rsuite";
+import { FilterObject } from "../types/filter";
+import ArowBackIcon from "@rsuite/icons/ArowBack";
 
 function MaiEquipment(props: Props) {
   const [selecteTable, setSelectedTable] =
@@ -29,6 +31,7 @@ function MaiEquipment(props: Props) {
         block: "start",
       });
     }
+    console.log("filters", filters);
   }, [isFormOpen]);
   const headers: TableHeaders = {
     soldiers: soldierKeys,
@@ -40,6 +43,8 @@ function MaiEquipment(props: Props) {
   const [data, setData] = useState<TableData>();
   const [dataToTable, setDataToTable] = useState<TableData>();
   const [itemToEdit, setItemToEdit] = useState<Item | Soldier>();
+  const [filters, setFilters] = useState<FilterObject>();
+
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
     console.log("filters", filters);
     if (data) {
@@ -116,7 +121,7 @@ function MaiEquipment(props: Props) {
   if (
     props.user.email &&
     props.user.email !== "hapakmaog162@gmail.com" &&
-    !data?.admins.includes(props.user.email)
+    !data?.admins.map((admin) => admin.email).includes(props.user.email)
   ) {
     return (
       <div
@@ -158,8 +163,11 @@ function MaiEquipment(props: Props) {
         {!isFormOpen && (
           <>
             <Filter
+              setFilters={setFilters}
+              filters={filters!}
               onFilter={onFilter}
               filterType={selecteTable}
+              dataLength={dataToTable ? dataToTable[selecteTable].length : 0}
               openForm={() => {
                 setIsFormOpen(true);
                 setItemToEdit(undefined);
@@ -174,26 +182,40 @@ function MaiEquipment(props: Props) {
               />
             ) : (
               <div className="table soldier-table responsiveTable">
-                <tbody>
-                  <tr>
-                    <Placeholder.Paragraph graph="circle" active />
-                  </tr>
-                  <tr>
-                    <Placeholder.Paragraph graph="circle" active />
-                  </tr>
-                  <tr>
-                    <Placeholder.Paragraph graph="circle" active />
-                  </tr>
-                  <tr>
-                    <Placeholder.Paragraph graph="circle" active />
-                  </tr>
-                  <tr>
-                    <Placeholder.Paragraph graph="circle" active />
-                  </tr>
-                  <tr>
-                    <Placeholder.Paragraph graph="circle" active />
-                  </tr>
-                </tbody>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <Placeholder.Paragraph graph="circle" active />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <Placeholder.Paragraph graph="circle" active />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <Placeholder.Paragraph graph="circle" active />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <Placeholder.Paragraph graph="circle" active />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <Placeholder.Paragraph graph="circle" active />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <Placeholder.Paragraph graph="circle" active />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
           </>
@@ -201,8 +223,17 @@ function MaiEquipment(props: Props) {
         {isFormOpen && (
           <div
             ref={formRef}
-            className="w-full flex flex-col justify-center items-center"
+            className="w-full flex relative flex-col justify-center items-center"
           >
+            <div className="absolute top-3 hover:bg-gray-300 rounded-full p-2 transition-all cursor-pointer left-3">
+              <ArowBackIcon
+                style={{ fontSize: "20px" }}
+                onClick={() => {
+                  setIsFormOpen(false);
+                  setItemToEdit(undefined);
+                }}
+              />
+            </div>
             <span className="text-black text-xl">
               {itemToEdit ? "ערוך" : "הוסף"}{" "}
               {itemToEdit ? itemToEdit.name : headerTranslate[selecteTable]}

@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import { Item } from "../types/table";
 
 import { Button } from "rsuite";
 export default function Signature(props: Props) {
@@ -45,6 +44,5 @@ export default function Signature(props: Props) {
 }
 
 interface Props {
-  item: Item;
   onEnd: Function;
 }

@@ -33,6 +33,7 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
 };
 
 export const itemsKeys = Object.keys({
+  profileImage: "",
   serialNumber: "",
   name: "",
   owner: "",

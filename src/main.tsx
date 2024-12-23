@@ -6,6 +6,8 @@ import { BrowserRouter } from "react-router-dom";
 import { GoogleAuthProvider, getAuth } from "@firebase/auth";
 import { initializeApp } from "@firebase/app";
 import { getFirestore } from "@firebase/firestore";
+import { Provider } from "react-redux";
+import store from "./redux/store.ts";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6QpZcuQDkW7ZvhlXX-2Orke-jmRmyqRA",
@@ -25,7 +27,10 @@ export const googleProvider = new GoogleAuthProvider();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
+      ,
     </BrowserRouter>
   </StrictMode>
 );

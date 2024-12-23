@@ -70,13 +70,6 @@ export default function HModal({
             format="dd.MM.yyyy"
           />
           <Signature
-            item={
-              {
-                ...item,
-                soldierId: selectedOption?.id,
-                owner: selectedOption?.name,
-              } as Item
-            }
             onEnd={(e: string) => {
               setSignatureUrl(e);
             }}

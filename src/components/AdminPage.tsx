@@ -20,14 +20,13 @@ export default function AdminPage(props: Props) {
   };
   useEffect(() => {
     async function fetchData() {
-      // await updateBoard("hapak", newData);
       await getBoardByIdSnap();
     }
     fetchData();
   }, []);
   const getBoardByIdSnap = async () => {
     try {
-      const boardRef = doc(db, "boards", "hapak");
+      const boardRef = doc(db, "boards", "hapak162");
       // Listen to changes in the board document
       //   console.log("try newBoard");
       const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
@@ -57,7 +56,7 @@ export default function AdminPage(props: Props) {
   const AddNewAdmin = async () => {
     if (data) {
       try {
-        await updateBoaedSpesificKey("hapak", "admins", [
+        await updateBoaedSpesificKey("hapak162", "admins", [
           ...data?.admins,
           newAdmin,
         ]);
@@ -73,7 +72,7 @@ export default function AdminPage(props: Props) {
           (admin) => admin.email !== adminToRemove.email
         );
 
-        await updateBoaedSpesificKey("hapak", "admins", newAdmins);
+        await updateBoaedSpesificKey("hapak162", "admins", newAdmins);
       } catch (err) {
         console.log(err);
       }

@@ -67,7 +67,7 @@ function MaiEquipment(props: Props) {
 
   const getBoardByIdSnap = async () => {
     try {
-      const boardRef = doc(db, "boards", "hapak");
+      const boardRef = doc(db, "boards", "hapak162");
       // Listen to changes in the board document
       // console.log("try newBoard");
       const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
@@ -98,7 +98,7 @@ function MaiEquipment(props: Props) {
   const onAddItem = async (item: Item | Soldier) => {
     if (data) {
       if (!data[selecteTable].find((existItem) => item.id === existItem.id)) {
-        await updateBoaedSpesificKey("hapak", selecteTable, [
+        await updateBoaedSpesificKey("hapak162", selecteTable, [
           ...data[selecteTable],
           item,
         ]);
@@ -107,7 +107,7 @@ function MaiEquipment(props: Props) {
           (existItem) => item.id !== existItem.id
         );
 
-        await updateBoaedSpesificKey("hapak", selecteTable, [
+        await updateBoaedSpesificKey("hapak162", selecteTable, [
           ...newArrayItems,
           item,
         ]);

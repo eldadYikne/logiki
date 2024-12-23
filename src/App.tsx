@@ -69,7 +69,7 @@ export default function App() {
           {user && <Route path="/admin" element={<AdminPage user={user} />} />}
         </Routes>
       </div>
-      {user && <SignaNatureModal user={user} />}
+      {/* {user && <SignaNatureModal user={user} />} */}
       <Footer />
     </div>
   );

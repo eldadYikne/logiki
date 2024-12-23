@@ -137,7 +137,7 @@ export default function DetailsPreview() {
   };
   const getBoardByIdSnap = async () => {
     try {
-      const boardRef = doc(db, "boards", "hapak");
+      const boardRef = doc(db, "boards", "hapak162");
       const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
         if (boardDoc.exists()) {
           const newBoard = { ...boardDoc.data(), id: boardDoc.id };
@@ -165,7 +165,7 @@ export default function DetailsPreview() {
         (itemType) => itemType.id !== item.id
       );
       try {
-        await updateBoaedSpesificKey("hapak", item.itemType, [
+        await updateBoaedSpesificKey("hapak162", item.itemType, [
           ...newItems,
           item,
         ]);
@@ -232,7 +232,7 @@ export default function DetailsPreview() {
     const key: keyof TableData = (item as Item).itemType
       ? (item as Item).itemType
       : "soldiers";
-    await putBoardValueByKey("hapak", key, item);
+    await putBoardValueByKey("hapak162", key, item);
   };
   const getItemToEdit = () => {
     return (item as Item).serialNumber
@@ -258,7 +258,7 @@ export default function DetailsPreview() {
               { placement: "topCenter" }
             );
             naigate("/");
-            await deleteBoardValueByKey("hapak", key, item as Item);
+            await deleteBoardValueByKey("hapak162", key, item as Item);
           }
         } else {
           toaster.push(

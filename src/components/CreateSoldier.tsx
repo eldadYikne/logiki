@@ -10,7 +10,7 @@ export default function CreateSoldier() {
     console.log("soldier", soldier);
     try {
       if (soldier.name) {
-        await addBoardValueByKey("hapak", "soldiers", soldier);
+        await addBoardValueByKey("hapak162", "soldiers", soldier);
         setIsFormOpen(false);
       }
     } catch (err) {

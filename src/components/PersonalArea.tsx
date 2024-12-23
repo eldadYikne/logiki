@@ -5,6 +5,7 @@ import { auth } from "../main";
 import { Button } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { Admin } from "../types/table";
+import GoogleAuth from "./GoogleAuth";
 
 export default function PersonalArea() {
   const [user, setUser] = useState<User>();
@@ -45,6 +46,12 @@ export default function PersonalArea() {
             })}
         </div>
       </div>
+      <span onClick={() => navigat("/")}>
+        <GoogleAuth
+          setUser={() => {}}
+          userConnected={user?.displayName ?? ""}
+        />
+      </span>
       <div className="absolute top-20 left-10">
         {user?.email === "hapakmaog162@gmail.com" && (
           <Button

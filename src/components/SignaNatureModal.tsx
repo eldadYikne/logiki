@@ -1,4 +1,4 @@
-import { Button, Modal } from "rsuite";
+import { Button, Message, Modal, useToaster } from "rsuite";
 import Signature from "./Signature";
 import { useEffect, useState } from "react";
 import { User } from "firebase/auth";
@@ -14,6 +14,8 @@ export default function SignaNatureModal({ user }: Props) {
   const [data, setData] = useState<TableData>();
   const [admin, setNewAdmin] = useState<Admin>();
   const [isOpen, setIsOpen] = useState(false);
+  const toaster = useToaster();
+
   // const dispatch = useDispatch();
   useEffect(() => {
     async function fetchData() {
@@ -29,6 +31,7 @@ export default function SignaNatureModal({ user }: Props) {
       if (connectedAdmin) {
         setNewAdmin(connectedAdmin);
         setIsOpen(!!connectedAdmin.signature);
+        console.log("connectedAdmin", connectedAdmin);
         // dispatch(setAdmin(connectedAdmin));
       }
     }
@@ -65,6 +68,12 @@ export default function SignaNatureModal({ user }: Props) {
     try {
       if (signatureUrl && admin) {
         await putBoardAdmins("hapak", { ...admin, signature: signatureUrl });
+        toaster.push(
+          <Message type="success" showIcon>
+            החתימה נקלטה בהצלחה!
+          </Message>,
+          { placement: "topCenter" }
+        );
       }
     } catch (err) {}
   };
@@ -76,7 +85,7 @@ export default function SignaNatureModal({ user }: Props) {
       {!admin.signature && (
         <Modal
           size={"xs"}
-          open={isOpen}
+          open={!admin.signature}
           onClose={() => {}}
           dir="rtl"
           overflow={false}

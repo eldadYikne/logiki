@@ -1,5 +1,6 @@
 import { Button } from "rsuite";
 import { Soldier } from "../types/soldier";
+import FileDownloadIcon from "@rsuite/icons/FileDownload";
 
 export default function SoldierXcelDownload({ data }: Props) {
   // Function to convert data to CSV format with RTL support
@@ -48,7 +49,12 @@ export default function SoldierXcelDownload({ data }: Props) {
 
   return (
     <div>
-      <Button onClick={downloadCSV}>הורד אקסל חיילים</Button>
+      <Button
+        endIcon={<FileDownloadIcon style={{ color: "green" }} />}
+        onClick={downloadCSV}
+      >
+        אקסל
+      </Button>
     </div>
   );
 }

@@ -138,9 +138,11 @@ function MaiEquipment(props: Props) {
   return (
     <div dir="rtl" className="flex flex-col w-full">
       <div className="sm:p-12 py-5">
-        {dataToTable?.soldiers && (
-          <SoldierXcelDownload data={dataToTable?.soldiers} />
-        )}
+        <div className="absolute left-2">
+          {dataToTable?.soldiers && (
+            <SoldierXcelDownload data={dataToTable?.soldiers} />
+          )}
+        </div>
 
         <div className="flex ">
           {!itemToEdit &&

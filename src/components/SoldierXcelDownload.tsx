@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "rsuite";
 import { Soldier } from "../types/soldier";
 import FileDownloadIcon from "@rsuite/icons/FileDownload";
@@ -16,7 +17,7 @@ export default function SoldierXcelDownload({ data }: Props) {
 
     // Prepare rows with RTL support
     const rows = sortedData.map((item: Soldier) => [
-      item.name || "",
+      item.name || "", // Name column should be the first column (RTL)
       teamTranslate[item.team] || "",
       item.personalNumber ?? "",
       item.size?.pance ?? "",
@@ -24,32 +25,18 @@ export default function SoldierXcelDownload({ data }: Props) {
       item.size?.short ?? "",
     ]);
 
-    // Reverse the rows and columns to simulate RTL (name column first)
-    const reversedRows = rows.map((row) => row.reverse());
-    const reversedHeader = header.reverse();
+    // Reverse the order of columns for RTL (name stays first)
+    // const rtlRows = rows.map((row) => row.reverse()); // Reverse the columns in each row
+    const rtlHeader = header.reverse(); // Reverse the header for RTL
 
     // Create worksheet data with header and reversed rows
-    const wsData = [reversedHeader, ...reversedRows];
+    const wsData = [rtlHeader, ...rows];
 
-    // Create a new worksheet from the data
+    // Create worksheet from data
     const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-    // Apply RTL for the entire sheet
-    const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      for (let row = range.s.r; row <= range.e.r; row++) {
-        const cell = ws[XLSX.utils.encode_cell({ r: row, c: col })];
-        if (cell) {
-          // Set RTL alignment for cells
-          cell.s = {
-            alignment: { horizontal: "right", vertical: "center" },
-          };
-        }
-      }
-    }
-
-    // Set sheet properties to enforce RTL (Right-to-Left)
-    ws["!sheetPr"] = { tabColor: { rgb: "FF0000" } };
+    // Set RTL for the workbook by modifying the workbook's metadata
+    set_right_to_left(ws);
 
     return ws;
   };
@@ -61,6 +48,9 @@ export default function SoldierXcelDownload({ data }: Props) {
     // Create a new workbook
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Soldiers");
+
+    // Set workbook properties for RTL
+    set_right_to_left(wb);
 
     // Write the workbook to a binary array
     const wbOut = XLSX.write(wb, { bookType: "xlsx", type: "array" });
@@ -96,4 +86,12 @@ export default function SoldierXcelDownload({ data }: Props) {
 
 interface Props {
   data: Soldier[];
+}
+
+// Helper function to set the RTL property in the workbook
+function set_right_to_left(wb: any) {
+  if (!wb.Workbook) wb.Workbook = {};
+  if (!wb.Workbook.Views) wb.Workbook.Views = [];
+  if (!wb.Workbook.Views[0]) wb.Workbook.Views[0] = {};
+  wb.Workbook.Views[0].RTL = true;
 }

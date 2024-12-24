@@ -4,7 +4,7 @@ import { Soldier } from "../types/soldier";
 export default function SoldierXcelDownload({ data }: Props) {
   // Function to convert data to CSV format with RTL support
   const convertToCSV = (data: any) => {
-    const header = ["Name", "Team", "Pance Size", "Shoes Size", "Short Size"];
+    const header = ["שם", "צוות", "מספר אישי", "מכנס ", "נעליים ", "חולצה "];
 
     // Insert RTL mark to suggest RTL formatting in Excel
     const rtlMark = "\u200F"; // This is the Right-To-Left Mark (RTLM)

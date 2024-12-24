@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "rsuite";
 import { Soldier } from "../types/soldier";
 import FileDownloadIcon from "@rsuite/icons/FileDownload";

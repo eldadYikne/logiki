@@ -7,7 +7,7 @@ import * as XLSX from "xlsx";
 export default function SoldierXcelDownload({ data }: Props) {
   // Function to convert data to Excel format with RTL support and sorting by name
   const convertToExcel = (data: any) => {
-    const header = ["שם", "צוות", "מספר אישי", "מכנס", "נעליים", "חולצה"];
+    const header = ["חולצה", "נעליים", "מכנס", "מספר אישי", "צוות", "שם"];
 
     // Sort the data by the 'name' field in Hebrew (localeCompare with 'he' locale)
     const sortedData = [...data].sort((a, b) =>
@@ -76,9 +76,7 @@ export default function SoldierXcelDownload({ data }: Props) {
       <Button
         endIcon={<FileDownloadIcon style={{ color: "green" }} />}
         onClick={downloadExcel}
-      >
-        אקסל
-      </Button>
+      ></Button>
     </div>
   );
 }

@@ -5,12 +5,17 @@ import { teamTranslate } from "../const";
 import * as XLSX from "xlsx";
 
 export default function SoldierXcelDownload({ data }: Props) {
-  // Function to convert data to Excel format with RTL support
+  // Function to convert data to Excel format with RTL support and sorting by name
   const convertToExcel = (data: any) => {
     const header = ["שם", "צוות", "מספר אישי", "מכנס", "נעליים", "חולצה"];
 
+    // Sort the data by the 'name' field in Hebrew (localeCompare with 'he' locale)
+    const sortedData = [...data].sort((a, b) =>
+      a.name.localeCompare(b.name, "he")
+    );
+
     // Prepare rows with RTL support
-    const rows = data.map((item: Soldier) => [
+    const rows = sortedData.map((item: Soldier) => [
       item.name || "",
       teamTranslate[item.team] || "",
       item.personalNumber ?? "",
@@ -20,7 +25,7 @@ export default function SoldierXcelDownload({ data }: Props) {
     ]);
 
     // Reverse the rows and columns to simulate RTL (name column first)
-    const reversedRows = rows.map((row: any) => row.reverse());
+    const reversedRows = rows.map((row) => row.reverse());
     const reversedHeader = header.reverse();
 
     // Create worksheet data with header and reversed rows
@@ -45,16 +50,6 @@ export default function SoldierXcelDownload({ data }: Props) {
 
     // Set sheet properties to enforce RTL (Right-to-Left)
     ws["!sheetPr"] = { tabColor: { rgb: "FF0000" } };
-
-    // Apply RTL on the sheet (use this method to apply the direction)
-    ws["!cols"] = [
-      { wch: 10 }, // Column width (optional)
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 10 },
-    ];
 
     return ws;
   };
@@ -92,7 +87,9 @@ export default function SoldierXcelDownload({ data }: Props) {
       <Button
         endIcon={<FileDownloadIcon style={{ color: "green" }} />}
         onClick={downloadExcel}
-      ></Button>
+      >
+        אקסל
+      </Button>
     </div>
   );
 }

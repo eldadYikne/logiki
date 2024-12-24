@@ -92,9 +92,7 @@ export default function SoldierXcelDownload({ data }: Props) {
       <Button
         endIcon={<FileDownloadIcon style={{ color: "green" }} />}
         onClick={downloadExcel}
-      >
-        אקסל
-      </Button>
+      ></Button>
     </div>
   );
 }

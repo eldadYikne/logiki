@@ -19,9 +19,6 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   notes: "הערות",
   items: "פריטים",
   phoneNumber: "פלאפון",
-  nightVisionDevice: "אמרלים",
-  combatEquipment: "ציוד קרבי",
-  weaponAccessories: "אביזרי נשק",
   profileImage: "תמונת פרופיל",
   pdfFileSignature: " חתימה",
   status: "סטטוס",
@@ -39,12 +36,12 @@ export const itemsKeys = Object.keys({
   owner: "",
   soldierId: "",
   history: [],
-  itemType: "combatEquipment",
   id: "",
   pdfFileSignature: "",
   status: "stored",
   soldierPersonalNumber: 0,
   signtureDate: "",
+  itemType: { id: "", name: "" },
   representative: "",
 } as Item) as (keyof Item)[];
 

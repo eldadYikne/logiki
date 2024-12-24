@@ -13,7 +13,6 @@ export default function SignaNatureModal({ user }: Props) {
   const [signatureUrl, setSignatureUrl] = useState<string>();
   const [data, setData] = useState<TableData>();
   const [admin, setNewAdmin] = useState<Admin>();
-  const [isOpen, setIsOpen] = useState(false);
   const toaster = useToaster();
 
   // const dispatch = useDispatch();
@@ -30,7 +29,6 @@ export default function SignaNatureModal({ user }: Props) {
       );
       if (connectedAdmin) {
         setNewAdmin(connectedAdmin);
-        setIsOpen(!!connectedAdmin.signature);
         console.log("connectedAdmin", connectedAdmin);
         // dispatch(setAdmin(connectedAdmin));
       }

@@ -1,10 +1,7 @@
-import { CombinedKeys, Item, itemType } from "./table";
+import { CombinedKeys, Item, ItemType } from "./table";
 
 export interface FilterOptions {
-  soldiers: FilterOption[];
-  nightVisionDevice: FilterOption[];
-  combatEquipment: FilterOption[];
-  weaponAccessories: FilterOption[];
+  [key: string]: FilterOption[];
 }
 
 interface FilterOption {
@@ -23,7 +20,7 @@ export interface FilterObject {
   owner?: string;
   soldierId?: string;
   history?: History[];
-  itemType?: itemType;
+  itemType?: ItemType;
   items?: Item[];
   notes?: string;
   phoneNumber?: number;

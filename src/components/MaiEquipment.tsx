@@ -1,4 +1,4 @@
-import { Item, TableData, TableHeaders, itemType } from "../types/table";
+import { Item, TableData, TableHeaders, ItemType } from "../types/table";
 import { Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
 import { useEffect, useRef, useState } from "react";
@@ -14,9 +14,11 @@ import { FilterObject } from "../types/filter";
 import ArowBackIcon from "@rsuite/icons/ArowBack";
 
 function MaiEquipment(props: Props) {
-  const [selecteTable, setSelectedTable] =
-    useState<keyof TableHeaders>("soldiers");
+  const [selecteTable, setSelectedTable] = useState<string>("soldiers");
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [headers, setHeaders] = useState<TableHeaders>({
+    soldiers: soldierKeys,
+  });
   const formRef = useRef<any>();
   useEffect(() => {
     async function fetchData() {
@@ -30,39 +32,42 @@ function MaiEquipment(props: Props) {
         behavior: "smooth",
         block: "start",
       });
+      if (data) {
+        let newHeaders = {};
+        data.itemsTypes.map((item) => {
+          newHeaders = { ...newHeaders, [item.id]: itemsKeys };
+        });
+      }
     }
     console.log("filters", filters);
   }, [isFormOpen]);
-  const headers: TableHeaders = {
-    soldiers: soldierKeys,
-    nightVisionDevice: itemsKeys,
-    combatEquipment: itemsKeys,
-    weaponAccessories: itemsKeys,
-  };
 
   const [data, setData] = useState<TableData>();
-  const [dataToTable, setDataToTable] = useState<TableData>();
+  const [dataToTable, setDataToTable] = useState<NewTableData>();
   const [itemToEdit, setItemToEdit] = useState<Item | Soldier>();
   const [filters, setFilters] = useState<FilterObject>();
-
+  interface NewTableData {
+    soldiers: Soldier[];
+    [key: string]: Item[] | Soldier[];
+  }
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
     console.log("filters", filters);
-    if (data) {
-      setDataToTable(
-        (prevData) =>
-          prevData && {
-            ...prevData,
-            [selecteTable]: data[selecteTable].filter((item) => {
-              // Check if every filter matches for the current item
-              return Object.entries(filters).every(([key, value]) => {
-                if (!value) return true; // Skip empty filters
-                const itemValue = String(item[key as keyof SoldierItem]);
-                return itemValue.includes(value);
-              });
-            }),
-          }
-      );
-    }
+    // if (data) {
+    //   setDataToTable(
+    //     (prevData) =>
+    //       prevData && {
+    //         ...prevData,
+    //         [selecteTable]: data[selecteTable].filter((item) => {
+    //           // Check if every filter matches for the current item
+    //           return Object.entries(filters).every(([key, value]) => {
+    //             if (!value) return true; // Skip empty filters
+    //             const itemValue = String(item[key as keyof SoldierItem]);
+    //             return itemValue.includes(value);
+    //           });
+    //         }),
+    //       }
+    //   );
+    // }
   };
 
   const getBoardByIdSnap = async () => {
@@ -96,23 +101,22 @@ function MaiEquipment(props: Props) {
     }
   };
   const onAddItem = async (item: Item | Soldier) => {
-    if (data) {
-      if (!data[selecteTable].find((existItem) => item.id === existItem.id)) {
-        await updateBoaedSpesificKey("hapak162", selecteTable, [
-          ...data[selecteTable],
-          item,
-        ]);
-      } else {
-        const newArrayItems = data[selecteTable].filter(
-          (existItem) => item.id !== existItem.id
-        );
-
-        await updateBoaedSpesificKey("hapak162", selecteTable, [
-          ...newArrayItems,
-          item,
-        ]);
-      }
-    }
+    // if (data) {
+    //   if (!data[selecteTable].find((existItem) => item.id === existItem.id)) {
+    //     await updateBoaedSpesificKey("hapak162", selecteTable, [
+    //       ...data[selecteTable],
+    //       item,
+    //     ]);
+    //   } else {
+    //     const newArrayItems = data[selecteTable].filter(
+    //       (existItem) => item.id !== existItem.id
+    //     );
+    //     await updateBoaedSpesificKey("hapak162", selecteTable, [
+    //       ...newArrayItems,
+    //       item,
+    //     ]);
+    //   }
+    // }
   };
   const onActionClickInTable = (item: Item | Soldier) => {
     setItemToEdit(item);
@@ -134,34 +138,32 @@ function MaiEquipment(props: Props) {
       </div>
     );
   }
+
   return (
     <div dir="rtl" className="flex flex-col w-full">
-      <div className="sm:p-12 py-5">
-        <div className="flex ">
-          {!itemToEdit &&
-            !isFormOpen &&
-            Object.keys(headers).map((header) => (
+      <div className="">
+        <div className="flex shadow-lg gap-1 p-3 space-x-10 ">
+          {" "}
+          <div
+            className="text-blue-500 "
+            onClick={() => setSelectedTable("soldiers")}
+          >
+            חיילים
+          </div>
+          {dataToTable?.itemsTypes.map((itemType) => {
+            return (
               <div
-                key={header}
-                onClick={() => {
-                  itemToEdit
-                    ? () => {}
-                    : setSelectedTable(header as keyof TableHeaders);
-                }}
-                className={`${
-                  header === selecteTable
-                    ? "bg-blue-900 text-white"
-                    : "bg-gray-200"
-                } 
-               p-3  rounded-t-3xl shadow-md sm:text-md text-sm   cursor-pointer m-[1px]`}
+                key={itemType.id}
+                className="text-blue-500 "
+                onClick={() => setSelectedTable(itemType.id)}
               >
-                {" "}
-                {headerTranslate[header as keyof TableHeaders]}
+                {itemType.name}
               </div>
-            ))}
+            );
+          })}
         </div>
         {!isFormOpen && (
-          <>
+          <div className="sm:p-12 py-5">
             <Filter
               setFilters={setFilters}
               filters={filters!}
@@ -218,7 +220,7 @@ function MaiEquipment(props: Props) {
                 </table>
               </div>
             )}
-          </>
+          </div>
         )}
         {isFormOpen && (
           <div
@@ -238,8 +240,8 @@ function MaiEquipment(props: Props) {
               {itemToEdit ? "ערוך" : "הוסף"}{" "}
               {itemToEdit ? itemToEdit.name : headerTranslate[selecteTable]}
             </span>
-            <DynamicForm
-              itemType={selecteTable as itemType}
+            {/* <DynamicForm
+              itemType={selecteTable as ItemType}
               type={selecteTable === "soldiers" ? "Soldier" : "Item"}
               isCancelButtonShown={true}
               onSubmit={(e) => {
@@ -253,7 +255,7 @@ function MaiEquipment(props: Props) {
                 setItemToEdit(undefined);
               }}
               itemToEdit={itemToEdit}
-            />
+            /> */}
           </div>
         )}
       </div>

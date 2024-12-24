@@ -9,7 +9,7 @@ export interface Item {
   soldierId: string;
   signtureDate: string;
   history: ItemHistory[];
-  itemType: itemType;
+  itemType: ItemType;
   pdfFileSignature: string;
   status: Status;
   soldierPersonalNumber: number;
@@ -25,25 +25,18 @@ export interface ItemHistory {
   dateReturn: string;
   pdfFileSignature: string;
 }
-export type itemType =
-  | "nightVisionDevice"
-  | "combatEquipment"
-  | "weaponAccessories";
 
 export interface TableHeaders {
   soldiers: (keyof Soldier)[];
-  nightVisionDevice: (keyof Item)[];
-  combatEquipment: (keyof Item)[];
-  weaponAccessories: (keyof Item)[];
+  [key: string]: (keyof Item)[] | (keyof Soldier)[];
 }
 
 export interface TableData {
   id: string;
   soldiers: Soldier[];
-  nightVisionDevice: Item[];
-  combatEquipment: Item[];
-  weaponAccessories: Item[];
+  items: Item[];
   admins: Admin[];
+  itemsTypes: ItemType[];
 }
 export interface Admin {
   email: string;
@@ -54,4 +47,8 @@ export interface Admin {
   personalNumber: number;
   rank: string;
 }
-export type CombinedKeys = keyof Item | keyof Soldier | itemType; // Union of keys from both Item and Soldier
+export interface ItemType {
+  name: string;
+  id: string;
+}
+export type CombinedKeys = keyof Item | keyof Soldier; // Union of keys from both Item and Soldier

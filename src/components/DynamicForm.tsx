@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Form, Button, Schema, Message, useToaster, Dropdown } from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
-import { CombinedKeys, Item } from "../types/table";
+import { CombinedKeys, Item, ItemType } from "../types/table";
 import {
   ItemTranslate,
   sizeTranslate,
@@ -19,12 +19,12 @@ export type itemType =
 type FormData = Item | Soldier;
 
 const DynamicForm: React.FC<Props> = ({
-  itemType,
   type,
   onSubmit,
   closeForm,
   itemToEdit,
   isCancelButtonShown,
+  itemTypesOptions,
 }) => {
   const [tryConfirm, setTryConfirm] = useState<boolean>(false);
   const toaster = useToaster();
@@ -39,7 +39,7 @@ const DynamicForm: React.FC<Props> = ({
     }
   }, []);
   const defaultFormValues: NewForm =
-    type === "Item"
+    type === "item"
       ? { name: "", serialNumber: "" }
       : {
           name: "",
@@ -67,19 +67,19 @@ const DynamicForm: React.FC<Props> = ({
     phoneNumber?: number;
     serialNumber?: string;
     profileImage?: string;
+    itemType?: ItemType;
     size?: Size;
     team?: Team | "";
   }
   const fields = itemToEdit
     ? Object.keys(itemToEdit)
-    : type === "Item"
-    ? ["profileImage", "name", "serialNumber"] // Item fields
+    : type === "item"
+    ? ["profileImage", "name", "serialNumber", "itemType"] // Item fields
     : ["name", "personalNumber", "phoneNumber", "team", "profileImage", "size"]; // Soldier fields
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
     "notes",
     "owner",
-    "itemType",
     "history",
     "soldierId",
     "status",
@@ -91,7 +91,7 @@ const DynamicForm: React.FC<Props> = ({
     "items",
   ];
   const defaultObjectTosubmit =
-    type === "Item"
+    type === "item"
       ? ({
           id: uuidv4(),
           profileImage: newForm.profileImage ?? "",
@@ -100,12 +100,12 @@ const DynamicForm: React.FC<Props> = ({
           owner: "",
           soldierId: "",
           history: [],
-          itemType,
           pdfFileSignature: "",
           status: "stored",
           soldierPersonalNumber: 0,
           signtureDate: "",
           representative: "",
+          itemType: newForm.itemType,
         } as Item)
       : ({
           id: uuidv4(),
@@ -199,17 +199,19 @@ const DynamicForm: React.FC<Props> = ({
                 <Form.ControlLabel className="text-black">
                   {ItemTranslate[field as CombinedKeys] || field}:
                 </Form.ControlLabel>
-                {field !== "size" && field !== "team" && (
-                  <Form.Control
-                    value={newForm[field as keyof NewForm] as string}
-                    name={field}
-                    accept={field === "personalNumber" ? "number" : "text"}
-                    onChange={(e) => {
-                      setNewForm((value) => ({ ...value, [field]: e }));
-                    }}
-                    ref={i === 0 ? firstInputRef : seconedInputRef}
-                  />
-                )}
+                {field !== "size" &&
+                  field !== "team" &&
+                  field !== "itemType" && (
+                    <Form.Control
+                      value={newForm[field as keyof NewForm] as string}
+                      name={field}
+                      accept={field === "personalNumber" ? "number" : "text"}
+                      onChange={(e) => {
+                        setNewForm((value) => ({ ...value, [field]: e }));
+                      }}
+                      ref={i === 0 ? firstInputRef : seconedInputRef}
+                    />
+                  )}
                 {field === "size" &&
                   (newForm as Soldier).size &&
                   Object.keys((newForm as Soldier).size).map((key) => {
@@ -295,6 +297,42 @@ const DynamicForm: React.FC<Props> = ({
                       )}
                   </div>
                 )}
+                {field === "itemType" && (
+                  <div className="w-full add-soldier-dropdown">
+                    <Dropdown
+                      title={"בחר קבוצת פריט"}
+                      style={{ width: "100%" }}
+                    >
+                      {itemTypesOptions &&
+                        itemTypesOptions.map((itemType) => {
+                          return (
+                            <Dropdown.Item
+                              style={{ width: "100%" }}
+                              key={itemType.id}
+                              onSelect={() => {
+                                console.log(itemType);
+                                setNewForm((value) => ({
+                                  ...value,
+                                  itemType: itemType,
+                                }));
+                              }}
+                              value={itemType.name}
+                            >
+                              {itemType.name}
+                            </Dropdown.Item>
+                          );
+                        })}
+                    </Dropdown>
+                    {formRef.current &&
+                      !formRef.current.itemType &&
+                      !(newForm as Item).itemType &&
+                      tryConfirm && (
+                        <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 left-0">
+                          בחר קבוצת פריט
+                        </span>
+                      )}
+                  </div>
+                )}
               </FormGroup>
             </div>
           )
@@ -353,21 +391,22 @@ const sizePickersOptions: { [key in keyof Size]: string[] } = {
   ],
 };
 interface Props {
-  type: "Item" | "Soldier";
+  type: "item" | "soldier";
   onSubmit: (data: FormData) => void;
-  itemType: itemType;
   closeForm: Function;
   itemToEdit?: FormData;
   isCancelButtonShown: boolean;
+  itemTypesOptions?: ItemType[];
 }
 
-const getValidationModel = (type: "Item" | "Soldier") => {
-  const { StringType, NumberType } = Schema.Types;
+const getValidationModel = (type: "item" | "soldier") => {
+  const { StringType, NumberType, ObjectType } = Schema.Types;
 
-  return type === "Item"
+  return type === "item"
     ? Schema.Model({
         name: StringType().isRequired("שדה חובה"),
         serialNumber: StringType().isRequired("שדה חובה"),
+        itemType: ObjectType().isRequired("שדה חובה"),
       })
     : Schema.Model({
         name: StringType().isRequired("שדה חובה"),

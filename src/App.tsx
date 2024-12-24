@@ -19,6 +19,7 @@ import { Loader } from "rsuite";
 import PlaceholderParagraph from "rsuite/esm/Placeholder/PlaceholderParagraph";
 import PersonalArea from "./components/PersonalArea";
 import SignaNatureModal from "./components/SignaNatureModal";
+import ItemTypePage from "./pages/ItemTypePage";
 
 export default function App() {
   const [user, setUser] = useState<User>();
@@ -62,7 +63,8 @@ export default function App() {
               )
             }
           />
-          <Route path="/add-soldier" element={<CreateSoldier />} />
+          <Route path="/add/:type" element={<CreateSoldier />} />
+          <Route path="/items-type" element={<ItemTypePage />} />
           {user && <Route path="/personal-area" element={<PersonalArea />} />}
 
           {user && <Route path="/soldier/:id" element={<DetailsPreview />} />}

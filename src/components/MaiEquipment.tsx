@@ -12,6 +12,7 @@ import { db } from "../main";
 import { Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
 import ArowBackIcon from "@rsuite/icons/ArowBack";
+import SoldierXcelDownload from "./SoldierXcelDownload";
 
 function MaiEquipment(props: Props) {
   const [selecteTable, setSelectedTable] =
@@ -137,6 +138,10 @@ function MaiEquipment(props: Props) {
   return (
     <div dir="rtl" className="flex flex-col w-full">
       <div className="sm:p-12 py-5">
+        {dataToTable?.soldiers && (
+          <SoldierXcelDownload data={dataToTable?.soldiers} />
+        )}
+
         <div className="flex ">
           {!itemToEdit &&
             !isFormOpen &&

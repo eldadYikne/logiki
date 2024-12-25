@@ -202,3 +202,17 @@ body {
     }
   }
 }
+.half-circle {
+  width: 40px;
+  height: 20px; /* as the half of the width */
+  background-color: white;
+  border-bottom-left-radius: 110px; /* 100px of height + 10px of border */
+  border-bottom-right-radius: 110px; /* 100px of height + 10px of border */
+  border: 10px solid gray;
+  border-bottom: 0;
+}
+.filter-box-shadow {
+  -webkit-box-shadow: 1px 15px 13px -11px rgba(104, 119, 240, 0.46);
+  -moz-box-shadow: 1px 15px 13px -11px rgba(104, 119, 240, 0.46);
+  box-shadow: 1px 15px 13px -11px rgba(104, 119, 240, 0.46);
+}

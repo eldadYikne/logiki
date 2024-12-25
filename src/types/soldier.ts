@@ -1,4 +1,4 @@
-import { Item } from "./table";
+import { Admin, Item } from "./table";
 
 export interface Soldier {
   id: string;
@@ -18,6 +18,7 @@ export interface Size {
 }
 export type SoldierItem = Item | Soldier;
 export type DetailsItem = Item | Soldier;
+export type AdminItemSoldier = Item | Soldier | Admin;
 export type Team =
   | "contact"
   | "logistics"

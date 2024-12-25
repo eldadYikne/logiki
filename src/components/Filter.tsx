@@ -1,10 +1,9 @@
 import { Dropdown, Input } from "rsuite";
-import { FilterObject, FilterOptions } from "../types/filter";
+import { FilterObject, FilterOption, FilterOptions } from "../types/filter";
 import { ItemTranslate, teamOptions, teamTranslate } from "../const";
 import { CombinedKeys } from "../types/table";
 import { useEffect } from "react";
 import { Team } from "../types/soldier";
-import PlusRoundIcon from "@rsuite/icons/PlusRound";
 import PeoplesIcon from "@rsuite/icons/Peoples";
 
 export default function Filter({
@@ -20,40 +19,30 @@ export default function Filter({
       setFilters(filters);
     }
   }, []);
-  const filtersToShow: FilterOptions = {
-    combatEquipment: [
-      { key: "serialNumber", type: "string" },
-      { key: "name", type: "string" },
-      { key: "owner", type: "string" },
-    ],
-    nightVisionDevice: [
-      { key: "serialNumber", type: "string" },
-      { key: "name", type: "string" },
-      { key: "owner", type: "string" },
-    ],
-    soldiers: [
-      { key: "personalNumber", type: "string" },
-      { key: "name", type: "string" },
-      {
-        key: "team",
-        type: "dropdown",
-        options: teamOptions.map((team) => ({
-          id: team,
-          key: teamTranslate[team as Team],
-        })),
-      },
-      // { key: "nightVisionDevice", type: "dropdown", options: [] },
-    ],
-    weaponAccessories: [
-      { key: "serialNumber", type: "string" },
-      { key: "name", type: "string" },
-      { key: "owner", type: "string" },
-    ],
-  };
+  const filtersToShow: FilterOption[] =
+    filterType === "soldiers"
+      ? [
+          { key: "personalNumber", type: "string" },
+          { key: "name", type: "string" },
+          {
+            key: "team",
+            type: "dropdown",
+            options: teamOptions.map((team) => ({
+              id: team,
+              key: teamTranslate[team as Team],
+            })),
+          },
+        ]
+      : [
+          { key: "serialNumber", type: "string" },
+          { key: "name", type: "string" },
+          { key: "owner", type: "string" },
+        ];
+
   return (
-    <div className="w-full flex p-3 items-center justify-between">
+    <div className="w-full flex  items-center justify-between">
       <div className="bg-white  flex sm:gap-8  gap-2">
-        {filtersToShow[filterType].map((filter, i) => {
+        {filtersToShow.map((filter, i) => {
           return (
             <div key={i}>
               {filter.type === "string" && (
@@ -145,18 +134,6 @@ export default function Filter({
             </div>
           );
         })}
-
-        <PlusRoundIcon
-          color="#1e3a8a"
-          className="fixed bottom-3 z-40 left-3"
-          style={{
-            fontSize: "40px",
-            fontWeight: "200",
-            background: "white",
-            borderRadius: "50%",
-          }}
-          onClick={() => openForm()}
-        />
       </div>
       <div className="bg-gray-200 p-2 flex items-center justify-center gap-1 rounded-md">
         <span className="text-xs sm:text-sm">{dataLength}</span>

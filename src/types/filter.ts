@@ -4,7 +4,7 @@ export interface FilterOptions {
   [key: string]: FilterOption[];
 }
 
-interface FilterOption {
+export interface FilterOption {
   key: CombinedKeys; // Key must match one of the CombinedKeys values
   type: "string" | "dropdown";
   options?: DropdownFilterOption[];

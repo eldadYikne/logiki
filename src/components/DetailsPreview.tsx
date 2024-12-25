@@ -5,9 +5,9 @@ import {
   CombinedKeys,
   Item,
   ItemHistory,
+  ItemType,
   TableData,
   TableHeaders,
-  itemType,
 } from "../types/table";
 import { DetailsItem, Size, Soldier, Team } from "../types/soldier";
 import FileDownloadIcon from "@rsuite/icons/FileDownload";
@@ -64,11 +64,7 @@ export default function DetailsPreview() {
     "notes",
     "name",
   ];
-  const types: itemType[] = [
-    "nightVisionDevice",
-    "combatEquipment",
-    "weaponAccessories",
-  ];
+
   const historyTh = [
     "dateTaken",
     "dateReturn",
@@ -112,12 +108,7 @@ export default function DetailsPreview() {
 
   const findObjectById = (id: string) => {
     if (data) {
-      const allArrays = [
-        ...data.nightVisionDevice,
-        ...data.combatEquipment,
-        ...data.soldiers,
-        ...data.weaponAccessories,
-      ];
+      const allArrays = [...data.items, ...data.soldiers];
       const currentItem = allArrays.find((item) => item.id === id);
 
       if ((currentItem as Soldier).personalNumber) {
@@ -126,7 +117,7 @@ export default function DetailsPreview() {
             return (item as Item).soldierId === currentItem?.id;
           }
         }) as Item[];
-        // console.log("soldItems", soldItems);
+        console.log("soldItems", soldItems);
         setSoldierItems(soldItems);
       } else {
         setSoldierItems([]);
@@ -161,14 +152,9 @@ export default function DetailsPreview() {
   const onSignature = async (item: Item) => {
     // console.log("onSignature item", item);
     if (data) {
-      const newItems = data[item.itemType].filter(
-        (itemType) => itemType.id !== item.id
-      );
+      const newItems = data.items.filter((itemType) => itemType.id !== item.id);
       try {
-        await updateBoaedSpesificKey("hapak162", item.itemType, [
-          ...newItems,
-          item,
-        ]);
+        await updateBoaedSpesificKey("hapak162", "items", [...newItems, item]);
       } catch (err) {
         console.log(err);
       }
@@ -227,11 +213,9 @@ export default function DetailsPreview() {
       />
     );
   };
-  const onEditSoldier = async (item: Soldier | Item) => {
+  const onEdit = async (item: Soldier | Item) => {
     console.log("item", item);
-    const key: keyof TableData = (item as Item).itemType
-      ? (item as Item).itemType
-      : "soldiers";
+    const key: keyof TableData = (item as Item).itemType ? "items" : "soldiers";
     await putBoardValueByKey("hapak162", key, item);
   };
   const getItemToEdit = () => {
@@ -243,12 +227,13 @@ export default function DetailsPreview() {
           team: (item as Soldier).team ?? "",
         } as Soldier);
   };
-  const onDelteSoldier = async () => {
+  const onDelete = async () => {
     try {
       if ((item as Item).id) {
         const key: keyof TableData = (item as Item).itemType
-          ? (item as Item).itemType
+          ? "items"
           : "soldiers";
+
         if (user?.email === "hapakmaog162@gmail.com") {
           if (confirm(`אתה בטוח רוצה למחוק את ${item?.name}`)) {
             toaster.push(
@@ -287,7 +272,7 @@ export default function DetailsPreview() {
                       >
                         <Dropdown.Item
                           onClick={() => {
-                            onDelteSoldier();
+                            onDelete();
                           }}
                           icon={<TrashIcon color="red" />}
                         >
@@ -404,19 +389,19 @@ export default function DetailsPreview() {
                   }}
                 />
               </div>
-              {types.map((itemType) => {
+              {data?.itemsTypes.map((itemType: ItemType) => {
                 return (
-                  <div key={itemType} className="flex flex-col gap-2">
+                  <div key={itemType.id} className="flex flex-col gap-2">
                     {soldierItems.find(
-                      (item) => item.itemType === itemType
+                      (item) => item.itemType.id === itemType.id
                     ) && (
                       <span className="w-full  border-b-2 text-xl">
-                        {headerTranslate[itemType]}
+                        {itemType.name}
                       </span>
                     )}
                     {soldierItems?.map((item) => {
                       return (
-                        item.itemType === itemType && (
+                        item.itemType.id === itemType.id && (
                           <div
                             key={item.id}
                             className="flex justify-between items-center gap-5 w-full"
@@ -517,11 +502,10 @@ export default function DetailsPreview() {
             עריכה
           </div>
           <DynamicForm
-            itemType={"combatEquipment"}
-            type={(item as Soldier).phoneNumber ? "Soldier" : "Item"}
+            type={(item as Soldier).phoneNumber ? "soldier" : "item"}
             itemToEdit={{ ...getItemToEdit() } as DetailsItem}
             onSubmit={(e) => {
-              onEditSoldier(e as Soldier);
+              onEdit(e as Soldier);
               console.log("data", e);
             }}
             closeForm={() => {

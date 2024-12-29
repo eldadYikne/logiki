@@ -28,6 +28,7 @@ export default function HTable(props: Props) {
     "pdfFileSignature",
     "size",
     "representative",
+    "isExclusiveItem",
     "signtureDate",
     "itemType",
     "soldierPersonalNumber",
@@ -159,6 +160,12 @@ function renderCellData(header: string, row: Soldier | Item) {
             {typeof item === "object" ? JSON.stringify(item) : item}
           </span>
         ));
+      } else if (header === "numberOfUnExclusiveItems") {
+        return (row as Item).isExclusiveItem ? (
+          ""
+        ) : (
+          <span className="font-semibold">{value}</span>
+        );
       } else if (header === "status") {
         return (
           <span>

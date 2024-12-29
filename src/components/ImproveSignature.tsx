@@ -19,6 +19,10 @@ const notRenderKeys: Array<keyof Item> = [
   "id",
   "soldierId",
   "representative",
+  "owner",
+  // "soldierPersonalNumber",
+  // "signtureDate",
+  // "pdfFileSignature",
 ];
 
 const ImproveSignature: React.FC<DynamicTableProps> = ({
@@ -199,6 +203,22 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
                   <span>{`מזכה : ${historyItem.representative} `}</span>
                 </div>
               )}
+              {/* {
+                <div className="flex gap-2 justify-between">
+                  <div>
+                    <span>{item.representative}</span>
+                  </div>
+                  <div>
+                    <span>{item.owner}</span>
+                    <span>{item.soldierPersonalNumber}</span>
+                    <img
+                      src={item.pdfFileSignature}
+                      alt="Signature"
+                      style={{ maxWidth: "100px", maxHeight: "50px" }}
+                    />
+                  </div>
+                </div>
+              } */}
             </div>
           </div>
         )}

@@ -20,6 +20,7 @@ import PlaceholderParagraph from "rsuite/esm/Placeholder/PlaceholderParagraph";
 import PersonalArea from "./components/PersonalArea";
 import SignaNatureModal from "./components/SignaNatureModal";
 import ItemTypePage from "./pages/ItemTypePage";
+import Cart from "./components/Cart";
 
 export default function App() {
   const [user, setUser] = useState<User>();
@@ -67,6 +68,7 @@ export default function App() {
             }
           />
           <Route path="/add/:type" element={<CreateSoldier />} />
+          {user && <Route path="/cart" element={<Cart user={user} />} />}
           <Route path="/items-type" element={<ItemTypePage />} />
           {user && <Route path="/personal-area" element={<PersonalArea />} />}
 

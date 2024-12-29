@@ -8,7 +8,7 @@ import { User } from "firebase/auth";
 export default function SignatureProcessModal({
   isOpen,
   onCloseModal,
-  item,
+  items,
   mode,
   dropdownOptions,
   onConfirm,
@@ -16,7 +16,7 @@ export default function SignatureProcessModal({
 }: Props) {
   const modalOptions = {
     signature: {
-      title: `החתם ${item.name} `,
+      title: `החתם ${items[0].name} `,
     },
   };
 
@@ -25,6 +25,26 @@ export default function SignatureProcessModal({
   const [selectedOption, setSelectedOption] = useState<DetailsItem>(); // Stores the selected object
   const [inputValue, setInputValue] = useState(""); // Manages input value for di
   inputValue;
+  const onConfirmSignature = () => {
+    const confirmedItems = items.map(
+      (item) =>
+        ({
+          ...item,
+          soldierId: selectedOption?.id,
+          owner: "",
+          pdfFileSignature: signatureUrl,
+          signtureDate: getCurrentDate(),
+          soldierPersonalNumber:
+            selectedOption && selectedOption
+              ? (selectedOption as Soldier)?.personalNumber
+              : 0,
+          status: "signed",
+          representative: user.displayName,
+        } as Item)
+    );
+    onConfirm(confirmedItems);
+    onCloseModal();
+  };
   return (
     <Modal
       open={isOpen}
@@ -78,22 +98,7 @@ export default function SignatureProcessModal({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          onClick={() => {
-            onConfirm({
-              ...item,
-              soldierId: selectedOption?.id,
-              owner: "",
-              pdfFileSignature: signatureUrl,
-              signtureDate: getCurrentDate(),
-              soldierPersonalNumber:
-                selectedOption && selectedOption
-                  ? (selectedOption as Soldier)?.personalNumber
-                  : 0,
-              status: "signed",
-              representative: user.displayName,
-            } as Item);
-            onCloseModal();
-          }}
+          onClick={onConfirmSignature}
           appearance="primary"
           disabled={!signatureUrl || !selectedOption?.id}
         >
@@ -115,7 +120,7 @@ interface Props {
   isOpen: boolean;
   onCloseModal: Function;
   mode: "signature";
-  item: DetailsItem;
+  items: Item[];
   dropdownOptions: DetailsItem[];
   dropdownTitle: string;
   onConfirm: Function;

@@ -7,7 +7,7 @@ import { GoogleAuthProvider, getAuth } from "@firebase/auth";
 import { initializeApp } from "@firebase/app";
 import { getFirestore } from "@firebase/firestore";
 import { Provider } from "react-redux";
-import store from "./redux/store.ts";
+import store from "./store/store.ts";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6QpZcuQDkW7ZvhlXX-2Orke-jmRmyqRA",

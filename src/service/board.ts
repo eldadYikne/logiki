@@ -99,6 +99,47 @@ export const putBoardValueByKey = async (
     console.error("Error updating board:", error);
   }
 };
+export const putBoardValueByArrayKey = async (
+  boardId: string,
+  key: keyof TableData,
+  data: Item[]
+) => {
+  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the board document
+  console.log("putBoardValueByKey!!");
+
+  try {
+    const boardDoc = await getDoc(boardRef);
+
+    if (boardDoc.exists() && data.every((item) => item.id)) {
+      // Ensure all items have an id
+      const boardData = boardDoc.data();
+
+      // Loop through each item in the data array and filter out existing items
+      let updatedItems = [...boardData[key]]; // Copy the current items of the board
+
+      // Filter out existing items by their id (to avoid duplicates)
+      updatedItems = updatedItems.filter(
+        (existingItem: Item | Soldier) =>
+          !data.some((newItem) => newItem.id === existingItem.id)
+      );
+
+      console.log("updatedItems after removing duplicates:", updatedItems);
+      console.log("data to add:", data);
+
+      // Update the board document by adding the new items
+      await updateDoc(boardRef, {
+        ...boardData,
+        [key]: [...updatedItems, ...data],
+      });
+
+      console.log("Board updated successfully!");
+    } else {
+      console.error("Board not found or invalid data!");
+    }
+  } catch (error) {
+    console.error("Error updating board:", error);
+  }
+};
 export const putBoardAdmins = async (boardId: string, data: Admin) => {
   const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
 

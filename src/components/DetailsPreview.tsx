@@ -29,7 +29,14 @@ import {
   teamTranslate,
 } from "../const";
 import PhoneFillIcon from "@rsuite/icons/PhoneFill";
-import { Button, Dropdown, IconButton, Message, useToaster } from "rsuite";
+import {
+  Button,
+  Dropdown,
+  IconButton,
+  Loader,
+  Message,
+  useToaster,
+} from "rsuite";
 import SignatureProcessModal from "./SignatureProcessModal";
 import {
   deleteBoardValueByKey,
@@ -46,6 +53,9 @@ import ImproveSignature from "./ImproveSignature";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
 import DynamicForm from "./DynamicForm";
+import { useDispatch, useSelector } from "react-redux";
+import { addItemToCart } from "../store/cartSlice";
+import { RootState } from "../store/store";
 export default function DetailsPreview() {
   const { id } = useParams();
   const [data, setData] = useState<TableData>();
@@ -64,6 +74,7 @@ export default function DetailsPreview() {
   const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
   const naigate = useNavigate();
   const toaster = useToaster();
+  const [isLoading, setIsLoading] = useState(false);
 
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
@@ -164,7 +175,9 @@ export default function DetailsPreview() {
     }
   };
 
-  const onSignature = async (itemToSignature: Item) => {
+  const onSignature = async (itemsToSignature: Item[]) => {
+    const itemToSignature = itemsToSignature[0];
+    setIsLoading(true);
     console.log("onSignature ", itemToSignature);
     if (data) {
       try {
@@ -219,7 +232,10 @@ export default function DetailsPreview() {
             );
           }
         }
+        setIsLoading(false);
       } catch (err) {
+        setIsLoading(false);
+
         console.log(err);
       }
     }
@@ -233,13 +249,14 @@ export default function DetailsPreview() {
   };
   const onConfirmItemBack = async (itemToBack: Item) => {
     console.log("onConfirmItemBack", itemToBack);
+    setIsLoading(true);
     if ((itemToBack as Item).owner || !itemToBack.isExclusiveItem) {
       const itemToUpdate: Item = {
         ...itemToBack,
-        owner: "",
         soldierId: (itemToBack as Item).soldierId,
         pdfFileSignature: "",
         soldierPersonalNumber: 0,
+        owner: "",
         status: "stored",
         representative: "",
         signtureDate: "",
@@ -261,10 +278,7 @@ export default function DetailsPreview() {
         let signedSoldier = data.soldiers.find(
           (soldier) => soldier.id === itemToUpdate.soldierId
         );
-        const itemExistOnSoldier = signedSoldier?.items.find(
-          (item) => item.id === itemToUpdate.id
-        );
-        console.log("itemExistOnSoldier", itemExistOnSoldier);
+
         const findItemHisBack = data.items.find(
           (item) => item.id === itemToUpdate.id
         );
@@ -274,6 +288,7 @@ export default function DetailsPreview() {
             (itemNoExlusive) => itemNoExlusive.id === itemToUpdate.id
           );
           notExslusiveItems.splice(notExslusiveItemIndex, 1);
+
           const newItemnow: Item = {
             id: itemToUpdate.id,
             history: itemToUpdate.history,
@@ -296,22 +311,26 @@ export default function DetailsPreview() {
               : Number(findItemHisBack.numberOfUnExclusiveItems + 1),
           } as Item;
           await putBoardValueByKey("hapak162", "items", newItemnow);
-
-          await putBoardValueByKey("hapak162", "soldiers", {
-            ...signedSoldier,
-            items: notExslusiveItems,
-          });
+          if (!itemToUpdate.isExclusiveItem) {
+            await putBoardValueByKey("hapak162", "soldiers", {
+              ...signedSoldier,
+              items: notExslusiveItems,
+            });
+          }
+          setIsLoading(false);
           setSoldierItemToBack(undefined);
 
           toaster.push(
             <Message type="success" showIcon>
-              הפעולה בוצעה בהצלחה!
+              !הפעולה בוצעה בהצלחה
             </Message>,
             { placement: "topCenter" }
           );
         }
         setIsModalConfirmOpen(false);
       } catch (err) {
+        setIsLoading(false);
+
         console.log(err);
       }
     }
@@ -374,8 +393,37 @@ export default function DetailsPreview() {
       }
     } catch (err) {}
   };
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+
+  const onAddItemToCart = () => {
+    if (
+      !cartItems.find((itemCart) => item?.id === itemCart.id) &&
+      (item as Item).history
+    ) {
+      dispatch(addItemToCart(item as Item));
+      toaster.push(
+        <Message type="success" showIcon>
+          פריט נוסף להחתמה
+        </Message>,
+        { placement: "topCenter" }
+      );
+    } else {
+      toaster.push(
+        <Message type="info" showIcon>
+          נראה שהוספת פריט זהה להחתמה
+        </Message>,
+        { placement: "topCenter" }
+      );
+    }
+  };
   return (
     <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex details-preview ">
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-800 opacity-50 z-[100] flex justify-center items-center">
+          <Loader size="lg" content="" />
+        </div>
+      )}
       {item && !editSoldier && (
         <div className="flex flex-col gap-3 w-full">
           <div className="border relative border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
@@ -383,7 +431,7 @@ export default function DetailsPreview() {
               {item && (
                 <div dir="rtl" className="flex flex-col gap-4 ">
                   {
-                    <div className="absolute top-2 right-2 edit-dropdown">
+                    <div className="absolute top-0 right-2 edit-dropdown">
                       <Dropdown
                         placement="leftStart"
                         renderToggle={renderIconButton}
@@ -407,6 +455,16 @@ export default function DetailsPreview() {
                       </Dropdown>
                     </div>
                   }
+                  {item && (item as Item).history && (
+                    <img
+                      className="absolute top-0 left-2 w-7 h-7 "
+                      style={{ fontSize: "20px" }}
+                      src={
+                        " https://cdn-icons-png.flaticon.com/512/3523/3523885.png"
+                      }
+                      onClick={onAddItemToCart}
+                    />
+                  )}
 
                   <div className="flex w-full justify-between">
                     <span className="text-3xl select-none">
@@ -642,10 +700,10 @@ export default function DetailsPreview() {
       {soldierItemToBack && (
         <ModalConfirm
           title={` נציג לוגיסטי - ${user?.displayName}`}
-          description={`אתה בטוח שאתה רוצה לזכות את ${
+          description={`?אתה בטוח שאתה רוצה לזכות את ${
             (soldierItemToBack as Item).owner || soldierItemToBack?.name
           } על ${(soldierItemToBack as Item).name} ${
-            (soldierItemToBack as Item).serialNumber
+            (soldierItemToBack as Item).serialNumber ?? ""
           }`}
           onConfirm={() => onConfirmItemBack(soldierItemToBack as Item)}
           image={""}
@@ -661,7 +719,7 @@ export default function DetailsPreview() {
         <SignatureProcessModal
           dropdownTitle="בחר חייל"
           dropdownOptions={data?.soldiers ?? []}
-          item={item}
+          items={[item] as Item[]}
           user={user}
           mode={"signature"}
           isOpen={modalOpen}

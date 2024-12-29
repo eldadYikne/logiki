@@ -51,6 +51,6 @@ const renderFileds = (
     return headerTranslate[value as keyof TableHeaders];
   } else {
     const value = (item as Item)[key as keyof Item];
-    return String(value);
+    return String(value ?? "-");
   }
 };

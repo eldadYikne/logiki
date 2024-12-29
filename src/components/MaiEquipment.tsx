@@ -1,15 +1,14 @@
-import { Item, TableData, TableHeaders, Admin, ItemType } from "../types/table";
+import { Item, TableData, TableHeaders, Admin } from "../types/table";
 import { AdminItemSoldier, Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
-import React, { LegacyRef, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
 import { doc, onSnapshot } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { db } from "../main";
-import { Button, Placeholder } from "rsuite";
+import { Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
-import SoldierXcelDownload from "./SoldierXcelDownload";
 import PlusRoundIcon from "@rsuite/icons/PlusRound";
 import { useNavigate } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
@@ -70,6 +69,7 @@ function MaiEquipment(props: Props) {
   const [dataToTableFilter, setDataToTableFilter] = useState<NewTableData>();
   const [itemToEdit, setItemToEdit] = useState<Item | Soldier>();
   const [filters, setFilters] = useState<FilterObject>({});
+  itemToEdit;
   interface NewTableData {
     soldiers: Soldier[];
     [key: string]: Item[] | Soldier[] | Admin[];
@@ -236,6 +236,7 @@ function MaiEquipment(props: Props) {
                   <table>
                     <tbody>
                       {Array.from({ length: 6 }).map((a, i) => {
+                        a;
                         return (
                           <tr key={i}>
                             <td>

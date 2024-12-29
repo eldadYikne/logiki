@@ -4,7 +4,7 @@ import { Soldier } from "../types/soldier";
 import { addBoardValueByKey } from "../service/board";
 import CheckRoundIcon from "@rsuite/icons/CheckRound";
 import { useNavigate, useParams } from "react-router-dom";
-import { Item, TableData } from "../types/table";
+import { TableData } from "../types/table";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../main";
 export default function CreateSoldier() {

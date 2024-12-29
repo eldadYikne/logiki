@@ -1,4 +1,4 @@
-import { Button, Dropdown, Input } from "rsuite";
+import { Button, Input } from "rsuite";
 import { FilterObject, FilterOption, FilterOptions } from "../types/filter";
 import { ItemTranslate, teamOptions, teamTranslate } from "../const";
 import { CombinedKeys } from "../types/table";
@@ -10,7 +10,7 @@ export default function Filter({
   filterType,
   onFilter,
   filters,
-  setFilters,
+
   dataLength,
 }: Props) {
   const inputRefs = useRef<any[]>([]);

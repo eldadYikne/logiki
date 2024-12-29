@@ -15,10 +15,9 @@ import AdminPage from "./components/AdminPage";
 import Navbar from "./components/Navbar";
 import CreateSoldier from "./pages/CreatePage";
 import Footer from "./components/Footer";
-import { Loader } from "rsuite";
-import PlaceholderParagraph from "rsuite/esm/Placeholder/PlaceholderParagraph";
+
 import PersonalArea from "./components/PersonalArea";
-import SignaNatureModal from "./components/SignaNatureModal";
+
 import ItemTypePage from "./pages/ItemTypePage";
 import Cart from "./components/Cart";
 

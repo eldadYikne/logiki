@@ -6,7 +6,6 @@ import {
   Message,
   useToaster,
   Dropdown,
-  Input,
   InputNumber,
   Checkbox,
 } from "rsuite";
@@ -301,7 +300,7 @@ const DynamicForm: React.FC<Props> = ({
                       <Checkbox
                         disabled={!!itemToEdit}
                         onChange={(e, value) => {
-                          console.log("e", value);
+                          console.log("e", e);
                           setNewForm((prev) => ({
                             ...prev,
                             isExclusiveItem: value,

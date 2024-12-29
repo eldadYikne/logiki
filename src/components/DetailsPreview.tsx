@@ -38,11 +38,7 @@ import {
   useToaster,
 } from "rsuite";
 import SignatureProcessModal from "./SignatureProcessModal";
-import {
-  deleteBoardValueByKey,
-  putBoardValueByKey,
-  updateBoaedSpesificKey,
-} from "../service/board";
+import { deleteBoardValueByKey, putBoardValueByKey } from "../service/board";
 import { auth, db } from "../main";
 import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
@@ -67,10 +63,7 @@ export default function DetailsPreview() {
     useState<ItemNotExclusive>();
   const [user, setUser] = useState<User>();
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
-  const [
-    isModalConfirmOpenOfSildierDetailsPage,
-    setModalConfirmOpenOfSildierDetailsPage,
-  ] = useState(false);
+
   const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
   const naigate = useNavigate();
   const toaster = useToaster();
@@ -613,9 +606,6 @@ export default function DetailsPreview() {
                                     console.log("soldierItem", soldierItem);
                                     if (soldierItem) {
                                       setSoldierItemToBack(soldierItem);
-                                      setModalConfirmOpenOfSildierDetailsPage(
-                                        true
-                                      );
                                     }
                                   }}
                                 >

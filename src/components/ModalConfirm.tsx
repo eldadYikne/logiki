@@ -9,6 +9,7 @@ interface ModalConfirmProps {
   onConfirm: (inputValue: string) => void;
   onCancel: () => void;
   isOpen: boolean;
+  image: string;
 }
 
 const ModalConfirm: React.FC<ModalConfirmProps> = ({
@@ -18,6 +19,7 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
   cancelText = "Cancel",
   onConfirm,
   onCancel,
+  image,
   isOpen,
 }) => {
   const [inputValue, setInputValue] = useState("");
@@ -38,7 +40,12 @@ const ModalConfirm: React.FC<ModalConfirmProps> = ({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{description}</p>
+        <div className="w-full gap-7 flex flex-col justify-center items-center ">
+          <span>{description}</span>
+          {image && (
+            <img className="h-32 w-32 rounded-full" src={image} alt="" />
+          )}{" "}
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleConfirm} appearance="primary">

@@ -1,53 +1,51 @@
 import { User } from "firebase/auth";
 import Logo from "../assets/logo.png";
 import { useNavigate } from "react-router";
+import MenuIcon from "@rsuite/icons/Menu";
+import { useState } from "react";
+import Menu from "./Menu";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 
 export default function Navbar(props: Props) {
   const navigat = useNavigate();
-  return (
-    <div className="h-16 sticky z-50  cursor-pointer shadow-md shadow-blue-50 justify-between items-center flex sm:p-4 px-1 sm:px-6">
-      <span
-        onClick={() => navigat("/")}
-        className=" font-mono  flex items-center justify-center"
-      >
-        {" "}
-        <span>
-          <img className="h-12" src={Logo} />
-        </span>
-        <span className="sm:text-2xl text-md">יחידת חפ״ק מאו״ג 162</span>
-      </span>
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartItemCount = cartItems.length;
 
-      {props.user && props.user?.email && (
-        <span className="flex gap-3">
-          {/* {props.user.email === "hapakmaog162@gmail.com" && (
-            <Button
-              onClick={() => {
-                navigat("/admin");
-              }}
-            >
-              איזור מנהל
-            </Button>
-          )} */}
-          {/* <span onClick={() => navigat("/")}>
-            <GoogleAuth
-              setUser={props.setUser}
-              userConnected={props.user?.displayName ?? ""}
-            />
-          </span> */}
-          <div
-            onClick={() => {
-              navigat("/personal-area");
-            }}
-            className=" rounded-full p-1 w-8 h-8 flex justify-center items-center"
-          >
-            {/* <AdminIcon /> */}
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/1144/1144760.png"
-              alt=""
-            />
-          </div>
+  return (
+    <div className="h-16 sticky  z-30 overflow-x-hidden cursor-pointer shadow-md shadow-blue-50 justify-between items-center flex sm:p-4 px-4 sm:px-6">
+      <MenuIcon
+        onClick={() => setIsMenuOpen((prev) => !prev)}
+        style={{ fontSize: "25px" }}
+      />
+      <div className="flex gap-5 items-center justify-center">
+        <div className="relative">
+          <img
+            className="w-7 h-7"
+            style={{ fontSize: "20px" }}
+            onClick={() => navigat("/cart")}
+            src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png"
+          />
+          {cartItemCount > 0 && (
+            <span className="absolute top-[-8px] right-[-13px] bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {cartItemCount}
+            </span>
+          )}
+        </div>
+
+        <span
+          onClick={() => navigat("/")}
+          className=" font-mono  flex items-center justify-center"
+        >
+          <span>
+            <img className="h-8" src={Logo} />
+          </span>
+          {/* <span className="sm:text-2xl text-md">יחידת חפ״ק מאו״ג 162</span> */}
         </span>
-      )}
+      </div>
+
+      <Menu isMenuOpen={isMenuOpen} onCloseMenu={() => setIsMenuOpen(false)} />
     </div>
   );
 }

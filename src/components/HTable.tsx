@@ -28,6 +28,7 @@ export default function HTable(props: Props) {
     "pdfFileSignature",
     "size",
     "representative",
+    "isExclusiveItem",
     "signtureDate",
     "itemType",
     "soldierPersonalNumber",
@@ -92,7 +93,7 @@ export default function HTable(props: Props) {
         props.dataType === "soldier"
           ? "table soldier-table"
           : "table item-table"
-      }`}
+      } border-none`}
     >
       <Thead>
         <Tr>
@@ -128,7 +129,7 @@ export default function HTable(props: Props) {
                       header === "profileImage" ? "profile-image" : ""
                     } ${header} `}
                     onClick={() => {
-                      navigate(`/soldier/${row.id}`);
+                      navigate(`/details/${row.id}`);
                     }}
                     key={colIndex}
                   >
@@ -145,6 +146,7 @@ export default function HTable(props: Props) {
 }
 
 function renderCellData(header: string, row: Soldier | Item) {
+  if (!row) return;
   if ("id" in row) {
     // Check if the row is a Soldier or an Item
     if (header in row) {
@@ -158,6 +160,12 @@ function renderCellData(header: string, row: Soldier | Item) {
             {typeof item === "object" ? JSON.stringify(item) : item}
           </span>
         ));
+      } else if (header === "numberOfUnExclusiveItems") {
+        return (row as Item).isExclusiveItem ? (
+          ""
+        ) : (
+          <span className="font-semibold">{value}</span>
+        );
       } else if (header === "status") {
         return (
           <span>

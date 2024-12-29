@@ -4,4 +4,34 @@
       width: 99px;
     }
   }
+
+  @media screen and (max-width: 640px) {
+    .history-table {
+      thead {
+        tr {
+          position: inherit;
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+      tbody {
+        tr {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          gap: 3px;
+          td {
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            padding-right: 0;
+            padding-left: 0 !important;
+          }
+        }
+      }
+      .history-item {
+      }
+    }
+  }
 }

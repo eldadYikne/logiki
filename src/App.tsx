@@ -13,12 +13,14 @@ import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
 import AdminPage from "./components/AdminPage";
 import Navbar from "./components/Navbar";
-import CreateSoldier from "./components/CreateSoldier";
+import CreateSoldier from "./pages/CreatePage";
 import Footer from "./components/Footer";
 import { Loader } from "rsuite";
 import PlaceholderParagraph from "rsuite/esm/Placeholder/PlaceholderParagraph";
 import PersonalArea from "./components/PersonalArea";
 import SignaNatureModal from "./components/SignaNatureModal";
+import ItemTypePage from "./pages/ItemTypePage";
+import Cart from "./components/Cart";
 
 export default function App() {
   const [user, setUser] = useState<User>();
@@ -41,9 +43,12 @@ export default function App() {
 
   if (loading) {
     return (
-      <PlaceholderParagraph rows={8}>
-        <Loader center content="loading" />
-      </PlaceholderParagraph>
+      // <PlaceholderParagraph rows={8}>
+      //   <Loader center content="loading" />
+      // </PlaceholderParagraph>
+      <div className="h-screen w-full flex justify-center items-center">
+        <div className="loader"></div>
+      </div>
     );
   }
 
@@ -62,14 +67,16 @@ export default function App() {
               )
             }
           />
-          <Route path="/add-soldier" element={<CreateSoldier />} />
+          <Route path="/add/:type" element={<CreateSoldier />} />
+          {user && <Route path="/cart" element={<Cart user={user} />} />}
+          <Route path="/items-type" element={<ItemTypePage />} />
           {user && <Route path="/personal-area" element={<PersonalArea />} />}
 
-          {user && <Route path="/soldier/:id" element={<DetailsPreview />} />}
+          {user && <Route path="/details/:id" element={<DetailsPreview />} />}
           {user && <Route path="/admin" element={<AdminPage user={user} />} />}
         </Routes>
       </div>
-      {user && <SignaNatureModal user={user} />}
+      {/* {user && <SignaNatureModal user={user} />} */}
       <Footer />
     </div>
   );

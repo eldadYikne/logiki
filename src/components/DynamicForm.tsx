@@ -1,7 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Form, Button, Schema, Message, useToaster, Dropdown } from "rsuite";
+import {
+  Form,
+  Button,
+  Schema,
+  Message,
+  useToaster,
+  Dropdown,
+  Input,
+  InputNumber,
+  Checkbox,
+} from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
-import { CombinedKeys, Item } from "../types/table";
+import { CombinedKeys, Item, ItemType } from "../types/table";
 import {
   ItemTranslate,
   sizeTranslate,
@@ -11,25 +21,31 @@ import {
 import { Size, Soldier, Team } from "../types/soldier";
 import { v4 as uuidv4 } from "uuid";
 import { UploadWidget } from "./UploadWidget";
-export type itemType =
-  | "nightVisionDevice"
-  | "combatEquipment"
-  | "weaponAccessories";
 
 type FormData = Item | Soldier;
-
+interface NewForm {
+  name: string;
+  personalNumber?: number;
+  phoneNumber?: number;
+  serialNumber?: string;
+  profileImage?: string;
+  itemType?: ItemType;
+  size?: Size;
+  team?: Team | "";
+  isExclusiveItem?: boolean;
+  numberOfUnExclusiveItems?: number;
+}
 const DynamicForm: React.FC<Props> = ({
-  itemType,
   type,
   onSubmit,
   closeForm,
   itemToEdit,
   isCancelButtonShown,
+  itemTypesOptions,
 }) => {
   const [tryConfirm, setTryConfirm] = useState<boolean>(false);
   const toaster = useToaster();
   const formRef = useRef<any>();
-  const model = getValidationModel(type);
   useEffect(() => {
     if (itemToEdit) {
       setNewForm(itemToEdit);
@@ -39,8 +55,8 @@ const DynamicForm: React.FC<Props> = ({
     }
   }, []);
   const defaultFormValues: NewForm =
-    type === "Item"
-      ? { name: "", serialNumber: "" }
+    type === "item"
+      ? { name: "", serialNumber: "", isExclusiveItem: true }
       : {
           name: "",
           personalNumber: 0,
@@ -52,6 +68,7 @@ const DynamicForm: React.FC<Props> = ({
   const [newForm, setNewForm] = useState<NewForm>(
     itemToEdit ?? defaultFormValues
   );
+  const model = getValidationModel(type, newForm);
 
   const firstInputRef = useRef<any>();
   const seconedInputRef = useRef<any>();
@@ -59,27 +76,32 @@ const DynamicForm: React.FC<Props> = ({
     // if (firstInputRef.current) {
     //   firstInputRef.current.focus();
     // }
+    console.log("itemToEdit", itemToEdit);
   }, [newForm]);
 
-  interface NewForm {
-    name: string;
-    personalNumber?: number;
-    phoneNumber?: number;
-    serialNumber?: string;
-    profileImage?: string;
-    size?: Size;
-    team?: Team | "";
-  }
   const fields = itemToEdit
-    ? Object.keys(itemToEdit)
-    : type === "Item"
-    ? ["profileImage", "name", "serialNumber"] // Item fields
+    ? Object.keys(itemToEdit).filter((key) => {
+        if ((itemToEdit as Item).isExclusiveItem) {
+          return true;
+        } else {
+          return key !== "serialNumber";
+        }
+      })
+    : type === "item"
+    ? [
+        "profileImage",
+        "name",
+        "itemType",
+        "isExclusiveItem",
+        `${
+          newForm.isExclusiveItem ? "serialNumber" : "numberOfUnExclusiveItems"
+        }`,
+      ] // Item fields
     : ["name", "personalNumber", "phoneNumber", "team", "profileImage", "size"]; // Soldier fields
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
     "notes",
     "owner",
-    "itemType",
     "history",
     "soldierId",
     "status",
@@ -91,21 +113,25 @@ const DynamicForm: React.FC<Props> = ({
     "items",
   ];
   const defaultObjectTosubmit =
-    type === "Item"
+    type === "item"
       ? ({
           id: uuidv4(),
           profileImage: newForm.profileImage ?? "",
-          serialNumber: newForm.serialNumber ?? "",
+          serialNumber: newForm.isExclusiveItem ? newForm.serialNumber : "",
           name: newForm.name ?? "",
           owner: "",
           soldierId: "",
           history: [],
-          itemType,
           pdfFileSignature: "",
           status: "stored",
           soldierPersonalNumber: 0,
           signtureDate: "",
           representative: "",
+          itemType: newForm.itemType,
+          isExclusiveItem: newForm.isExclusiveItem ?? false,
+          numberOfUnExclusiveItems: newForm.isExclusiveItem
+            ? 0
+            : newForm.numberOfUnExclusiveItems,
         } as Item)
       : ({
           id: uuidv4(),
@@ -120,7 +146,6 @@ const DynamicForm: React.FC<Props> = ({
         } as Soldier);
   const handleSubmit = (isValid: boolean) => {
     console.log(isValid, newForm);
-
     if (!isValid) {
       setTryConfirm(true);
       toaster.push(
@@ -156,7 +181,6 @@ const DynamicForm: React.FC<Props> = ({
       formValue={newForm}
       className="flex flex-col w-2/3 max-w-96 gap-2 justify-center items-center"
     >
-      {type}
       {newForm.profileImage ? (
         <div className="py-3 relative">
           <img className="h-24 w-24 rounded-full" src={newForm.profileImage} />
@@ -197,19 +221,26 @@ const DynamicForm: React.FC<Props> = ({
             <div key={field} className={`w-full ${type} `}>
               <FormGroup key={field}>
                 <Form.ControlLabel className="text-black">
-                  {ItemTranslate[field as CombinedKeys] || field}:
+                  {field !== "isExclusiveItem" &&
+                    field !== "numberOfUnExclusiveItems" &&
+                    field !== "itemType" &&
+                    `${ItemTranslate[field as CombinedKeys] || field}:`}
                 </Form.ControlLabel>
-                {field !== "size" && field !== "team" && (
-                  <Form.Control
-                    value={newForm[field as keyof NewForm] as string}
-                    name={field}
-                    accept={field === "personalNumber" ? "number" : "text"}
-                    onChange={(e) => {
-                      setNewForm((value) => ({ ...value, [field]: e }));
-                    }}
-                    ref={i === 0 ? firstInputRef : seconedInputRef}
-                  />
-                )}
+                {field !== "size" &&
+                  field !== "team" &&
+                  field !== "isExclusiveItem" &&
+                  field !== "numberOfUnExclusiveItems" &&
+                  field !== "itemType" && (
+                    <Form.Control
+                      value={newForm[field as keyof NewForm] as string}
+                      name={field}
+                      accept={field === "personalNumber" ? "number" : "text"}
+                      onChange={(e) => {
+                        setNewForm((value) => ({ ...value, [field]: e }));
+                      }}
+                      ref={i === 0 ? firstInputRef : seconedInputRef}
+                    />
+                  )}
                 {field === "size" &&
                   (newForm as Soldier).size &&
                   Object.keys((newForm as Soldier).size).map((key) => {
@@ -258,6 +289,47 @@ const DynamicForm: React.FC<Props> = ({
                       </div>
                     );
                   })}
+                {field === "isExclusiveItem" && (
+                  <div>
+                    {itemToEdit ? (
+                      <div>
+                        {(itemToEdit as Item).isExclusiveItem
+                          ? "פריט זה ייחודי"
+                          : "פריט זה אינו יחודי"}
+                      </div>
+                    ) : (
+                      <Checkbox
+                        disabled={!!itemToEdit}
+                        onChange={(e, value) => {
+                          console.log("e", value);
+                          setNewForm((prev) => ({
+                            ...prev,
+                            isExclusiveItem: value,
+                          }));
+                        }}
+                        checked={newForm.isExclusiveItem}
+                        color="blue"
+                      >
+                        פריט זה הוא פריט יחודי
+                      </Checkbox>
+                    )}
+                  </div>
+                )}
+                {field === "numberOfUnExclusiveItems" &&
+                  !newForm.isExclusiveItem && (
+                    <div>
+                      <span>מספר פריטים:</span>
+                      <InputNumber
+                        value={newForm.numberOfUnExclusiveItems}
+                        onChange={(e) => {
+                          setNewForm((value) => ({
+                            ...value,
+                            numberOfUnExclusiveItems: e,
+                          }));
+                        }}
+                      />
+                    </div>
+                  )}
                 {field === "team" && (
                   <div className="w-full add-soldier-dropdown">
                     <Dropdown
@@ -291,6 +363,47 @@ const DynamicForm: React.FC<Props> = ({
                       tryConfirm && (
                         <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 left-0">
                           בחר צוות
+                        </span>
+                      )}
+                  </div>
+                )}
+                {field === "itemType" && (
+                  <div className="w-full my-8 add-soldier-dropdown">
+                    <Dropdown
+                      title={
+                        newForm.itemType
+                          ? newForm.itemType.name
+                          : "בחר קבוצת פריט"
+                      }
+                      style={{ width: "100%" }}
+                      color="#d9d5d5"
+                    >
+                      {itemTypesOptions &&
+                        itemTypesOptions.map((itemType) => {
+                          return (
+                            <Dropdown.Item
+                              style={{ width: "100%" }}
+                              key={itemType.id}
+                              onSelect={() => {
+                                console.log(itemType);
+                                setNewForm((value) => ({
+                                  ...value,
+                                  itemType: itemType,
+                                }));
+                              }}
+                              value={itemType.name}
+                            >
+                              {itemType.name}
+                            </Dropdown.Item>
+                          );
+                        })}
+                    </Dropdown>
+                    {formRef.current &&
+                      !formRef.current.itemType &&
+                      !(newForm as Item).itemType &&
+                      tryConfirm && (
+                        <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 left-0">
+                          בחר קבוצת פריט
                         </span>
                       )}
                   </div>
@@ -353,21 +466,25 @@ const sizePickersOptions: { [key in keyof Size]: string[] } = {
   ],
 };
 interface Props {
-  type: "Item" | "Soldier";
+  type: "item" | "soldier";
   onSubmit: (data: FormData) => void;
-  itemType: itemType;
   closeForm: Function;
   itemToEdit?: FormData;
   isCancelButtonShown: boolean;
+  itemTypesOptions?: ItemType[];
 }
+const getValidationModel = (type: "item" | "soldier", newForm: NewForm) => {
+  const { StringType, NumberType, ObjectType, BooleanType } = Schema.Types;
 
-const getValidationModel = (type: "Item" | "Soldier") => {
-  const { StringType, NumberType } = Schema.Types;
-
-  return type === "Item"
+  return type === "item"
     ? Schema.Model({
         name: StringType().isRequired("שדה חובה"),
-        serialNumber: StringType().isRequired("שדה חובה"),
+        serialNumber: newForm.isExclusiveItem
+          ? StringType().isRequired("שדה חובה")
+          : StringType().isRequiredOrEmpty(),
+        itemType: ObjectType().isRequired("שדה חובה"),
+        isExclusiveItem: BooleanType().isRequired("שדה חובה"),
+        profileImage: StringType().isRequired("שדה חובה"),
       })
     : Schema.Model({
         name: StringType().isRequired("שדה חובה"),

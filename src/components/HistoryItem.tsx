@@ -2,16 +2,40 @@ import { Td, Tr } from "react-super-responsive-table";
 import { Item, ItemHistory } from "../types/table";
 import { getCurrentDate } from "../utils";
 import ImproveSignature from "./ImproveSignature";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "rsuite";
 
 export default function HistoryItem(props: Props) {
   const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
-
+  const [sortHistory, setSortHistory] = useState<ItemHistory>();
+  useEffect(() => {
+    if (props.history) {
+      const {
+        dateReturn,
+        dateTaken,
+        ownerName,
+        pdfFileSignature,
+        representative,
+        soldierId,
+      } = props.history;
+      setSortHistory({
+        dateTaken,
+        ownerName,
+        dateReturn,
+        representative,
+        pdfFileSignature,
+        soldierId,
+      });
+    }
+  }, []);
   const renderHistory = (key: keyof ItemHistory, history: ItemHistory) => {
     const value = history[key];
     if (key === "dateReturn" || key === "dateTaken") {
-      return value ? value : getCurrentDate();
+      return (
+        <span className="font-semibold">
+          {value ? value : getCurrentDate()}
+        </span>
+      );
     } else if (key === "pdfFileSignature") {
       return (
         <span>
@@ -20,7 +44,7 @@ export default function HistoryItem(props: Props) {
             appearance="primary"
             onClick={() => setIsModalImprovalOpen(true)}
           >
-            הפק טופס
+            הפק
           </Button>
           <ImproveSignature
             onCloseModal={() => setIsModalImprovalOpen(false)}
@@ -36,20 +60,22 @@ export default function HistoryItem(props: Props) {
       return value ?? "-";
     }
   };
+
   return (
     <Tr>
-      {Object.keys(props.history).map((key) => {
-        return (
-          key !== "soldierId" && (
-            <Td key={key}>
-              {/* <span>{historyTranslate[key as keyof ItemHistory]}</span>:{" "} */}
-              <span>
-                {renderHistory(key as keyof ItemHistory, props.history)}
-              </span>
-            </Td>
-          )
-        );
-      })}
+      {sortHistory &&
+        Object.keys(sortHistory).map((key) => {
+          return (
+            key !== "soldierId" && (
+              <Td className="history-item" key={key}>
+                {/* <span>{historyTranslate[key as keyof ItemHistory]}</span>:{" "} */}
+                <span>
+                  {renderHistory(key as keyof ItemHistory, props.history)}
+                </span>
+              </Td>
+            )
+          );
+        })}
     </Tr>
   );
 }

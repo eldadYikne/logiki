@@ -1,15 +1,12 @@
-import { CombinedKeys, Item, itemType } from "./table";
+import { CombinedKeys, Item, ItemType } from "./table";
 
 export interface FilterOptions {
-  soldiers: FilterOption[];
-  nightVisionDevice: FilterOption[];
-  combatEquipment: FilterOption[];
-  weaponAccessories: FilterOption[];
+  [key: string]: FilterOption[];
 }
 
-interface FilterOption {
+export interface FilterOption {
   key: CombinedKeys; // Key must match one of the CombinedKeys values
-  type: "string" | "dropdown";
+  type: "string" | "dropdown" | "options";
   options?: DropdownFilterOption[];
 }
 export interface DropdownFilterOption {
@@ -17,13 +14,13 @@ export interface DropdownFilterOption {
   id: string;
 }
 export interface FilterObject {
-  id: string;
-  name: string;
-  personalNumber: string;
+  id?: string;
+  name?: string;
+  personalNumber?: string;
   owner?: string;
   soldierId?: string;
   history?: History[];
-  itemType?: itemType;
+  itemType?: ItemType;
   items?: Item[];
   notes?: string;
   phoneNumber?: number;

@@ -36,7 +36,7 @@ export default function SignaNatureModal({ user }: Props) {
   }, [data?.admins]);
   const getBoardByIdSnap = async () => {
     try {
-      const boardRef = doc(db, "boards", "hapak");
+      const boardRef = doc(db, "boards", "hapak162");
       // Listen to changes in the board document
       // console.log("try newBoard");
       const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
@@ -65,7 +65,7 @@ export default function SignaNatureModal({ user }: Props) {
   const handleSignature = async () => {
     try {
       if (signatureUrl && admin) {
-        await putBoardAdmins("hapak", { ...admin, signature: signatureUrl });
+        await putBoardAdmins("hapak162", { ...admin, signature: signatureUrl });
         toaster.push(
           <Message type="success" showIcon>
             החתימה נקלטה בהצלחה!

@@ -1,24 +1,27 @@
-import { Item, TableData, TableHeaders, itemType } from "../types/table";
-import { Soldier, SoldierItem } from "../types/soldier";
+import { Item, TableData, TableHeaders, Admin, ItemType } from "../types/table";
+import { AdminItemSoldier, Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
-import { useEffect, useRef, useState } from "react";
-import DynamicForm from "./DynamicForm";
-import { headerTranslate, itemsKeys, soldierKeys } from "../const";
+import React, { LegacyRef, useEffect, useRef, useState } from "react";
+import { itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
 import { doc, onSnapshot } from "firebase/firestore";
 import { User } from "firebase/auth";
-import { updateBoaedSpesificKey } from "../service/board";
 import { db } from "../main";
-import { Placeholder } from "rsuite";
+import { Button, Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
-import ArowBackIcon from "@rsuite/icons/ArowBack";
 import SoldierXcelDownload from "./SoldierXcelDownload";
+import PlusRoundIcon from "@rsuite/icons/PlusRound";
+import { useNavigate } from "react-router-dom";
+import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
+import { Animation } from "rsuite";
+import SlideItemTypes from "./SlideItemTypes";
 
 function MaiEquipment(props: Props) {
-  const [selecteTable, setSelectedTable] =
-    useState<keyof TableHeaders>("soldiers");
-  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const formRef = useRef<any>();
+  const [selecteTable, setSelectedTable] = useState<string>("soldiers");
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [headers, setHeaders] = useState<TableHeaders>();
+  const [data, setData] = useState<TableData>();
+  const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
       await getBoardByIdSnap();
@@ -26,59 +29,92 @@ function MaiEquipment(props: Props) {
     fetchData();
   }, []);
   useEffect(() => {
-    if (formRef.current) {
-      formRef?.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
+    if (data) {
+      let newHeaders = {
+        soldiers: soldierKeys,
+      };
+      data.itemsTypes.map((item) => {
+        newHeaders = {
+          ...newHeaders,
+          [(item as Item).id]: itemsKeys,
+        } as TableHeaders;
       });
+      setHeaders(newHeaders as TableHeaders);
+      const reducedItems = data.items.reduce<{ [key: string]: Item[] }>(
+        (acc, item: Item) => {
+          if (acc[item.itemType.id as string]) {
+            acc[item.itemType.id as string] = [
+              ...acc[item.itemType.id as string],
+              item,
+            ];
+          } else {
+            acc[item.itemType.id as string] = [item];
+          }
+          return acc;
+        },
+        {}
+      );
+      setDataToTable({
+        ...reducedItems,
+        soldiers: data.soldiers ?? [],
+      } as NewTableData);
+      setDataToTableFilter({
+        ...reducedItems,
+        soldiers: data.soldiers ?? [],
+      } as NewTableData);
+      // console.log("reducedItems", reducedItems);
     }
-    console.log("filters", filters);
-  }, [isFormOpen]);
-  const headers: TableHeaders = {
-    soldiers: soldierKeys,
-    nightVisionDevice: itemsKeys,
-    combatEquipment: itemsKeys,
-    weaponAccessories: itemsKeys,
-  };
+  }, [data]);
 
-  const [data, setData] = useState<TableData>();
-  const [dataToTable, setDataToTable] = useState<TableData>();
+  const [dataToTable, setDataToTable] = useState<NewTableData>();
+  const [dataToTableFilter, setDataToTableFilter] = useState<NewTableData>();
   const [itemToEdit, setItemToEdit] = useState<Item | Soldier>();
-  const [filters, setFilters] = useState<FilterObject>();
-
+  const [filters, setFilters] = useState<FilterObject>({});
+  interface NewTableData {
+    soldiers: Soldier[];
+    [key: string]: Item[] | Soldier[] | Admin[];
+    admins: Admin[];
+  }
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
     console.log("filters", filters);
-    if (data) {
-      setDataToTable(
-        (prevData) =>
-          prevData && {
-            ...prevData,
-            [selecteTable]: data[selecteTable].filter((item) => {
-              // Check if every filter matches for the current item
+    setFilters(filters as FilterObject);
+    if (dataToTable && selecteTable && dataToTableFilter) {
+      setDataToTable((prevData: any) => {
+        if (prevData && prevData[selecteTable]) {
+          const filteredData = dataToTableFilter[selecteTable].filter(
+            (item: AdminItemSoldier) => {
+              // Check if all filters match for the current item
               return Object.entries(filters).every(([key, value]) => {
                 if (!value) return true; // Skip empty filters
-                const itemValue = String(item[key as keyof SoldierItem]);
-                return itemValue.includes(value);
+                // Safely access the property using key
+                const itemValue = String(item[key as keyof AdminItemSoldier]);
+                return itemValue.includes(value); // Filter based on the value
               });
-            }),
-          }
-      );
+            }
+          );
+          return {
+            ...prevData,
+            [selecteTable]: filteredData,
+          };
+        }
+        return prevData;
+      });
     }
   };
 
   const getBoardByIdSnap = async () => {
     try {
-      const boardRef = doc(db, "boards", "hapak");
+      const boardRef = doc(db, "boards", "hapak162");
       // Listen to changes in the board document
       // console.log("try newBoard");
       const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
         // console.log("try newBoard boardDoc", boardDoc);
         if (boardDoc.exists()) {
           // Document exists, return its data along with the ID
-          const newBoard = { ...boardDoc.data(), id: boardDoc.id };
+          const newBoard = { ...boardDoc.data() };
           if (newBoard) {
             setData(newBoard as TableData);
-            setDataToTable(newBoard as TableData);
+            setDataToTable(newBoard as NewTableData);
           }
           return newBoard;
           console.log("newBoard", newBoard);
@@ -96,33 +132,16 @@ function MaiEquipment(props: Props) {
       throw error; // Rethrow the error to handle it where the function is called
     }
   };
-  const onAddItem = async (item: Item | Soldier) => {
-    if (data) {
-      if (!data[selecteTable].find((existItem) => item.id === existItem.id)) {
-        await updateBoaedSpesificKey("hapak", selecteTable, [
-          ...data[selecteTable],
-          item,
-        ]);
-      } else {
-        const newArrayItems = data[selecteTable].filter(
-          (existItem) => item.id !== existItem.id
-        );
 
-        await updateBoaedSpesificKey("hapak", selecteTable, [
-          ...newArrayItems,
-          item,
-        ]);
-      }
-    }
-  };
   const onActionClickInTable = (item: Item | Soldier) => {
     setItemToEdit(item);
-    setIsFormOpen(true);
   };
   if (
     props.user.email &&
     props.user.email !== "hapakmaog162@gmail.com" &&
-    !data?.admins.map((admin) => admin.email).includes(props.user.email)
+    !data?.admins
+      .map((admin) => (admin as Admin).email)
+      .includes(props.user.email)
   ) {
     return (
       <div
@@ -135,138 +154,122 @@ function MaiEquipment(props: Props) {
       </div>
     );
   }
+
   return (
     <div dir="rtl" className="flex flex-col w-full">
-      <div className="sm:p-12 py-5">
-        <div className="absolute left-2">
-          {dataToTable?.soldiers && (
-            <SoldierXcelDownload data={dataToTable?.soldiers} />
-          )}
-        </div>
+      <div className="">
+        <div className="absolute left-2"></div>
+        {data && data.itemsTypes && (
+          <SlideItemTypes
+            selecteTable={selecteTable}
+            setSelectedTable={setSelectedTable}
+            itemsTypes={data?.itemsTypes}
+          />
+        )}
 
-        <div className="flex ">
-          {!itemToEdit &&
-            !isFormOpen &&
-            Object.keys(headers).map((header) => (
+        <div className="">
+          <Animation.Collapse in={isFilterOpen}>
+            {(props) => (
               <div
-                key={header}
-                onClick={() => {
-                  itemToEdit
-                    ? () => {}
-                    : setSelectedTable(header as keyof TableHeaders);
+                {...props}
+                style={{
+                  boxShadow: "1px 15px 13px -11px rgba(104, 119, 240, 0.46)",
+                  overflow: "hidden",
+                  padding: 8,
                 }}
-                className={`${
-                  header === selecteTable
-                    ? "bg-blue-900 text-white"
-                    : "bg-gray-200"
-                } 
-               p-3  rounded-t-3xl shadow-md sm:text-md text-sm   cursor-pointer m-[1px]`}
               >
-                {" "}
-                {headerTranslate[header as keyof TableHeaders]}
-              </div>
-            ))}
-        </div>
-        {!isFormOpen && (
-          <>
-            <Filter
-              setFilters={setFilters}
-              filters={filters!}
-              onFilter={onFilter}
-              filterType={selecteTable}
-              dataLength={dataToTable ? dataToTable[selecteTable].length : 0}
-              openForm={() => {
-                setIsFormOpen(true);
-                setItemToEdit(undefined);
-              }}
-            />
-            {dataToTable ? (
-              <HTable
-                data={dataToTable ? dataToTable[selecteTable] : []}
-                headers={headers[selecteTable]}
-                onAction={onActionClickInTable}
-                dataType={selecteTable === "soldiers" ? "soldier" : "item"}
-              />
-            ) : (
-              <div className="table soldier-table responsiveTable">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <Placeholder.Paragraph graph="circle" active />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Placeholder.Paragraph graph="circle" active />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Placeholder.Paragraph graph="circle" active />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Placeholder.Paragraph graph="circle" active />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Placeholder.Paragraph graph="circle" active />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Placeholder.Paragraph graph="circle" active />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <Filter
+                  setFilters={setFilters}
+                  filters={filters}
+                  onFilter={onFilter}
+                  filterType={selecteTable}
+                  dataLength={
+                    dataToTable && dataToTable[selecteTable]
+                      ? dataToTable[selecteTable].length
+                      : 0
+                  }
+                  openForm={() => {
+                    // setItemToEdit(undefined);
+                  }}
+                />
               </div>
             )}
-          </>
-        )}
-        {isFormOpen && (
-          <div
-            ref={formRef}
-            className="w-full flex relative flex-col justify-center items-center"
-          >
-            <div className="absolute top-3 hover:bg-gray-300 rounded-full p-2 transition-all cursor-pointer left-3">
-              <ArowBackIcon
-                style={{ fontSize: "20px" }}
-                onClick={() => {
-                  setIsFormOpen(false);
-                  setItemToEdit(undefined);
-                }}
-              />
-            </div>
-            <span className="text-black text-xl">
-              {itemToEdit ? "ערוך" : "הוסף"}{" "}
-              {itemToEdit ? itemToEdit.name : headerTranslate[selecteTable]}
-            </span>
-            <DynamicForm
-              itemType={selecteTable as itemType}
-              type={selecteTable === "soldiers" ? "Soldier" : "Item"}
-              isCancelButtonShown={true}
-              onSubmit={(e) => {
-                if (data) {
-                  onAddItem(e);
-                }
-                console.log("data", e);
-              }}
-              closeForm={() => {
-                setIsFormOpen(false);
-                setItemToEdit(undefined);
-              }}
-              itemToEdit={itemToEdit}
+          </Animation.Collapse>
+          <div className={`flex w-full transition-all justify-center z-10 `}>
+            <ArrowDownLineIcon
+              color="#3498FF"
+              style={{ fontSize: "20px", width: "30px", height: "20px" }}
+              className={`
+                bg-gray-300
+                transition-all
+                ${
+                  isFilterOpen
+                    ? "rotate-180 rounded-t-[50px]"
+                    : "rounded-b-[50px]"
+                } `}
+              onClick={() => setIsFilterOpen((prev) => !prev)}
             />
           </div>
-        )}
+          <div className="sm:p-12 py-5">
+            {dataToTable &&
+              dataToTable[selecteTable] &&
+              headers &&
+              headers[selecteTable] &&
+              dataToTable[selecteTable].length > 0 && (
+                <HTable
+                  data={
+                    dataToTable ? (dataToTable[selecteTable] as Item[]) : []
+                  }
+                  headers={headers[selecteTable]}
+                  onAction={onActionClickInTable}
+                  dataType={selecteTable === "soldiers" ? "soldier" : "item"}
+                />
+              )}
+            {dataToTable &&
+              (!dataToTable[selecteTable] ||
+                dataToTable[selecteTable].length === 0) && (
+                <div>לא נמצאו פריטים</div>
+              )}
+            {!dataToTable ||
+              (!dataToTable[selecteTable] && (
+                <div className="table soldier-table responsiveTable">
+                  <table>
+                    <tbody>
+                      {Array.from({ length: 6 }).map((a, i) => {
+                        return (
+                          <tr key={i}>
+                            <td>
+                              <Placeholder.Paragraph graph="circle" active />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+          </div>
+        </div>
       </div>
+      <PlusRoundIcon
+        color="#1e3a8a"
+        className="fixed bottom-3 z-40 left-3"
+        style={{
+          fontSize: "40px",
+          fontWeight: "200",
+          background: "white",
+          borderRadius: "50%",
+        }}
+        onClick={() => {
+          navigate(
+            `${selecteTable === "soldiers" ? "add/soldier" : "add/item"}`
+          );
+        }}
+      />
     </div>
   );
 }
+
 interface Props {
   user: User;
   setUser: Function;

@@ -56,7 +56,7 @@ export default function Filter({
                 {filter.type === "string" && (
                   <div>
                     <Input
-                      ref={(el) => (inputRefs.current[i] = el!)}
+                      ref={(el: any) => (inputRefs.current[i] = el!)}
                       placeholder={
                         ItemTranslate[filter.key as CombinedKeys] || filter.key
                       }

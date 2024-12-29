@@ -6,6 +6,7 @@ interface Props {
 }
 
 export default function RowTableSignature({ item, notRenderKeys }: Props) {
+  console.log("itemrow", item);
   return (
     <tr>
       {Object.keys(item).map((key) => {
@@ -42,8 +43,11 @@ const renderFileds = (
     );
   } else if (key === "soldierId") {
     return (item as Item).soldierPersonalNumber;
+  } else if (key === "owner") {
+    return "";
   } else if (key === "itemType") {
-    const value = (item as Item)[key as keyof Item];
+    const value = (item as Item)["itemType"].name;
+    return value;
     return headerTranslate[value as keyof TableHeaders];
   } else {
     const value = (item as Item)[key as keyof Item];

@@ -52,12 +52,12 @@ export const addBoardValueByKey = async (
     if (boardDoc.exists()) {
       const boardData = boardDoc.data();
       // Update the board document with the updated data, including preserving "users"
-      await updateDoc(boardRef, {
+      const x = await updateDoc(boardRef, {
         ...boardData,
         [key]: [...boardData[key], data],
       });
 
-      console.log("Board updated successfully!");
+      console.log("Board updated successfully!", x);
     } else {
       console.error("Board not found!");
     }
@@ -65,13 +65,14 @@ export const addBoardValueByKey = async (
     console.error("Error updating board:", error);
   }
 };
+
 export const putBoardValueByKey = async (
   boardId: string,
   key: keyof TableData,
   data: Item | Soldier
 ) => {
   const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
-
+  console.log("putBoardValueByKey!!");
   try {
     const boardDoc = await getDoc(boardRef);
 
@@ -82,6 +83,8 @@ export const putBoardValueByKey = async (
       const newArrayItems = boardData[key].filter(
         (existItem: Item) => data.id !== existItem.id
       );
+      console.log("newArrayItems", newArrayItems);
+      console.log("data", data);
 
       await updateDoc(boardRef, {
         ...boardData,

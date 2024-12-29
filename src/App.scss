@@ -216,3 +216,51 @@ body {
   -moz-box-shadow: 1px 15px 13px -11px rgba(104, 119, 240, 0.46);
   box-shadow: 1px 15px 13px -11px rgba(104, 119, 240, 0.46);
 }
+.sidebar {
+  background-color: white;
+  color: #318ce7;
+  height: 100%;
+  overflow-x: hidden;
+  padding-top: 60px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: 0.5s;
+  z-index: 10;
+}
+@media screen and (max-width: 640px) {
+  .slidebar-shadow {
+    box-shadow: -31px -60px 63px 219px rgba(84, 119, 240, 0.46);
+  }
+}
+.slidebar-shadow {
+  box-shadow: 15px 15px 15px 15px;
+}
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 45px;
+  aspect-ratio: 1;
+  --c: no-repeat linear-gradient(#318ce7 0 0);
+  background: var(--c) 0% 100%, var(--c) 50% 100%, var(--c) 100% 100%;
+  animation: l2 1s infinite linear;
+}
+@keyframes l2 {
+  0% {
+    background-size: 20% 100%, 20% 100%, 20% 100%;
+  }
+  20% {
+    background-size: 20% 60%, 20% 100%, 20% 100%;
+  }
+  40% {
+    background-size: 20% 80%, 20% 60%, 20% 100%;
+  }
+  60% {
+    background-size: 20% 100%, 20% 80%, 20% 60%;
+  }
+  80% {
+    background-size: 20% 100%, 20% 100%, 20% 80%;
+  }
+  100% {
+    background-size: 20% 100%, 20% 100%, 20% 100%;
+  }
+}

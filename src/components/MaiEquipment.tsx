@@ -14,6 +14,7 @@ import PlusRoundIcon from "@rsuite/icons/PlusRound";
 import { useNavigate } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
+import SlideItemTypes from "./SlideItemTypes";
 
 function MaiEquipment(props: Props) {
   const [selecteTable, setSelectedTable] = useState<string>("soldiers");
@@ -61,14 +62,14 @@ function MaiEquipment(props: Props) {
         ...reducedItems,
         soldiers: data.soldiers ?? [],
       } as NewTableData);
-      console.log("reducedItems", reducedItems);
+      // console.log("reducedItems", reducedItems);
     }
   }, [data]);
 
   const [dataToTable, setDataToTable] = useState<NewTableData>();
   const [dataToTableFilter, setDataToTableFilter] = useState<NewTableData>();
   const [itemToEdit, setItemToEdit] = useState<Item | Soldier>();
-  const [filters, setFilters] = useState<FilterObject>();
+  const [filters, setFilters] = useState<FilterObject>({});
   interface NewTableData {
     soldiers: Soldier[];
     [key: string]: Item[] | Soldier[] | Admin[];
@@ -76,7 +77,7 @@ function MaiEquipment(props: Props) {
   }
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
     console.log("filters", filters);
-
+    setFilters(filters as FilterObject);
     if (dataToTable && selecteTable && dataToTableFilter) {
       setDataToTable((prevData: any) => {
         if (prevData && prevData[selecteTable]) {
@@ -85,7 +86,6 @@ function MaiEquipment(props: Props) {
               // Check if all filters match for the current item
               return Object.entries(filters).every(([key, value]) => {
                 if (!value) return true; // Skip empty filters
-
                 // Safely access the property using key
                 const itemValue = String(item[key as keyof AdminItemSoldier]);
                 return itemValue.includes(value); // Filter based on the value
@@ -132,24 +132,7 @@ function MaiEquipment(props: Props) {
       throw error; // Rethrow the error to handle it where the function is called
     }
   };
-  // const onAddItem = async (item: Item | Soldier) => {
-  //   // if (data) {
-  //   //   if (!data[selecteTable].find((existItem) => item.id === existItem.id)) {
-  //   //     await updateBoaedSpesificKey("hapak162", selecteTable, [
-  //   //       ...data[selecteTable],
-  //   //       item,
-  //   //     ]);
-  //   //   } else {
-  //   //     const newArrayItems = data[selecteTable].filter(
-  //   //       (existItem) => item.id !== existItem.id
-  //   //     );
-  //   //     await updateBoaedSpesificKey("hapak162", selecteTable, [
-  //   //       ...newArrayItems,
-  //   //       item,
-  //   //     ]);
-  //   //   }
-  //   // }
-  // };
+
   const onActionClickInTable = (item: Item | Soldier) => {
     setItemToEdit(item);
   };
@@ -171,81 +154,46 @@ function MaiEquipment(props: Props) {
       </div>
     );
   }
-  const FilterCollapse = React.forwardRef(
-    (props, ref: LegacyRef<HTMLDivElement>) => (
-      <div
-        {...props}
-        ref={ref}
-        style={{
-          boxShadow: "1px 15px 13px -11px rgba(104, 119, 240, 0.46)",
-          overflow: "hidden",
-          padding: 8,
-        }}
-      >
-        <Filter
-          setFilters={setFilters}
-          filters={filters!}
-          onFilter={onFilter}
-          filterType={selecteTable}
-          dataLength={
-            dataToTable && dataToTable[selecteTable]
-              ? dataToTable[selecteTable].length
-              : 0
-          }
-          openForm={() => {
-            setItemToEdit(undefined);
-          }}
-        />
-      </div>
-    )
-  );
 
   return (
     <div dir="rtl" className="flex flex-col w-full">
       <div className="">
-        <div className="absolute left-2">
-          {/* {dataToTable?.soldiers && (
-            <SoldierXcelDownload data={dataToTable?.soldiers} />
-          )} */}
-        </div>
-        <div className="flex relative z-10 shadow-lg h-11 items-center w-full max-w-full overflow-x-auto  gap-4 ">
-          <div
-            className={`text-blue-500 cursor-pointer p-2 hover:bg-slate-50 ${
-              selecteTable === "soldiers"
-                ? "font-semibold border-b-2 border-blue-500"
-                : ""
-            }`}
-            onClick={() => setSelectedTable("soldiers")}
-          >
-            חיילים
-          </div>
-          {data &&
-            data?.itemsTypes.map((itemType) => {
-              return (
-                <div
-                  key={(itemType as ItemType).id}
-                  className={`text-blue-500 p-2 text-nowrap cursor-pointer hover:bg-slate-50 
-                    ${
-                      selecteTable === itemType.id
-                        ? "font-semibold border-b-2 border-blue-500"
-                        : ""
-                    }
-                    `}
-                  onClick={() => {
-                    console.log((itemType as ItemType).id);
-
-                    setSelectedTable((itemType as ItemType).id);
-                  }}
-                >
-                  {itemType.name}
-                </div>
-              );
-            })}
-        </div>
+        <div className="absolute left-2"></div>
+        {data && data.itemsTypes && (
+          <SlideItemTypes
+            selecteTable={selecteTable}
+            setSelectedTable={setSelectedTable}
+            itemsTypes={data?.itemsTypes}
+          />
+        )}
 
         <div className="">
           <Animation.Collapse in={isFilterOpen}>
-            {(props, ref) => <FilterCollapse {...props} ref={ref} />}
+            {(props) => (
+              <div
+                {...props}
+                style={{
+                  boxShadow: "1px 15px 13px -11px rgba(104, 119, 240, 0.46)",
+                  overflow: "hidden",
+                  padding: 8,
+                }}
+              >
+                <Filter
+                  setFilters={setFilters}
+                  filters={filters}
+                  onFilter={onFilter}
+                  filterType={selecteTable}
+                  dataLength={
+                    dataToTable && dataToTable[selecteTable]
+                      ? dataToTable[selecteTable].length
+                      : 0
+                  }
+                  openForm={() => {
+                    // setItemToEdit(undefined);
+                  }}
+                />
+              </div>
+            )}
           </Animation.Collapse>
           <div className={`flex w-full transition-all justify-center z-10 `}>
             <ArrowDownLineIcon
@@ -264,33 +212,42 @@ function MaiEquipment(props: Props) {
           </div>
           <div className="sm:p-12 py-5">
             {dataToTable &&
-            dataToTable[selecteTable] &&
-            headers &&
-            headers[selecteTable] &&
-            dataToTable[selecteTable].length > 0 ? (
-              <HTable
-                data={dataToTable ? (dataToTable[selecteTable] as Item[]) : []}
-                headers={headers[selecteTable]}
-                onAction={onActionClickInTable}
-                dataType={selecteTable === "soldiers" ? "soldier" : "item"}
-              />
-            ) : (
-              <div className="table soldier-table responsiveTable">
-                <table>
-                  <tbody>
-                    {Array.from({ length: 6 }).map(() => {
-                      return (
-                        <tr>
-                          <td>
-                            <Placeholder.Paragraph graph="circle" active />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+              dataToTable[selecteTable] &&
+              headers &&
+              headers[selecteTable] &&
+              dataToTable[selecteTable].length > 0 && (
+                <HTable
+                  data={
+                    dataToTable ? (dataToTable[selecteTable] as Item[]) : []
+                  }
+                  headers={headers[selecteTable]}
+                  onAction={onActionClickInTable}
+                  dataType={selecteTable === "soldiers" ? "soldier" : "item"}
+                />
+              )}
+            {dataToTable &&
+              (!dataToTable[selecteTable] ||
+                dataToTable[selecteTable].length === 0) && (
+                <div>לא נמצאו פריטים</div>
+              )}
+            {!dataToTable ||
+              (!dataToTable[selecteTable] && (
+                <div className="table soldier-table responsiveTable">
+                  <table>
+                    <tbody>
+                      {Array.from({ length: 6 }).map((a, i) => {
+                        return (
+                          <tr key={i}>
+                            <td>
+                              <Placeholder.Paragraph graph="circle" active />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
           </div>
         </div>
       </div>

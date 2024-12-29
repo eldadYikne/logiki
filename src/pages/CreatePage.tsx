@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import DynamicForm from "./DynamicForm";
+import DynamicForm from "../components/DynamicForm";
 import { Soldier } from "../types/soldier";
 import { addBoardValueByKey } from "../service/board";
 import CheckRoundIcon from "@rsuite/icons/CheckRound";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Item, TableData } from "../types/table";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../main";
@@ -12,7 +12,7 @@ export default function CreateSoldier() {
   console.log("type", type);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(true);
   const [data, setData] = useState<TableData>();
-
+  const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
       await getBoardByIdSnap();
@@ -48,15 +48,18 @@ export default function CreateSoldier() {
       throw error; // Rethrow the error to handle it where the function is called
     }
   };
+
   const onAddItem = async (soldier: any) => {
     console.log("soldier", soldier);
     try {
       if (type === "item") {
         await addBoardValueByKey("hapak162", "items", soldier);
         setIsFormOpen(false);
+        navigate(`/details/${soldier.id}`);
       } else if (type === "soldier") {
         await addBoardValueByKey("hapak162", "soldiers", soldier);
         setIsFormOpen(false);
+        navigate(`/details/${soldier.id}`);
       }
     } catch (err) {
       console.log(err);
@@ -64,12 +67,13 @@ export default function CreateSoldier() {
   };
 
   return (
-    <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col justify-center items-center h-screens ">
-      <div className="flex flex-col justify-center items-center">
+    <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col  items-center h-screens ">
+      <div className="flex flex-col justify-center items-center w-full">
         {data && isFormOpen && (type === "item" || type === "soldier") && (
           <div className="w-full flex flex-col items-center justify-center">
-            <div className="w-full flex justify-center font-serif text-2xl py-2">
-              טופס הרשמה
+            <div className="w-full gap-2 flex justify-center font-serif text-2xl py-2">
+              <span>טופס הרשמה</span>
+              <span>{type === "item" ? "פריט" : "חייל"}</span>
             </div>
             {data?.itemsTypes && (
               <DynamicForm

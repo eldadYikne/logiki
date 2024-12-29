@@ -5,7 +5,7 @@ import Signature from "./Signature";
 import { Item } from "../types/table";
 import { getCurrentDate } from "../utils";
 import { User } from "firebase/auth";
-export default function HModal({
+export default function SignatureProcessModal({
   isOpen,
   onCloseModal,
   item,
@@ -82,7 +82,7 @@ export default function HModal({
             onConfirm({
               ...item,
               soldierId: selectedOption?.id,
-              owner: selectedOption?.name,
+              owner: "",
               pdfFileSignature: signatureUrl,
               signtureDate: getCurrentDate(),
               soldierPersonalNumber:

@@ -27,6 +27,8 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   representative: "רס״פ מחתים",
   size: "מידות",
   team: "צוות",
+  isExclusiveItem: "פריט בודד",
+  numberOfUnExclusiveItems: "מספר פריטים",
 };
 
 export const itemsKeys = Object.keys({
@@ -43,6 +45,8 @@ export const itemsKeys = Object.keys({
   signtureDate: "",
   itemType: { id: "", name: "" },
   representative: "",
+  isExclusiveItem: false,
+  numberOfUnExclusiveItems: 0,
 } as Item) as (keyof Item)[];
 
 export const headerTranslate: { [key in keyof TableHeaders]: string } = {

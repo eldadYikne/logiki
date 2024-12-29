@@ -92,7 +92,7 @@ export default function HTable(props: Props) {
         props.dataType === "soldier"
           ? "table soldier-table"
           : "table item-table"
-      }`}
+      } border-none`}
     >
       <Thead>
         <Tr>
@@ -128,7 +128,7 @@ export default function HTable(props: Props) {
                       header === "profileImage" ? "profile-image" : ""
                     } ${header} `}
                     onClick={() => {
-                      navigate(`/soldier/${row.id}`);
+                      navigate(`/details/${row.id}`);
                     }}
                     key={colIndex}
                   >

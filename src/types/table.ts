@@ -14,7 +14,10 @@ export interface Item {
   status: Status;
   soldierPersonalNumber: number;
   representative: string;
+  isExclusiveItem: boolean;
+  numberOfUnExclusiveItems: number;
 }
+
 export type Status = "stored" | "signed" | "broken";
 
 export interface ItemHistory {

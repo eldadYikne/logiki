@@ -13,7 +13,7 @@ import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
 import AdminPage from "./components/AdminPage";
 import Navbar from "./components/Navbar";
-import CreateSoldier from "./components/CreateSoldier";
+import CreateSoldier from "./pages/CreatePage";
 import Footer from "./components/Footer";
 import { Loader } from "rsuite";
 import PlaceholderParagraph from "rsuite/esm/Placeholder/PlaceholderParagraph";
@@ -42,9 +42,12 @@ export default function App() {
 
   if (loading) {
     return (
-      <PlaceholderParagraph rows={8}>
-        <Loader center content="loading" />
-      </PlaceholderParagraph>
+      // <PlaceholderParagraph rows={8}>
+      //   <Loader center content="loading" />
+      // </PlaceholderParagraph>
+      <div className="h-screen w-full flex justify-center items-center">
+        <div className="loader"></div>
+      </div>
     );
   }
 
@@ -67,7 +70,7 @@ export default function App() {
           <Route path="/items-type" element={<ItemTypePage />} />
           {user && <Route path="/personal-area" element={<PersonalArea />} />}
 
-          {user && <Route path="/soldier/:id" element={<DetailsPreview />} />}
+          {user && <Route path="/details/:id" element={<DetailsPreview />} />}
           {user && <Route path="/admin" element={<AdminPage user={user} />} />}
         </Routes>
       </div>

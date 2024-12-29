@@ -6,7 +6,7 @@ export interface FilterOptions {
 
 export interface FilterOption {
   key: CombinedKeys; // Key must match one of the CombinedKeys values
-  type: "string" | "dropdown";
+  type: "string" | "dropdown" | "options";
   options?: DropdownFilterOption[];
 }
 export interface DropdownFilterOption {
@@ -14,9 +14,9 @@ export interface DropdownFilterOption {
   id: string;
 }
 export interface FilterObject {
-  id: string;
-  name: string;
-  personalNumber: string;
+  id?: string;
+  name?: string;
+  personalNumber?: string;
   owner?: string;
   soldierId?: string;
   history?: History[];

@@ -2,13 +2,15 @@ import { doc, onSnapshot } from "@firebase/firestore";
 import { useEffect, useState } from "react";
 import { Admin, TableData } from "../types/table";
 import { db } from "../main";
-import { Button, Input } from "rsuite";
+import { Button, Input, Message, useToaster } from "rsuite";
 import { updateBoaedSpesificKey } from "../service/board";
 import { User } from "@firebase/auth";
 
 export default function AdminPage(props: Props) {
   const [data, setData] = useState<TableData>();
   const [newAdmin, setNewAdmin] = useState<Admin>();
+  const toaster = useToaster();
+
   const admin: Admin = {
     name: "",
     email: "",
@@ -60,6 +62,12 @@ export default function AdminPage(props: Props) {
           ...data?.admins,
           newAdmin,
         ]);
+        toaster.push(
+          <Message type="success" showIcon>
+            הפעולה בוצעה בהצלחה!
+          </Message>,
+          { placement: "topCenter" }
+        );
       } catch (err) {
         console.log(err);
       }
@@ -73,6 +81,12 @@ export default function AdminPage(props: Props) {
         );
 
         await updateBoaedSpesificKey("hapak162", "admins", newAdmins);
+        toaster.push(
+          <Message type="success" showIcon>
+            הפעולה בוצעה בהצלחה!
+          </Message>,
+          { placement: "topCenter" }
+        );
       } catch (err) {
         console.log(err);
       }

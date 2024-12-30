@@ -83,8 +83,6 @@ export const putBoardValueByKey = async (
       const newArrayItems = boardData[key].filter(
         (existItem: Item) => data.id !== existItem.id
       );
-      console.log("newArrayItems", newArrayItems);
-      console.log("data", data);
 
       await updateDoc(boardRef, {
         ...boardData,
@@ -122,9 +120,6 @@ export const putBoardValueByArrayKey = async (
         (existingItem: Item | Soldier) =>
           !data.some((newItem) => newItem.id === existingItem.id)
       );
-
-      console.log("updatedItems after removing duplicates:", updatedItems);
-      console.log("data to add:", data);
 
       // Update the board document by adding the new items
       await updateDoc(boardRef, {

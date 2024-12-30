@@ -187,6 +187,7 @@ function renderCellData(header: string, row: Soldier | Item) {
         return (
           <span className=" sm:flex justify-center profile-image  ">
             <img
+              loading="lazy"
               className="sm:h-10 sm:w-10 w-20 h-20 max-w-20  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1

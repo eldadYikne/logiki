@@ -1,5 +1,6 @@
 import { Size, Soldier, Team } from "./types/soldier";
 import {
+  Admin,
   CombinedKeys,
   Item,
   ItemHistory,
@@ -91,6 +92,15 @@ export const teamTranslate: { [key in Team]: string } = {
   mobility: "ניוד 🚗",
   nemerim: "נמרים 🐅",
   logistics: "רספי״ם 📦",
+};
+export const adminTranslate: { [key in keyof Admin]: string } = {
+  dateFirstSignIn: "תאריך כניסה",
+  email: "אימייל",
+  name: "שם מלא",
+  personalNumber: "מספר אישי",
+  phone: "שם מלא",
+  rank: "דרגה",
+  signature: "חתימה",
 };
 export const soldierKeys = Object.keys({
   profileImage: "",

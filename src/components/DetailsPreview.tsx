@@ -450,6 +450,7 @@ export default function DetailsPreview() {
                   }
                   {item && (item as Item).history && (
                     <img
+                      loading="lazy"
                       className="absolute top-0 left-2 w-7 h-7 "
                       style={{ fontSize: "20px" }}
                       src={
@@ -502,6 +503,7 @@ export default function DetailsPreview() {
               )}
               <div>
                 <img
+                  loading="lazy"
                   className="w-full sm:h-64 h-44 rounded-md"
                   src={
                     (item as Soldier)?.profileImage
@@ -582,6 +584,7 @@ export default function DetailsPreview() {
                               <span className="flex gap-5 items-center">
                                 {" "}
                                 <img
+                                  loading="lazy"
                                   className="rounded-full h-10 w-10"
                                   src={soldierItem.profileImage}
                                   alt=""

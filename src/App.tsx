@@ -20,6 +20,7 @@ import PersonalArea from "./components/PersonalArea";
 
 import ItemTypePage from "./pages/ItemTypePage";
 import Cart from "./components/Cart";
+import SignaNatureModal from "./components/SignaNatureModal";
 
 export default function App() {
   const [user, setUser] = useState<User>();
@@ -75,7 +76,7 @@ export default function App() {
           {user && <Route path="/admin" element={<AdminPage user={user} />} />}
         </Routes>
       </div>
-      {/* {user && <SignaNatureModal user={user} />} */}
+      {user && <SignaNatureModal user={user} />}
       <Footer />
     </div>
   );

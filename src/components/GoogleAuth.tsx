@@ -61,7 +61,7 @@ function GoogleAuth(props: Props) {
       )}
 
       {props.userConnected && (
-        <Button className=" flex gap-1" onClick={logOut}>
+        <Button color={props?.color} className=" flex gap-1" onClick={logOut}>
           <ExitIcon />
           {props.userConnected}
         </Button>
@@ -79,4 +79,5 @@ GoogleAuth.defaultProps = {
 interface Props {
   userConnected: string;
   setUser: Function;
+  color?: "red";
 }

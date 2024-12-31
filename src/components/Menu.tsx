@@ -28,12 +28,13 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
   };
   const links: MenuLink[] = [
     { link: "/", name: "רשימות", icon: getIconComponent("homepage") },
-    { link: "/add/item", name: "הוסף פריט", icon: getIconComponent("item") },
     {
       link: "/add/soldier",
       name: "הוסף חייל",
       icon: getIconComponent("soldier"),
     },
+    { link: "/add/item", name: "הוסף פריט", icon: getIconComponent("item") },
+
     {
       link: "/items-type",
       name: "הוסף קבוצת פריטים",

@@ -29,7 +29,6 @@ export default function SignaNatureModal({ user }: Props) {
       );
       if (connectedAdmin) {
         setNewAdmin(connectedAdmin);
-        console.log("connectedAdmin", connectedAdmin);
         // dispatch(setAdmin(connectedAdmin));
       }
     }

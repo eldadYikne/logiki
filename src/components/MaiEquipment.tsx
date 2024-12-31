@@ -32,7 +32,7 @@ function MaiEquipment(props: Props) {
       let newHeaders = {
         soldiers: soldierKeys,
       };
-      data.itemsTypes.map((item) => {
+      data.itemsTypes.forEach((item) => {
         newHeaders = {
           ...newHeaders,
           [(item as Item).id]: itemsKeys,
@@ -211,6 +211,24 @@ function MaiEquipment(props: Props) {
             />
           </div>
           <div className="sm:p-12 py-5">
+            {!dataToTable && (
+              <div className="table soldier-table responsiveTable">
+                <table>
+                  <tbody>
+                    {Array.from({ length: 6 }).map((a, i) => {
+                      a;
+                      return (
+                        <tr key={i}>
+                          <td>
+                            <Placeholder.Paragraph graph="circle" active />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
             {dataToTable &&
               dataToTable[selecteTable] &&
               headers &&
@@ -228,27 +246,10 @@ function MaiEquipment(props: Props) {
             {dataToTable &&
               (!dataToTable[selecteTable] ||
                 dataToTable[selecteTable].length === 0) && (
-                <div>לא נמצאו פריטים</div>
-              )}
-            {!dataToTable ||
-              (!dataToTable[selecteTable] && (
-                <div className="table soldier-table responsiveTable">
-                  <table>
-                    <tbody>
-                      {Array.from({ length: 6 }).map((a, i) => {
-                        a;
-                        return (
-                          <tr key={i}>
-                            <td>
-                              <Placeholder.Paragraph graph="circle" active />
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div className="w-full flex justify-center text-2xl">
+                  לא נמצאו פריטים
                 </div>
-              ))}
+              )}
           </div>
         </div>
       </div>

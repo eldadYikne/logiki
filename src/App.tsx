@@ -13,7 +13,7 @@ import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
 import AdminPage from "./components/AdminPage";
 import Navbar from "./components/Navbar";
-import CreateSoldier from "./pages/CreatePage";
+import Create from "./pages/Create";
 import Footer from "./components/Footer";
 
 import PersonalArea from "./components/PersonalArea";
@@ -67,7 +67,7 @@ export default function App() {
               )
             }
           />
-          <Route path="/add/:type" element={<CreateSoldier />} />
+          <Route path="/add/:type" element={<Create />} />
           {user && <Route path="/cart" element={<Cart user={user} />} />}
           <Route path="/items-type" element={<ItemTypePage />} />
           {user && <Route path="/personal-area" element={<PersonalArea />} />}

@@ -7,12 +7,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import { TableData } from "../types/table";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../main";
-export default function CreateSoldier() {
+import { Loader, Message, useToaster } from "rsuite";
+export default function Create() {
   const { type } = useParams();
   console.log("type", type);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(true);
   const [data, setData] = useState<TableData>();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const toaster = useToaster();
+
   useEffect(() => {
     async function fetchData() {
       await getBoardByIdSnap();
@@ -51,6 +55,7 @@ export default function CreateSoldier() {
 
   const onAddItem = async (soldier: any) => {
     console.log("soldier", soldier);
+    setIsLoading(true);
     try {
       if (type === "item") {
         await addBoardValueByKey("hapak162", "items", soldier);
@@ -60,14 +65,35 @@ export default function CreateSoldier() {
         await addBoardValueByKey("hapak162", "soldiers", soldier);
         setIsFormOpen(false);
         navigate(`/details/${soldier.id}`);
+      } else if (type === "team") {
       }
+      setIsLoading(false);
+
+      toaster.push(
+        <Message type="success" showIcon>
+          הפעולה בוצעה בהצלחה!
+        </Message>,
+        { placement: "topCenter" }
+      );
     } catch (err) {
       console.log(err);
+      setIsLoading(false);
+      toaster.push(
+        <Message type="error" showIcon>
+          מצטערים, חלה שגיאה
+        </Message>,
+        { placement: "topCenter" }
+      );
     }
   };
 
   return (
     <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col  items-center h-screens ">
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
+          <Loader size="lg" content="" />
+        </div>
+      )}
       <div className="flex flex-col justify-center items-center w-full">
         {data && isFormOpen && (type === "item" || type === "soldier") && (
           <div className="w-full flex flex-col items-center justify-center">

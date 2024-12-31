@@ -65,6 +65,7 @@ const CartPage = ({ user }: Props) => {
   };
   const onSignature = async (itemsToSignature: Item[]) => {
     console.log("onSignature ", itemsToSignature);
+
     setIsLoading(true);
     const exclusiveItems = itemsToSignature.filter(
       (item) => item.isExclusiveItem
@@ -72,6 +73,7 @@ const CartPage = ({ user }: Props) => {
     const notExclusiveItems = itemsToSignature.filter(
       (item) => !item.isExclusiveItem
     );
+
     console.log("exclusiveItems", exclusiveItems);
     console.log("notExclusiveItems", notExclusiveItems);
 
@@ -158,9 +160,10 @@ const CartPage = ({ user }: Props) => {
       }
     }
   };
+
   return (
     <div className="container flex flex-col items-center justify-around mx-auto p-4">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto w-full">
         <h2 className="text-2xl font-semibold mb-4">עגלת ההחתמות</h2>
         {isLoading && (
           <div className="absolute inset-0 bg-gray-800 opacity-50 z-50 flex justify-center items-center">

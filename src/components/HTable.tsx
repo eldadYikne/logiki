@@ -34,8 +34,8 @@ export default function HTable(props: Props) {
     "soldierPersonalNumber",
   ];
   useEffect(() => {
-    setSortColumn("name");
-    setSortOrder("asc");
+    // setSortColumn("name");
+    // setSortOrder("asc");
   }, []);
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -151,9 +151,7 @@ function renderCellData(header: string, row: Soldier | Item) {
     // Check if the row is a Soldier or an Item
     if (header in row) {
       const value = row[header as keyof typeof row];
-      if (header === "history") {
-        return <button className="bg-yellow-300 p-1 rounded"> היסטוריה</button>;
-      }
+
       if (Array.isArray(value)) {
         return value.map((item, index) => (
           <span key={index}>
@@ -162,7 +160,7 @@ function renderCellData(header: string, row: Soldier | Item) {
         ));
       } else if (header === "numberOfUnExclusiveItems") {
         return (row as Item).isExclusiveItem ? (
-          ""
+          "-"
         ) : (
           <span className="font-semibold">{value}</span>
         );
@@ -180,7 +178,8 @@ function renderCellData(header: string, row: Soldier | Item) {
             </button>
           </span>
         );
-      } else if (header === "itemType") {
+      } else if (header === "owner") {
+        return <span>{value ?? "-"}</span>;
       } else if (header === "team") {
         return <span>{teamTranslate[value as Team]}</span>;
       } else if (header === "profileImage") {
@@ -188,6 +187,7 @@ function renderCellData(header: string, row: Soldier | Item) {
           <span className=" sm:flex justify-center profile-image  ">
             <img
               loading="lazy"
+              alt={`${row.name ?? ""}`}
               className="sm:h-10 sm:w-10 w-20 h-20 max-w-20  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1
@@ -200,7 +200,7 @@ function renderCellData(header: string, row: Soldier | Item) {
       } else if (header === "id" || header === "pdfFileSignature") {
         return;
       } else {
-        return <span>{value}</span>;
+        return <span>{value ?? "-"}</span>;
       }
     } else {
       return ""; // If the property doesn't exist in the row, return an empty string

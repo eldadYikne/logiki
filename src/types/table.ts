@@ -1,4 +1,4 @@
-import { Soldier } from "./soldier";
+import { NewTeam, Soldier } from "./soldier";
 
 export interface Item {
   id: string;
@@ -39,6 +39,7 @@ export interface TableData {
   soldiers: Soldier[];
   items: Item[];
   admins: Admin[];
+  teams: NewTeam[];
   itemsTypes: ItemType[];
 }
 export interface Admin {

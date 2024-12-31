@@ -48,3 +48,7 @@ export type Team =
   | "asaf"
   | "mobility"
   | "nemerim";
+export interface NewTeam {
+  teamName: string;
+  id: string;
+}

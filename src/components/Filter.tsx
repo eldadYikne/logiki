@@ -86,6 +86,7 @@ export default function Filter({
                             className="mx-1"
                             onClick={(e) => {
                               e.stopPropagation();
+                              setFilterOptionsOpen((prev) => !prev);
                               onFilter({
                                 ...filters,
                                 team: "",

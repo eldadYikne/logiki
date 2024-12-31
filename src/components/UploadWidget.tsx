@@ -7,9 +7,10 @@ export function UploadWidget(props: Props) {
   const cloudinaryRef = useRef<any>();
   const widgetRef = useRef<any>();
   const [imageUrl, setImageUrl] = useState("");
-  const allowedFormats = ["jpg", "png", "jpeg"];
+  const allowedFormats = ["jpg", "png", "jpeg", "jfif"];
   imageUrl;
   const toaster = useToaster();
+  const maxFileSize = 3 * 1024 * 1024; // 3 MB
 
   const secureUri = "http://res.cloudinary.com/dfsknqfnh/image/upload/";
   useEffect(() => {
@@ -30,6 +31,15 @@ export function UploadWidget(props: Props) {
               </Message>,
               { placement: "topCenter" }
             );
+            if (result.info.bytes > maxFileSize) {
+              toaster.push(
+                <Message type="error" showIcon>
+                  הקובץ גדול מדי. הגודל המקסימלי הוא 5 MB
+                </Message>,
+                { placement: "topCenter" }
+              );
+              return;
+            }
             return;
           }
           setImageUrl(`${secureUri}${result.info.path}`);

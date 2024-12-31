@@ -155,12 +155,6 @@ const DynamicForm: React.FC<Props> = ({
       );
       return;
     } else {
-      toaster.push(
-        <Message type="success" showIcon>
-          הפעולה בוצעה בהצלחה!
-        </Message>,
-        { placement: "topCenter" }
-      );
     }
     console.log(newForm);
     const toSubmit = itemToEdit
@@ -327,6 +321,14 @@ const DynamicForm: React.FC<Props> = ({
                           }));
                         }}
                       />
+                      {formRef.current &&
+                        !formRef.current.numberOfUnExclusiveItems &&
+                        !(newForm as Item).numberOfUnExclusiveItems &&
+                        tryConfirm && (
+                          <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 left-0">
+                            בחר כמות
+                          </span>
+                        )}
                     </div>
                   )}
                 {field === "team" && (
@@ -481,6 +483,10 @@ const getValidationModel = (type: "item" | "soldier", newForm: NewForm) => {
         serialNumber: newForm.isExclusiveItem
           ? StringType().isRequired("שדה חובה")
           : StringType().isRequiredOrEmpty(),
+        numberOfUnExclusiveItems: newForm.isExclusiveItem
+          ? NumberType().isRequiredOrEmpty()
+          : NumberType().isRequired("שדה חובה"),
+
         itemType: ObjectType().isRequired("שדה חובה"),
         isExclusiveItem: BooleanType().isRequired("שדה חובה"),
         profileImage: StringType().isRequired("שדה חובה"),

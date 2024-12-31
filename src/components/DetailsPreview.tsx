@@ -50,7 +50,7 @@ import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
 import DynamicForm from "./DynamicForm";
 import { useDispatch, useSelector } from "react-redux";
-import { addItemToCart } from "../store/cartSlice";
+import { addItemToCart, removeItemFromCart } from "../store/cartSlice";
 import { RootState } from "../store/store";
 export default function DetailsPreview() {
   const { id } = useParams();
@@ -170,6 +170,27 @@ export default function DetailsPreview() {
 
   const onSignature = async (itemsToSignature: Item[]) => {
     const itemToSignature = itemsToSignature[0];
+    if (itemsToSignature[0].owner) {
+      toaster.push(
+        <Message type="error" showIcon>
+          פריט זה חתום
+        </Message>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
+    if (
+      !(itemToSignature as Item).isExclusiveItem &&
+      (itemToSignature as Item).numberOfUnExclusiveItems <= 0
+    ) {
+      toaster.push(
+        <Message type="info" showIcon>
+          פריט לא נמצא במלאי
+        </Message>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
     setIsLoading(true);
     console.log("onSignature ", itemToSignature);
     if (data) {
@@ -225,6 +246,14 @@ export default function DetailsPreview() {
             );
           }
         }
+        if (cartItems.length > 0 && itemToSignature.isExclusiveItem) {
+          const itemInCart = cartItems.find(
+            (item) => item.id === itemToSignature.id
+          );
+          if (itemInCart) {
+            dispatch(removeItemFromCart(itemInCart.id));
+          }
+        }
         setIsLoading(false);
       } catch (err) {
         setIsLoading(false);
@@ -254,7 +283,6 @@ export default function DetailsPreview() {
         representative: "",
         signtureDate: "",
         history: [
-          ...(itemToBack as Item).history,
           {
             dateTaken: (itemToBack as Item).signtureDate ?? "",
             dateReturn: getCurrentDate(),
@@ -263,6 +291,7 @@ export default function DetailsPreview() {
             representative: user ? user.displayName : "",
             pdfFileSignature: (itemToBack as Item).pdfFileSignature ?? "",
           },
+          ...(itemToBack as Item).history.slice(0, 9),
         ],
       } as Item;
       try {
@@ -391,9 +420,30 @@ export default function DetailsPreview() {
 
   const onAddItemToCart = () => {
     if (
+      !(item as Item).isExclusiveItem &&
+      (item as Item).numberOfUnExclusiveItems <= 0
+    ) {
+      toaster.push(
+        <Message type="info" showIcon>
+          פריט לא נמצא במלאי
+        </Message>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
+    if (
       !cartItems.find((itemCart) => item?.id === itemCart.id) &&
       (item as Item).history
     ) {
+      if ((item as Item).soldierId) {
+        toaster.push(
+          <Message type="error" showIcon>
+            פריט זה חתום
+          </Message>,
+          { placement: "topCenter" }
+        );
+        return;
+      }
       dispatch(addItemToCart(item as Item));
       toaster.push(
         <Message type="success" showIcon>
@@ -521,10 +571,19 @@ export default function DetailsPreview() {
                     onClick={() => {
                       onOpenSignatureModal();
                     }}
+                    disabled={
+                      !(item as Item).isExclusiveItem &&
+                      (item as Item).numberOfUnExclusiveItems <= 0
+                    }
                     color={(item as Item).owner ? "blue" : "green"}
                     appearance="primary"
                   >
-                    {(item as Item).owner ? "זיכוי" : "החתמה"}
+                    {!(item as Item).isExclusiveItem &&
+                    (item as Item).numberOfUnExclusiveItems <= 0
+                      ? "אזל"
+                      : (item as Item).owner
+                      ? "זיכוי"
+                      : "החתמה"}
                   </Button>
                   {(item as Item).owner && (
                     <Button

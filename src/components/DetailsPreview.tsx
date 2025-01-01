@@ -127,7 +127,7 @@ export default function DetailsPreview() {
       const allArrays = [...data.items, ...data.soldiers];
       const currentItem = allArrays.find((item) => item.id === id);
 
-      if ((currentItem as Soldier).personalNumber) {
+      if (currentItem && (currentItem as Soldier).personalNumber) {
         const soldItems: Item[] = allArrays.filter((item) => {
           if ((item as Item).soldierId) {
             return (item as Item).soldierId === currentItem?.id;
@@ -271,6 +271,9 @@ export default function DetailsPreview() {
   };
   const onConfirmItemBack = async (itemToBack: Item) => {
     console.log("onConfirmItemBack", itemToBack);
+    setSoldierItemToBack(undefined);
+    setIsModalConfirmOpen(false);
+
     setIsLoading(true);
     if ((itemToBack as Item).owner || !itemToBack.isExclusiveItem) {
       const itemToUpdate: Item = {
@@ -304,6 +307,17 @@ export default function DetailsPreview() {
         const findItemHisBack = data.items.find(
           (item) => item.id === itemToUpdate.id
         );
+        if (!findItemHisBack) {
+          setIsModalConfirmOpen(false);
+          setIsLoading(false);
+          setSoldierItemToBack(undefined);
+          return toaster.push(
+            <Message type="error" showIcon>
+              הפריט לא נמצא במערכת ייתכן שנמחק
+            </Message>,
+            { placement: "topCenter" }
+          );
+        }
         if (signedSoldier && !itemToUpdate.owner && findItemHisBack) {
           let notExslusiveItems = signedSoldier?.items;
           const notExslusiveItemIndex = signedSoldier?.items.findIndex(
@@ -363,7 +377,7 @@ export default function DetailsPreview() {
         {...props}
         ref={ref}
         icon={<span className="font-bold "> ⋮ </span>}
-        color=""
+        color="blue"
         style={{
           color: "black",
           background: "white",
@@ -460,11 +474,22 @@ export default function DetailsPreview() {
       );
     }
   };
+  if (!item && id) {
+    return (
+      <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex  ">
+        <div className="border text-2xl border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
+          <h1>פריט לא נמצא </h1>
+          <div></div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex details-preview ">
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-800 opacity-50 z-[100] flex justify-center items-center">
+        <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
           <Loader size="lg" content="" />
+          טוען...
         </div>
       )}
       {item && !editSoldier && (
@@ -719,7 +744,6 @@ export default function DetailsPreview() {
                       (item as Item).history.length - 4,
                       (item as Item).history.length
                     )
-                    .reverse()
                     .map((history, i) => {
                       return (
                         <HistoryItem

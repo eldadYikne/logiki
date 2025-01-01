@@ -21,6 +21,7 @@ import PersonalArea from "./components/PersonalArea";
 import ItemTypePage from "./pages/ItemTypePage";
 import Cart from "./components/Cart";
 import SignaNatureModal from "./components/SignaNatureModal";
+import SoldierProfilePage from "./pages/SoldierProfilePage";
 
 export default function App() {
   const [user, setUser] = useState<User>();
@@ -67,6 +68,7 @@ export default function App() {
               )
             }
           />
+          <Route path="/soldier-profile/:id" element={<SoldierProfilePage />} />
           <Route path="/add/:type" element={<Create />} />
           {user && <Route path="/cart" element={<Cart user={user} />} />}
           <Route path="/items-type" element={<ItemTypePage />} />

@@ -75,7 +75,7 @@ const DynamicForm: React.FC<Props> = ({
     // if (firstInputRef.current) {
     //   firstInputRef.current.focus();
     // }
-    console.log("itemToEdit", itemToEdit);
+    console.log("newForm", itemToEdit ?? newForm);
   }, [newForm]);
 
   const fields = itemToEdit
@@ -478,19 +478,21 @@ const getValidationModel = (type: "item" | "soldier", newForm: NewForm) => {
   const { StringType, NumberType, ObjectType, BooleanType } = Schema.Types;
 
   return type === "item"
-    ? Schema.Model({
-        name: StringType().isRequired("שדה חובה"),
-        serialNumber: newForm.isExclusiveItem
-          ? StringType().isRequired("שדה חובה")
-          : StringType().isRequiredOrEmpty(),
-        numberOfUnExclusiveItems: newForm.isExclusiveItem
-          ? NumberType().isRequiredOrEmpty()
-          : NumberType().isRequired("שדה חובה"),
-
-        itemType: ObjectType().isRequired("שדה חובה"),
-        isExclusiveItem: BooleanType().isRequired("שדה חובה"),
-        profileImage: StringType().isRequired("שדה חובה"),
-      })
+    ? newForm.isExclusiveItem
+      ? Schema.Model({
+          name: StringType().isRequired("שדה חובה"),
+          serialNumber: StringType().isRequired("שדה חובה"),
+          itemType: ObjectType().isRequired("שדה חובה"),
+          isExclusiveItem: BooleanType().isRequired("שדה חובה"),
+          profileImage: StringType().isRequired("שדה חובה"),
+        })
+      : Schema.Model({
+          name: StringType().isRequired("שדה חובה"),
+          numberOfUnExclusiveItems: NumberType().isRequired("שדה חובה"),
+          itemType: ObjectType().isRequired("שדה חובה"),
+          isExclusiveItem: BooleanType().isRequired("שדה חובה"),
+          profileImage: StringType().isRequired("שדה חובה"),
+        })
     : Schema.Model({
         name: StringType().isRequired("שדה חובה"),
         team: StringType().isRequired("שדה חובה"),

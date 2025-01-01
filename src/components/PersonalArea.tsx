@@ -112,9 +112,11 @@ export default function PersonalArea() {
         )}
       </div>
       <div className="flex flex-col px-5 gap-3 items-center justify-center">
-        <div>
-          <img className="rounded-full" src={user?.photoURL ?? ""} alt="" />
-        </div>
+        {user?.photoURL && (
+          <div>
+            <img className="rounded-full" src={user?.photoURL ?? ""} alt="" />
+          </div>
+        )}
         <div className="flex flex-col justify-center items-center gap-4 ">
           {admin &&
             userKeyToPreview.map((key) => {

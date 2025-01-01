@@ -90,8 +90,9 @@ export default function Create() {
   return (
     <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col  items-center h-screens ">
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
+        <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
           <Loader size="lg" content="" />
+          טוען...
         </div>
       )}
       <div className="flex flex-col justify-center items-center w-full">

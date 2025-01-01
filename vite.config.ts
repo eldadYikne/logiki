@@ -18,7 +18,7 @@ export default defineConfig({
         description: "ניהול לוגיסטי",
         display: "standalone",
         background_color: "transparent",
-        theme_color: "transparent",
+        theme_color: "#000000",
         icons: [
           {
             src: "logo.png",

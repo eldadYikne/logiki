@@ -43,6 +43,7 @@ export interface TableData {
   itemsTypes: ItemType[];
 }
 export interface Admin {
+  id: string;
   email: string;
   signature: string;
   dateFirstSignIn: string;

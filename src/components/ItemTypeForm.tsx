@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addBoardValueByKey } from "../service/board";
+import { createDynamic, updateDynamic } from "../service/board";
 import { v4 as uuidv4 } from "uuid";
 import { Button, Form, Message, useToaster } from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
@@ -17,9 +17,9 @@ export default function ItemTypeForm() {
   const onAddItems = async () => {
     try {
       if (newForm.name) {
-        await addBoardValueByKey("hapak162", "itemsTypes", {
-          id: uuidv4(),
+        await createDynamic("hapak162", "itemsTypes", {
           name: newForm.name,
+          id: "",
         });
         toaster.push(
           <Message type="success" showIcon>

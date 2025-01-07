@@ -6,10 +6,10 @@ import { Button, Input, Message, useToaster } from "rsuite";
 import { useNavigate, useParams } from "react-router-dom";
 import { Admin, TableData } from "../types/table";
 import GoogleAuth from "./GoogleAuth";
-import { doc, onSnapshot } from "firebase/firestore";
-import { putBoardAdmins } from "../service/board";
+import { updateDynamic } from "../service/board";
 import { adminTranslate } from "../const";
 import EditIcon from "@rsuite/icons/Edit";
+import { getAdminByEmail } from "../service/admin";
 
 export default function PersonalArea() {
   const [user, setUser] = useState<User>();
@@ -22,44 +22,14 @@ export default function PersonalArea() {
 
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdSnap();
+      let adminConnect = await getAdminByEmail("hapak162", user?.email ?? "");
+      if (adminConnect) {
+        setAdmin(adminConnect);
+      }
     }
-
     fetchData();
-  }, [id]);
-  useEffect(() => {
-    if (data) {
-      const newAdmin = data.admins.find((admin) => admin.email === user?.email);
-      if (newAdmin)
-        setAdmin({
-          ...newAdmin,
-          name: newAdmin.name ? newAdmin.name : user?.displayName ?? "",
-        });
-      console.log("newAdmin", newAdmin);
-    }
-  }, [data]);
-  const getBoardByIdSnap = async () => {
-    try {
-      const boardRef = doc(db, "boards", "hapak162");
-      const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        if (boardDoc.exists()) {
-          const newBoard = { ...boardDoc.data(), id: boardDoc.id };
-          if (newBoard) {
-            setData(newBoard as TableData);
-          }
-          // console.log("newBoard", newBoard);
-          return newBoard;
-        } else {
-          console.log("Board not found");
-        }
-      });
+  }, [user]);
 
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching board:", error);
-      throw error; // Rethrow the error to handle it where the function is called
-    }
-  };
   const userKeyToPreview: Array<keyof Admin> = [
     // "email",
     "name",
@@ -81,7 +51,7 @@ export default function PersonalArea() {
     try {
       console.log("update", admin);
       if (admin) {
-        await putBoardAdmins("hapak162", admin);
+        await updateDynamic("hapak162", admin.id, "admins", admin);
         toaster.push(
           <Message type="success" showIcon>
             הפעולה בוצעה בהצלחה!

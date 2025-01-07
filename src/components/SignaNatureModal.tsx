@@ -2,69 +2,31 @@ import { Button, Message, Modal, useToaster } from "rsuite";
 import Signature from "./Signature";
 import { useEffect, useState } from "react";
 import { User } from "firebase/auth";
-import { Admin, TableData } from "../types/table";
-import { db } from "../main";
-import { doc, onSnapshot } from "firebase/firestore";
-import { putBoardAdmins } from "../service/board";
-// import { useDispatch } from "react-redux";
-// import { setAdmin } from "../redux/actions";
+import { Admin } from "../types/table";
+import { getAdminByEmail, updateAdmin } from "../service/admin";
 
 export default function SignaNatureModal({ user }: Props) {
   const [signatureUrl, setSignatureUrl] = useState<string>();
-  const [data, setData] = useState<TableData>();
-  const [admin, setNewAdmin] = useState<Admin>();
+  const [admin, setAdmin] = useState<Admin>();
   const toaster = useToaster();
 
-  // const dispatch = useDispatch();
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdSnap();
-    }
-    fetchData();
-  }, []);
-  useEffect(() => {
-    if (data?.admins) {
-      const connectedAdmin = data.admins.find(
-        (admin) => admin.email === user.email
-      );
-      if (connectedAdmin) {
-        setNewAdmin(connectedAdmin);
-        // dispatch(setAdmin(connectedAdmin));
+      let adminConnected = await getAdminByEmail("hapak162", user?.email ?? "");
+      if (adminConnected) {
+        setAdmin(adminConnected);
       }
     }
-  }, [data?.admins]);
-  const getBoardByIdSnap = async () => {
-    try {
-      const boardRef = doc(db, "boards", "hapak162");
-      // Listen to changes in the board document
-      // console.log("try newBoard");
-      const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        // console.log("try newBoard boardDoc", boardDoc);
-        if (boardDoc.exists()) {
-          // Document exists, return its data along with the ID
-          const newBoard = { ...boardDoc.data(), id: boardDoc.id };
-          if (newBoard) {
-            setData(newBoard as TableData);
-          }
-          return newBoard;
-        } else {
-          // Document does not exist
-          console.log("Board not found");
-          // setDbBoard(null); // or however you handle this case in your application
-        }
-      });
+    fetchData();
+  }, [user]);
 
-      // Return the unsubscribe function to stop listening when needed
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching board:", error);
-      throw error; // Rethrow the error to handle it where the function is called
-    }
-  };
   const handleSignature = async () => {
     try {
       if (signatureUrl && admin) {
-        await putBoardAdmins("hapak162", { ...admin, signature: signatureUrl });
+        await updateAdmin("hapak162", admin.id, {
+          ...admin,
+          signature: signatureUrl,
+        });
         toaster.push(
           <Message type="success" showIcon>
             החתימה נקלטה בהצלחה!

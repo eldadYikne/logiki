@@ -40,7 +40,7 @@ export default function Navbar({ user }: Props) {
 
         {user && (
           <span
-            onClick={() => navigat("/")}
+            onClick={() => navigat("/soldiers")}
             className=" font-mono  flex items-center justify-center"
           >
             <span>

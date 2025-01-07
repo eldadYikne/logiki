@@ -129,7 +129,11 @@ export default function HTable(props: Props) {
                       header === "profileImage" ? "profile-image" : ""
                     } ${header} `}
                     onClick={() => {
-                      navigate(`/details/${row.id}`);
+                      navigate(
+                        `/${
+                          (row as Item).history ? "items" : "soldiers"
+                        }/details/${row.id}`
+                      );
                     }}
                     key={colIndex}
                   >

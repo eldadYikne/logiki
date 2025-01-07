@@ -7,7 +7,7 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import Login from "./components/Login";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import DetailsPreview from "./components/DetailsPreview";
 import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
@@ -58,8 +58,9 @@ export default function App() {
       <Navbar setUser={setUser} user={user} />
       <div className="content-wrap">
         <Routes>
+          <Route path="/" element={<Navigate to="/soldiers" replace />} />
           <Route
-            path="/"
+            path="/:type"
             element={
               !user ? (
                 <Login userConnected={""} setConnectedUser={setUser} />
@@ -74,7 +75,9 @@ export default function App() {
           <Route path="/items-type" element={<ItemTypePage />} />
           {user && <Route path="/personal-area" element={<PersonalArea />} />}
 
-          {user && <Route path="/details/:id" element={<DetailsPreview />} />}
+          {user && (
+            <Route path="/:type/details/:id" element={<DetailsPreview />} />
+          )}
           {user && <Route path="/admin" element={<AdminPage user={user} />} />}
         </Routes>
       </div>

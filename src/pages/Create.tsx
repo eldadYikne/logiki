@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import DynamicForm from "../components/DynamicForm";
 import { Soldier } from "../types/soldier";
-import { addBoardValueByKey } from "../service/board";
 import CheckRoundIcon from "@rsuite/icons/CheckRound";
 import { useNavigate, useParams } from "react-router-dom";
 import { TableData } from "../types/table";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../main";
 import { Loader, Message, useToaster } from "rsuite";
+import { createItem } from "../service/item";
+import { createSoldier } from "../service/soldier";
+import { getBoardByIdWithCallback } from "../service/board";
 export default function Create() {
   const { type } = useParams();
   console.log("type", type);
@@ -19,55 +21,29 @@ export default function Create() {
 
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdSnap();
+      await getBoardByIdWithCallback("hapak162", ["itemsTypes"], (a) => {
+        console.log("a", a);
+        setData((prev) => ({ ...prev, ...a } as TableData));
+      });
     }
     fetchData();
   }, [type]);
-  const getBoardByIdSnap = async () => {
-    try {
-      const boardRef = doc(db, "boards", "hapak162");
-      // Listen to changes in the board document
-      // console.log("try newBoard");
-      const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        // console.log("try newBoard boardDoc", boardDoc);
-        if (boardDoc.exists()) {
-          // Document exists, return its data along with the ID
-          const newBoard = { ...boardDoc.data(), id: boardDoc.id };
-          if (newBoard) {
-            setData(newBoard as TableData);
-          }
-          return newBoard;
-          console.log("newBoard", newBoard);
-        } else {
-          // Document does not exist
-          console.log("Board not found");
-          // setDbBoard(null); // or however you handle this case in your application
-        }
-      });
-
-      // Return the unsubscribe function to stop listening when needed
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching board:", error);
-      throw error; // Rethrow the error to handle it where the function is called
-    }
-  };
 
   const onAddItem = async (soldier: any) => {
     console.log("soldier", soldier);
     setIsLoading(true);
     try {
+      let sildierId;
       if (type === "item") {
-        await addBoardValueByKey("hapak162", "items", soldier);
+        sildierId = await createItem("hapak162", soldier);
         setIsFormOpen(false);
-        navigate(`/details/${soldier.id}`);
       } else if (type === "soldier") {
-        await addBoardValueByKey("hapak162", "soldiers", soldier);
+        sildierId = await createSoldier("hapak162", soldier);
         setIsFormOpen(false);
-        navigate(`/details/${soldier.id}`);
       } else if (type === "team") {
       }
       setIsLoading(false);
+      navigate(`/soldiers/details/${sildierId}`);
 
       toaster.push(
         <Message type="success" showIcon>

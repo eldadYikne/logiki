@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { ItemType } from "../types/table";
 
 export default function SlideItemTypes({
@@ -5,6 +6,8 @@ export default function SlideItemTypes({
   selecteTable,
   setSelectedTable,
 }: Props) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex relative z-10 shadow-lg h-11 items-center w-full max-w-full overflow-x-auto  gap-4 ">
       <div
@@ -13,7 +16,7 @@ export default function SlideItemTypes({
             ? "font-semibold border-b-2 border-blue-500"
             : ""
         }`}
-        onClick={() => setSelectedTable("soldiers")}
+        onClick={() => navigate("/soldiers")}
       >
         חיילים
       </div>
@@ -31,8 +34,7 @@ export default function SlideItemTypes({
               `}
               onClick={() => {
                 console.log((itemType as ItemType).id);
-
-                setSelectedTable((itemType as ItemType).id);
+                navigate(`/${itemType.id}`);
               }}
             >
               {itemType.name}

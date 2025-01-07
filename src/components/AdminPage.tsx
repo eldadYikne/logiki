@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { Admin, TableData } from "../types/table";
 import { db } from "../main";
 import { Button, Input, Message, useToaster } from "rsuite";
-import { updateBoaedSpesificKey } from "../service/board";
+import { getBoardByIdWithCallback } from "../service/board";
 import { User } from "@firebase/auth";
+import { createAdmin, removeAdmin } from "../service/admin";
 
 export default function AdminPage(props: Props) {
   const [data, setData] = useState<TableData>();
@@ -12,6 +13,7 @@ export default function AdminPage(props: Props) {
   const toaster = useToaster();
 
   const admin: Admin = {
+    id: "",
     name: "",
     email: "",
     personalNumber: 0,
@@ -22,46 +24,30 @@ export default function AdminPage(props: Props) {
   };
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdSnap();
+      await getBoardByIdWithCallback("hapak162", ["admins"], (a) => {
+        console.log("a", a);
+        setData((prev) => ({ ...prev, ...a } as TableData));
+      });
     }
     fetchData();
   }, []);
-  const getBoardByIdSnap = async () => {
-    try {
-      const boardRef = doc(db, "boards", "hapak162");
-      // Listen to changes in the board document
-      //   console.log("try newBoard");
-      const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        // console.log("try newBoard boardDoc", boardDoc);
-        if (boardDoc.exists()) {
-          // Document exists, return its data along with the ID
-          const newBoard = { ...boardDoc.data(), id: boardDoc.id };
-          if (newBoard) {
-            setData(newBoard as TableData);
-          }
-          return newBoard;
-          console.log("newBoard", newBoard);
-        } else {
-          // Document does not exist
-          console.log("Board not found");
-          // setDbBoard(null); // or however you handle this case in your application
-        }
-      });
 
-      // Return the unsubscribe function to stop listening when needed
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching board:", error);
-      throw error; // Rethrow the error to handle it where the function is called
-    }
-  };
   const AddNewAdmin = async () => {
     if (data) {
       try {
-        await updateBoaedSpesificKey("hapak162", "admins", [
-          ...data?.admins,
-          newAdmin,
-        ]);
+        if (data.admins.find((ad) => newAdmin?.email === ad.email)) {
+          toaster.push(
+            <Message type="error" showIcon>
+              מנהל קיים במערכת
+            </Message>,
+            { placement: "topCenter" }
+          );
+          return;
+        }
+        if (newAdmin) {
+          await createAdmin("hapak162", newAdmin);
+        }
+
         toaster.push(
           <Message type="success" showIcon>
             הפעולה בוצעה בהצלחה!
@@ -73,14 +59,14 @@ export default function AdminPage(props: Props) {
       }
     }
   };
-  const removeAdmin = async (adminToRemove: Admin) => {
+  const onRemoveAdmin = async (adminToRemove: Admin) => {
     if (data) {
       try {
-        const newAdmins = data.admins.filter(
-          (admin) => admin.email !== adminToRemove.email
-        );
+        // const newAdmins = data.admins.filter(
+        //   (admin) => admin.email !== adminToRemove.email
+        // );
 
-        await updateBoaedSpesificKey("hapak162", "admins", newAdmins);
+        await removeAdmin("hapak162", adminToRemove.id);
         toaster.push(
           <Message type="success" showIcon>
             הפעולה בוצעה בהצלחה!
@@ -122,7 +108,7 @@ export default function AdminPage(props: Props) {
                     className="flex items-center justify-between gap-2"
                   >
                     <span>{admin.email}</span>
-                    <Button onClick={() => removeAdmin(admin)} color="red">
+                    <Button onClick={() => onRemoveAdmin(admin)} color="red">
                       מחק
                     </Button>
                   </div>

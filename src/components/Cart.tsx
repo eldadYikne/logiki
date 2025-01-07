@@ -9,10 +9,10 @@ import SignatureProcessModal from "./SignatureProcessModal";
 import { User } from "firebase/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { Item, TableData } from "../types/table";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../main";
 import { ItemNotExclusive } from "../types/soldier";
-import { putBoardValueByArrayKey, putBoardValueByKey } from "../service/board";
+import { getBoardByIdWithCallback } from "../service/board";
+import { updateItemsBatch } from "../service/item";
+import { updateSoldier } from "../service/soldier";
 
 // Assuming you already have a CartSlice set up
 
@@ -25,33 +25,14 @@ const CartPage = ({ user }: Props) => {
 
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdSnap();
+      await getBoardByIdWithCallback("hapak162", ["soldiers"], (a) => {
+        console.log("a", a);
+        setData((prev) => ({ ...prev, ...a } as TableData));
+      });
     }
 
     fetchData();
   }, [id]);
-  const getBoardByIdSnap = async () => {
-    try {
-      const boardRef = doc(db, "boards", "hapak162");
-      const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        if (boardDoc.exists()) {
-          const newBoard = { ...boardDoc.data(), id: boardDoc.id };
-          if (newBoard) {
-            setData(newBoard as TableData);
-          }
-          // console.log("newBoard", newBoard);
-          return newBoard;
-        } else {
-          console.log("Board not found");
-        }
-      });
-
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching board:", error);
-      throw error; // Rethrow the error to handle it where the function is called
-    }
-  };
 
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -88,11 +69,8 @@ const CartPage = ({ user }: Props) => {
             soldierId: item.owner ? "" : item.soldierId,
             owner: signedSoldier?.name ?? "",
           }));
-          await putBoardValueByArrayKey(
-            "hapak162",
-            "items",
-            exclusiveItemsToSignature
-          );
+
+          await updateItemsBatch("hapak162", exclusiveItemsToSignature);
         }
         if (notExclusiveItems.length > 0) {
           console.log("signedSoldier", signedSoldier);
@@ -133,12 +111,9 @@ const CartPage = ({ user }: Props) => {
                   ),
                 } as Item)
             );
-            await putBoardValueByArrayKey(
-              "hapak162",
-              "items",
-              notExclusiveItemsToSignature
-            );
-            await putBoardValueByKey("hapak162", "soldiers", signedSoldier);
+
+            await updateItemsBatch("hapak162", notExclusiveItemsToSignature);
+            await updateSoldier("hapak162", signedSoldier.id, signedSoldier);
             setIsLoading(false);
 
             toaster.push(
@@ -148,7 +123,7 @@ const CartPage = ({ user }: Props) => {
               { placement: "topCenter" }
             );
             setTimeout(() => {
-              navigate(`/details/${signedSoldier.id}`);
+              navigate(`/soldiers/details/${signedSoldier.id}`);
             }, 2000);
           }
         }

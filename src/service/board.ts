@@ -1,196 +1,108 @@
-import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../main";
-import { Admin, Item, TableData } from "../types/table";
+import { Admin, Item, ItemType, TableData } from "../types/table";
 import { Soldier } from "../types/soldier";
 
-export const updateBoard = async (boardId: string, boardData: any) => {
-  boardId;
-  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
-  try {
-    await updateDoc(boardRef, boardData); // Update the user document with new data
-    console.log("BOARD updated successfully from serviceBoard!");
-  } catch (error) {
-    console.error("Error updating user:", error);
-  }
-};
-
-export const updateBoaedSpesificKey = async (
+export const createDynamic = async (
   boardId: string,
-  key: keyof TableData,
-  data: any
+  collectionName: "items" | "soldiers" | "itemsTypes",
+  item: Item | Soldier | ItemType
 ) => {
-  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
-
   try {
-    const boardDoc = await getDoc(boardRef);
+    // Reference to the items subcollection inside the board document
+    const itemsRef = collection(db, `boards/${boardId}/${collectionName}`);
 
-    if (boardDoc.exists()) {
-      const boardData = boardDoc.data();
+    // Add the item to the collection
+    const docRef = await addDoc(itemsRef, item);
 
-      // Update the board document with the updated data, including preserving "users"
-      await updateDoc(boardRef, { ...boardData, [key]: data });
-
-      console.log("Board updated successfully!");
-    } else {
-      console.error("Board not found!");
-    }
+    console.log(" successfully created:", item?.name);
+    return docRef.id; // Return the ID of the created item
   } catch (error) {
-    console.error("Error updating board:", error);
+    console.error("Error creating item:", error);
+    throw error; // Re-throw the error to handle it where the function is called
   }
 };
-
-export const addBoardValueByKey = async (
+export const updateDynamic = async (
   boardId: string,
-  key: keyof TableData,
-  data: any
+  itemId: string, // Custom ID in your documents
+  collectionName: "items" | "soldiers" | "itemsTypes" | "admins",
+  updates: Partial<Item | Soldier | ItemType | Admin>
 ) => {
-  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
-
   try {
-    const boardDoc = await getDoc(boardRef);
+    const itemRef = doc(db, `boards/${boardId}/${collectionName}`, itemId);
 
-    if (boardDoc.exists()) {
-      const boardData = boardDoc.data();
-      // Update the board document with the updated data, including preserving "users"
-      const x = await updateDoc(boardRef, {
-        ...boardData,
-        [key]: [...boardData[key], data],
-      });
+    await updateDoc(itemRef, updates);
 
-      console.log("Board updated successfully!", x);
-    } else {
-      console.error("Board not found!");
-    }
+    console.log(`${itemId} successfully updated`);
   } catch (error) {
-    console.error("Error updating board:", error);
+    console.error("Error updating item:", error);
+    throw error;
   }
 };
-
-export const putBoardValueByKey = async (
+export const removeDynamicById = async (
   boardId: string,
-  key: keyof TableData,
-  data: Item | Soldier
+  collectionName: "items" | "soldiers",
+  itemId: string
 ) => {
-  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
-  console.log("putBoardValueByKey!!");
   try {
-    const boardDoc = await getDoc(boardRef);
+    const itemRef = doc(db, `boards/${boardId}/${collectionName}`, itemId);
 
-    if (boardDoc.exists() && data.id) {
-      const boardData = boardDoc.data();
-      // Update the board document with the updated data, including preserving "users"
+    // Delete the document
+    await deleteDoc(itemRef);
 
-      const newArrayItems = boardData[key].filter(
-        (existItem: Item) => data.id !== existItem.id
-      );
-
-      await updateDoc(boardRef, {
-        ...boardData,
-        [key]: [...newArrayItems, data],
-      });
-
-      console.log("Board updated successfully!");
-    } else {
-      console.error("Board not found!");
-    }
+    console.log(`${itemId} successfully deleted`);
   } catch (error) {
-    console.error("Error updating board:", error);
+    console.error("Error deleting item:", error);
+    throw error; // Re-throw the error to handle it where the function is called
   }
 };
-export const putBoardValueByArrayKey = async (
+export const getBoardByIdWithCallback = async (
   boardId: string,
-  key: keyof TableData,
-  data: Item[]
+  boardKeys: Array<keyof TableData>,
+  setDataCallback: (data: any) => void
 ) => {
-  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the board document
-  console.log("putBoardValueByKey!!");
-
   try {
-    const boardDoc = await getDoc(boardRef);
+    const boardRef = doc(db, "boards", boardId);
 
-    if (boardDoc.exists() && data.every((item) => item.id)) {
-      // Ensure all items have an id
-      const boardData = boardDoc.data();
+    const unsubscribeBoard = onSnapshot(boardRef, (boardDoc) => {
+      if (boardDoc.exists()) {
+        // List of subcollection names to listen for
+        const subcollections = [...boardKeys];
+        const subcollectionData: Record<string, any[]> = {};
 
-      // Loop through each item in the data array and filter out existing items
-      let updatedItems = [...boardData[key]]; // Copy the current items of the board
+        const unsubscribes = subcollections.map((subcollectionName) => {
+          const subRef = collection(boardRef, subcollectionName);
 
-      // Filter out existing items by their id (to avoid duplicates)
-      updatedItems = updatedItems.filter(
-        (existingItem: Item | Soldier) =>
-          !data.some((newItem) => newItem.id === existingItem.id)
-      );
+          return onSnapshot(subRef, (subSnapshot) => {
+            subcollectionData[subcollectionName] = subSnapshot.docs.map(
+              (doc) => ({ ...doc.data(), id: doc.id })
+            );
+            setDataCallback({
+              [subcollectionName]: subcollectionData[subcollectionName],
+            });
+            // Update state via callback with the combined data
+          });
+        });
 
-      // Update the board document by adding the new items
-      await updateDoc(boardRef, {
-        ...boardData,
-        [key]: [...updatedItems, ...data],
-      });
+        // Return a cleanup function to unsubscribe from all listeners
+        return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+      } else {
+        console.log("Board not found");
+      }
+    });
 
-      console.log("Board updated successfully!");
-    } else {
-      console.error("Board not found or invalid data!");
-    }
+    // Return the unsubscribe function for the board document
+    return unsubscribeBoard;
   } catch (error) {
-    console.error("Error updating board:", error);
-  }
-};
-export const putBoardAdmins = async (boardId: string, data: Admin) => {
-  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
-
-  try {
-    const boardDoc = await getDoc(boardRef);
-
-    if (boardDoc.exists() && data.email) {
-      const boardData = boardDoc.data();
-      // Update the board document with the updated data, including preserving "users"
-
-      const newAdmins = boardData["admins"].filter(
-        (existItem: Admin) => data.email !== existItem.email
-      );
-
-      await updateDoc(boardRef, {
-        ...boardData,
-        admins: [...newAdmins, data],
-      });
-
-      console.log("Board updated successfully!");
-    } else {
-      console.error("Board not found!");
-    }
-  } catch (error) {
-    console.error("Error updating board:", error);
-  }
-};
-
-export const deleteBoardValueByKey = async (
-  boardId: string,
-  key: keyof TableData,
-  data: Item | Soldier
-) => {
-  const boardRef = doc(collection(db, "boards"), boardId); // Get reference to the user document
-
-  try {
-    const boardDoc = await getDoc(boardRef);
-
-    if (boardDoc.exists() && data.id) {
-      const boardData = boardDoc.data();
-      // Update the board document with the updated data, including preserving "users"
-
-      const newArrayItems = boardData[key].filter(
-        (existItem: Item) => data.id !== existItem.id
-      );
-
-      await updateDoc(boardRef, {
-        ...boardData,
-        [key]: [...newArrayItems],
-      });
-
-      console.log("Board updated successfully!");
-    } else {
-      console.error("Board not found!");
-    }
-  } catch (error) {
-    console.error("Error updating board:", error);
+    console.error("Error fetching board and subcollections:", error);
+    throw error; // Rethrow the error to handle it where the function is called
   }
 };

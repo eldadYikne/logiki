@@ -4,31 +4,43 @@ import HTable from "./HTable";
 import { useEffect, useState } from "react";
 import { itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
-import { doc, onSnapshot } from "firebase/firestore";
 import { User } from "firebase/auth";
-import { db } from "../main";
 import { Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
 import PlusRoundIcon from "@rsuite/icons/PlusRound";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
+import { getBoardByIdWithCallback } from "../service/board";
 
 function MaiEquipment(props: Props) {
-  const [selecteTable, setSelectedTable] = useState<string>("soldiers");
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const { type } = useParams();
+  const [selecteTable, setSelectedTable] = useState<string>(type ?? "");
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(true);
   const [headers, setHeaders] = useState<TableHeaders>();
   const [data, setData] = useState<TableData>();
   const navigate = useNavigate();
   useEffect(() => {
+    if (type) setSelectedTable(type);
+  }, [type]);
+  useEffect(() => {
     async function fetchData() {
-      await getBoardByIdSnap();
+      await getBoardByIdWithCallback(
+        "hapak162",
+        ["soldiers", "items", "itemsTypes"],
+        (a) => {
+          console.log("a", a);
+          setData((prev) => ({ ...prev, ...a } as TableData));
+          setDataToTable((prev) => ({ ...prev, ...a } as NewTableData));
+        }
+      );
     }
     fetchData();
   }, []);
   useEffect(() => {
-    if (data) {
+    if (data?.itemsTypes && data?.items) {
+      console.log("data", data);
       let newHeaders = {
         soldiers: soldierKeys,
       };
@@ -102,40 +114,10 @@ function MaiEquipment(props: Props) {
     }
   };
 
-  const getBoardByIdSnap = async () => {
-    try {
-      const boardRef = doc(db, "boards", "hapak162");
-      // Listen to changes in the board document
-      // console.log("try newBoard");
-      const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        // console.log("try newBoard boardDoc", boardDoc);
-        if (boardDoc.exists()) {
-          // Document exists, return its data along with the ID
-          const newBoard = { ...boardDoc.data() };
-          if (newBoard) {
-            setData(newBoard as TableData);
-            setDataToTable(newBoard as NewTableData);
-          }
-          return newBoard;
-          console.log("newBoard", newBoard);
-        } else {
-          // Document does not exist
-          console.log("Board not found");
-          // setDbBoard(null); // or however you handle this case in your application
-        }
-      });
-
-      // Return the unsubscribe function to stop listening when needed
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching board:", error);
-      throw error; // Rethrow the error to handle it where the function is called
-    }
-  };
-
   const onActionClickInTable = (item: Item | Soldier) => {
     setItemToEdit(item);
   };
+
   if (
     props.user.email &&
     props.user.email !== "hapakmaog162@gmail.com" &&
@@ -166,7 +148,6 @@ function MaiEquipment(props: Props) {
             itemsTypes={data?.itemsTypes}
           />
         )}
-
         <div className="">
           <Animation.Collapse in={isFilterOpen}>
             {(props) => (
@@ -195,7 +176,9 @@ function MaiEquipment(props: Props) {
               </div>
             )}
           </Animation.Collapse>
-          <div className={`flex w-full transition-all justify-center z-10 `}>
+          <div
+            className={`flex w-full transition-all justify-center sm:hidden  z-10 `}
+          >
             <ArrowDownLineIcon
               color="#3498FF"
               style={{ fontSize: "20px", width: "30px", height: "20px" }}

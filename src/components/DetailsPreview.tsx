@@ -38,7 +38,11 @@ import {
   useToaster,
 } from "rsuite";
 import SignatureProcessModal from "./SignatureProcessModal";
-import { deleteBoardValueByKey, putBoardValueByKey } from "../service/board";
+import {
+  getBoardByIdWithCallback,
+  removeDynamicById,
+  updateDynamic,
+} from "../service/board";
 import { auth, db } from "../main";
 import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
@@ -52,8 +56,14 @@ import DynamicForm from "./DynamicForm";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart, removeItemFromCart } from "../store/cartSlice";
 import { RootState } from "../store/store";
+import {
+  getSoldierById,
+  getSoldierItemsById,
+  updateSoldier,
+} from "../service/soldier";
+import { getItemById, updateItem } from "../service/item";
 export default function DetailsPreview() {
-  const { id } = useParams();
+  const { id, type } = useParams();
   const [data, setData] = useState<TableData>();
   const [item, setItem] = useState<DetailsItem>();
   const [modalOpen, setModalOpen] = useState(false);
@@ -98,74 +108,62 @@ export default function DetailsPreview() {
   ];
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdSnap();
+      await getBoardByIdWithCallback(
+        "hapak162",
+        ["soldiers", "items", "itemsTypes"],
+        (a) => {
+          console.log("a", a);
+          setData((prev) => ({ ...prev, ...a } as TableData));
+        }
+      );
     }
 
     fetchData();
   }, [id]);
   useEffect(() => {
-    if (data && id) {
-      //   console.log("data", data);
-      //   console.log("id", id);
-      const newItem: Item | Soldier | undefined = findObjectById(id);
-      console.log("newItem", newItem);
-      if (newItem) {
-        setItem(newItem);
-        if ((newItem as Item).isExclusiveItem) {
-          notRenderKeys.push("numberOfUnExclusiveItems");
+    async function fetchItem() {
+      if (data && id) {
+        //   console.log("data", data);
+        //   console.log("id", id);
+        const newItem: Item | Soldier | undefined = await findObjectById(id);
+        console.log("newItem", newItem);
+        if (newItem) {
+          setItem(newItem);
+          if ((newItem as Item).isExclusiveItem) {
+            notRenderKeys.push("numberOfUnExclusiveItems");
+          }
         }
       }
     }
+    fetchItem();
     auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
       }
     });
   }, [id, data]);
-  const findObjectById = (id: string) => {
-    if (data) {
-      const allArrays = [...data.items, ...data.soldiers];
-      const currentItem = allArrays.find((item) => item.id === id);
-
-      if (currentItem && (currentItem as Soldier).personalNumber) {
-        const soldItems: Item[] = allArrays.filter((item) => {
-          if ((item as Item).soldierId) {
-            return (item as Item).soldierId === currentItem?.id;
-          }
-        }) as Item[];
-
-        setSoldierItems([
-          ...soldItems,
-          ...((currentItem as Soldier).items as Item[]),
-        ]);
-      } else {
-        setSoldierItems([]);
-      }
-
-      return currentItem;
+  const findObjectById = async (id: string) => {
+    let currentItem;
+    if (type === "soldiers") {
+      currentItem = await getSoldierById("hapak162", id);
+      console.log("soldier", currentItem);
+    } else if (type === "items") {
+      currentItem = await getItemById("hapak162", id);
+      console.log("item", currentItem);
     }
-  };
-  const getBoardByIdSnap = async () => {
-    try {
-      const boardRef = doc(db, "boards", "hapak162");
-      const unsubscribe = onSnapshot(boardRef, (boardDoc) => {
-        if (boardDoc.exists()) {
-          const newBoard = { ...boardDoc.data(), id: boardDoc.id };
-          if (newBoard) {
-            setData(newBoard as TableData);
-          }
-          // console.log("newBoard", newBoard);
-          return newBoard;
-        } else {
-          console.log("Board not found");
-        }
-      });
+    if (currentItem && (currentItem as Soldier).personalNumber) {
+      const soldItems: Item[] | undefined =
+        (await getSoldierItemsById("hapak162", id)) ?? [];
 
-      return unsubscribe;
-    } catch (error) {
-      console.error("Error fetching board:", error);
-      throw error; // Rethrow the error to handle it where the function is called
+      setSoldierItems([
+        ...soldItems,
+        ...((currentItem as Soldier).items as Item[]),
+      ]);
+    } else {
+      setSoldierItems([]);
     }
+
+    return currentItem;
   };
 
   const onSignature = async (itemsToSignature: Item[]) => {
@@ -195,15 +193,23 @@ export default function DetailsPreview() {
     console.log("onSignature ", itemToSignature);
     if (data) {
       try {
-        let signedSoldier = data.soldiers.find(
-          (soldier) => soldier.id === itemToSignature.soldierId
+        let signedSoldier = await getSoldierById(
+          "hapak162",
+          itemToSignature.soldierId
         );
-        if (itemToSignature.isExclusiveItem) {
-          await putBoardValueByKey("hapak162", "items", {
+
+        if (itemToSignature.isExclusiveItem && signedSoldier) {
+          await updateItem("hapak162", itemToSignature.id, {
             ...itemToSignature,
             soldierId: itemToSignature.owner ? "" : itemToSignature.soldierId,
             owner: signedSoldier?.name ?? "",
           });
+          toaster.push(
+            <Message type="success" showIcon>
+              הפעולה בוצעה בהצלחה!
+            </Message>,
+            { placement: "topCenter" }
+          );
         } else if (!itemToSignature.isExclusiveItem) {
           console.log("signedSoldier", signedSoldier);
           if (signedSoldier && !itemToSignature.owner) {
@@ -224,7 +230,7 @@ export default function DetailsPreview() {
               numberOfUnExclusiveItems:
                 itemToSignature.numberOfUnExclusiveItems,
             } as ItemNotExclusive);
-            await putBoardValueByKey("hapak162", "items", {
+            await updateItem("hapak162", itemToSignature.id, {
               ...itemToSignature,
               soldierId: "",
               owner: "",
@@ -237,7 +243,7 @@ export default function DetailsPreview() {
                 itemToSignature.numberOfUnExclusiveItems - 1
               ),
             });
-            await putBoardValueByKey("hapak162", "soldiers", signedSoldier);
+            await updateSoldier("hapak162", signedSoldier.id, signedSoldier);
             toaster.push(
               <Message type="success" showIcon>
                 הפעולה בוצעה בהצלחה!
@@ -248,7 +254,7 @@ export default function DetailsPreview() {
         }
         if (cartItems.length > 0 && itemToSignature.isExclusiveItem) {
           const itemInCart = cartItems.find(
-            (item) => item.id === itemToSignature.id
+            (item: Item) => item.id === itemToSignature.id
           );
           if (itemInCart) {
             dispatch(removeItemFromCart(itemInCart.id));
@@ -257,7 +263,6 @@ export default function DetailsPreview() {
         setIsLoading(false);
       } catch (err) {
         setIsLoading(false);
-
         console.log(err);
       }
     }
@@ -273,7 +278,6 @@ export default function DetailsPreview() {
     console.log("onConfirmItemBack", itemToBack);
     setSoldierItemToBack(undefined);
     setIsModalConfirmOpen(false);
-
     setIsLoading(true);
     if ((itemToBack as Item).owner || !itemToBack.isExclusiveItem) {
       const itemToUpdate: Item = {
@@ -300,13 +304,12 @@ export default function DetailsPreview() {
       try {
         console.log("ItemToUpdate", itemToUpdate);
         if (!data) return;
-        let signedSoldier = data.soldiers.find(
-          (soldier) => soldier.id === itemToUpdate.soldierId
+        let signedSoldier = await getSoldierById(
+          "hapak162",
+          itemToUpdate.soldierId
         );
+        const findItemHisBack = await getItemById("hapak162", itemToUpdate.id);
 
-        const findItemHisBack = data.items.find(
-          (item) => item.id === itemToUpdate.id
-        );
         if (!findItemHisBack) {
           setIsModalConfirmOpen(false);
           setIsLoading(false);
@@ -346,9 +349,9 @@ export default function DetailsPreview() {
               ? 0
               : Number(findItemHisBack.numberOfUnExclusiveItems + 1),
           } as Item;
-          await putBoardValueByKey("hapak162", "items", newItemnow);
+          await updateItem("hapak162", newItemnow.id, newItemnow);
           if (!itemToUpdate.isExclusiveItem) {
-            await putBoardValueByKey("hapak162", "soldiers", {
+            await updateSoldier("hapak162", signedSoldier.id, {
               ...signedSoldier,
               items: notExslusiveItems,
             });
@@ -389,7 +392,13 @@ export default function DetailsPreview() {
   const onEdit = async (item: Soldier | Item) => {
     console.log("item", item);
     const key: keyof TableData = (item as Item).itemType ? "items" : "soldiers";
-    await putBoardValueByKey("hapak162", key, item);
+    await updateDynamic("hapak162", item?.id, key, item);
+    toaster.push(
+      <Message type="success" showIcon>
+        !הפעולה בוצעה בהצלחה
+      </Message>,
+      { placement: "topCenter" }
+    );
   };
   const getItemToEdit = () => {
     return (item as Item).history
@@ -415,8 +424,9 @@ export default function DetailsPreview() {
               </Message>,
               { placement: "topCenter" }
             );
-            naigate("/");
-            await deleteBoardValueByKey("hapak162", key, item as Item);
+            naigate(`/${type}`);
+
+            await removeDynamicById("hapak162", key, item?.id ?? "");
           }
         } else {
           toaster.push(
@@ -478,8 +488,8 @@ export default function DetailsPreview() {
     return (
       <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex  ">
         <div className="border text-2xl border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
-          <h1>פריט לא נמצא </h1>
-          <div></div>
+          {/* <h1>פריט לא נמצא </h1> */}
+          <Loader />
         </div>
       </div>
     );
@@ -526,7 +536,7 @@ export default function DetailsPreview() {
                   {item && (item as Item).history && (
                     <img
                       loading="lazy"
-                      className="absolute top-0 left-2 w-7 h-7 "
+                      className="absolute top-0 left-2 w-7 h-7 cursor-pointer "
                       style={{ fontSize: "20px" }}
                       src={
                         " https://cdn-icons-png.flaticon.com/512/3523/3523885.png"
@@ -535,7 +545,7 @@ export default function DetailsPreview() {
                     />
                   )}
 
-                  <div className="flex w-full justify-between">
+                  <div className="flex sm:flex-col w-full justify-between">
                     <span className="text-3xl select-none">
                       {(item as Item).name}
                     </span>
@@ -544,7 +554,7 @@ export default function DetailsPreview() {
                         style={{
                           background: statusColors[(item as Item).status],
                         }}
-                        className="text-xl p-2 text-white font-thin rounded-lg shadow-sm max-h-12"
+                        className="sm:text-xl sm:p-2 p-1 sm:w-1/2 text-white text-sm font-thin rounded-md shadow-sm max-h-7 sm:max-h-12"
                       >
                         {statusTranslate[(item as Item).status]}
                       </div>
@@ -682,7 +692,7 @@ export default function DetailsPreview() {
                                 <Button
                                   size="xs"
                                   onClick={() =>
-                                    naigate(`/details/${soldierItem.id}`)
+                                    naigate(`/items/details/${soldierItem.id}`)
                                   }
                                 >
                                   הצג

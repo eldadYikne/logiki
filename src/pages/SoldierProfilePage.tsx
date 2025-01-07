@@ -64,7 +64,7 @@ const SoldierProfilePage: React.FC<ProfilePageProps> = () => {
     }
   };
   return (
-    <div className="flex justify-center flex-col   w-full bg-paleGreen sm:p-8 p-5  rounded-xl shadow-lg ">
+    <div className="flex justify-center items-center flex-col   w-full bg-paleGreen sm:p-8 p-5  rounded-xl shadow-lg ">
       {!soldier && <SoldierLogin isLoading={isLoading} onSubmit={onLogin} />}
 
       {soldier && (

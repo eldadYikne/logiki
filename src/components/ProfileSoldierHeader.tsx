@@ -8,7 +8,7 @@ interface ProfileHeaderProps {
 
 const ProfileSoldierHeader: React.FC<ProfileHeaderProps> = ({ soldier }) => {
   return (
-    <div className="flex items-center  sm:gap-8  relative sm:flex-row justify-center flex-col bg-primary p-6 rounded-lg shadow-lg text-black">
+    <div className="flex items-center  sm:gap-8  relative lg:flex-row w-full sm:w-1/3 justify-center flex-col bg-primary p-6 rounded-lg shadow-lg text-black">
       <div className="bg-[#5f7a59] absolute sm:hidden  top-0 rounded-t-lg h-1/3 z-0 w-full"></div>
       <img
         src={soldier.profileImage}

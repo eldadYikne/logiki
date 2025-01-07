@@ -38,9 +38,11 @@ export default function Navbar({ user }: Props) {
           </div>
         )}
 
-        {user && (
+        {true && (
           <span
-            onClick={() => navigat("/soldiers")}
+            onClick={() =>
+              user ? navigat("/soldiers") : navigat("/soldier-profile")
+            }
             className=" font-mono  flex items-center justify-center"
           >
             <span>

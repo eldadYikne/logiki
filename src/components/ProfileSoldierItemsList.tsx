@@ -8,13 +8,18 @@ interface ItemsListProps {
 
 const ProfileSoldierItemsList: React.FC<ItemsListProps> = ({ items }) => {
   return (
-    <div className="mt-8 p-6 rounded-lg border border-gray-200">
-      <h2 className="text-2xl font-semibold mb-4"> ציוד אישי</h2>
+    <div className="mt-8 p-6 rounded-lg border relative border-gray-200">
+      <div className="bg-[#5f7a59] absolute sm:hidden  left-0 top-0 rounded-t-lg h-1/5 z-0 w-full"></div>
+
+      <h2 className="text-2xl font-semibold relative mb-4 text-white z-10">
+        {" "}
+        ציוד אישי
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
           <div
             key={item.id}
-            className="bg-secondary border border-gray-400 p-4 rounded-lg"
+            className="bg-secondary border z-10 border-gray-400 p-4 rounded-lg"
           >
             <img
               src={item.profileImage}

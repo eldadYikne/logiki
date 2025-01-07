@@ -69,7 +69,7 @@ export default function App() {
               )
             }
           />
-          <Route path="/soldier-profile/:id" element={<SoldierProfilePage />} />
+          <Route path="/soldier-profile" element={<SoldierProfilePage />} />
           <Route path="/add/:type" element={<Create />} />
           {user && <Route path="/cart" element={<Cart user={user} />} />}
           <Route path="/items-type" element={<ItemTypePage />} />

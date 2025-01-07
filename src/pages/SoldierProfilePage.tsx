@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import { useParams } from "react-router-dom";
 import {
   getSoldierByPersonalNumberAndPhone,
   getSoldierItemsById,
@@ -8,12 +7,15 @@ import {
 import { Soldier } from "../types/soldier";
 import ProfileSoldierHeader from "../components/ProfileSoldierHeader";
 import ProfileSoldierItemsList from "../components/ProfileSoldierItemsList";
+import { Message, useToaster } from "rsuite";
+import SoldierLogin, { FormLogin } from "../components/SoldierLogin";
 
 interface ProfilePageProps {}
 
 const SoldierProfilePage: React.FC<ProfilePageProps> = () => {
   const [soldier, setSoldier] = useState<Soldier>();
-  const { id } = useParams();
+  const toaster = useToaster();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -32,28 +34,39 @@ const SoldierProfilePage: React.FC<ProfilePageProps> = () => {
     fetchData();
   }, [soldier]);
 
-  useEffect(() => {
-    async function fetchAndAddSoldiers() {
-      if (!id) return;
-      try {
-        const newSoldier = await getSoldierByPersonalNumberAndPhone(
-          "hapak162",
-          "8016032",
-          "0526587480"
+  const onLogin = async (e: FormLogin) => {
+    console.log(e);
+
+    try {
+      setIsLoading(true);
+      const newSoldier = await getSoldierByPersonalNumberAndPhone(
+        "hapak162",
+        e.personalNumber,
+        e.phoneNumber
+      );
+
+      if (newSoldier) {
+        console.log(newSoldier);
+        setSoldier(newSoldier);
+      } else {
+        toaster.push(
+          <Message type="error" showIcon>
+            לא קיים
+          </Message>,
+          {
+            placement: "topCenter",
+          }
         );
-        if (newSoldier) {
-          console.log(newSoldier);
-        }
-      } catch (err) {
-        console.error("Error fetching or adding soldiers:", err);
       }
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching or adding soldiers:", err);
     }
-
-    fetchAndAddSoldiers();
-  }, []);
-
+  };
   return (
-    <div className="bg-paleGreen p-8  rounded-xl shadow-lg max-w-4xl mx-auto">
+    <div className="flex justify-center flex-col   w-full bg-paleGreen sm:p-8 p-5  rounded-xl shadow-lg ">
+      {!soldier && <SoldierLogin isLoading={isLoading} onSubmit={onLogin} />}
+
       {soldier && (
         <>
           <ProfileSoldierHeader soldier={soldier} />

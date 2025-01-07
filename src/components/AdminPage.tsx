@@ -1,7 +1,5 @@
-import { doc, onSnapshot } from "@firebase/firestore";
 import { useEffect, useState } from "react";
 import { Admin, TableData } from "../types/table";
-import { db } from "../main";
 import { Button, Input, Message, useToaster } from "rsuite";
 import { getBoardByIdWithCallback } from "../service/board";
 import { User } from "@firebase/auth";
@@ -62,10 +60,6 @@ export default function AdminPage(props: Props) {
   const onRemoveAdmin = async (adminToRemove: Admin) => {
     if (data) {
       try {
-        // const newAdmins = data.admins.filter(
-        //   (admin) => admin.email !== adminToRemove.email
-        // );
-
         await removeAdmin("hapak162", adminToRemove.id);
         toaster.push(
           <Message type="success" showIcon>

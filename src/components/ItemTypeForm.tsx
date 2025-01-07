@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { createDynamic, updateDynamic } from "../service/board";
-import { v4 as uuidv4 } from "uuid";
+import { createDynamic } from "../service/board";
 import { Button, Form, Message, useToaster } from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
 import { ItemTranslate } from "../const";

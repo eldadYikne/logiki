@@ -1,10 +1,10 @@
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { auth, db } from "../main";
+import { auth } from "../main";
 
 import { Button, Input, Message, useToaster } from "rsuite";
-import { useNavigate, useParams } from "react-router-dom";
-import { Admin, TableData } from "../types/table";
+import { useNavigate } from "react-router-dom";
+import { Admin } from "../types/table";
 import GoogleAuth from "./GoogleAuth";
 import { updateDynamic } from "../service/board";
 import { adminTranslate } from "../const";
@@ -16,8 +16,6 @@ export default function PersonalArea() {
   const [admin, setAdmin] = useState<Admin>();
   const [isEditMode, setIsEditMode] = useState(true);
   const navigat = useNavigate();
-  const { id } = useParams();
-  const [data, setData] = useState<TableData>();
   const toaster = useToaster();
 
   useEffect(() => {

@@ -5,11 +5,10 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../main";
-import { Admin, Item, ItemType } from "../types/table";
+import { Item } from "../types/table";
 import { Soldier } from "../types/soldier";
 import { query, where, getDocs } from "firebase/firestore";
 

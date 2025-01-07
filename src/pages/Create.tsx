@@ -4,8 +4,6 @@ import { Soldier } from "../types/soldier";
 import CheckRoundIcon from "@rsuite/icons/CheckRound";
 import { useNavigate, useParams } from "react-router-dom";
 import { TableData } from "../types/table";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../main";
 import { Loader, Message, useToaster } from "rsuite";
 import { createItem } from "../service/item";
 import { createSoldier } from "../service/soldier";

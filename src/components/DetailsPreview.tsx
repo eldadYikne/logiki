@@ -1,4 +1,3 @@
-import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -43,7 +42,7 @@ import {
   removeDynamicById,
   updateDynamic,
 } from "../service/board";
-import { auth, db } from "../main";
+import { auth } from "../main";
 import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
 import { User } from "@firebase/auth";

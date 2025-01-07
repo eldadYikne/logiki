@@ -1,11 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ItemType } from "../types/table";
 
-export default function SlideItemTypes({
-  itemsTypes,
-  selecteTable,
-  setSelectedTable,
-}: Props) {
+export default function SlideItemTypes({ itemsTypes, selecteTable }: Props) {
   const navigate = useNavigate();
 
   return (

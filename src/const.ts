@@ -101,6 +101,7 @@ export const adminTranslate: { [key in keyof Admin]: string } = {
   phone: "שם מלא",
   rank: "דרגה",
   signature: "חתימה",
+  id: "",
 };
 export const soldierKeys = Object.keys({
   profileImage: "",

@@ -341,7 +341,7 @@ const DynamicForm: React.FC<Props> = ({
                 {field === "team" && (
                   <div className="w-full add-soldier-dropdown">
                     <Dropdown
-                      title={(newForm as Soldier).team.name ?? "בחר צוות"}
+                      title={(newForm as Soldier).team?.name ?? "בחר צוות"}
                       style={{ width: "100%" }}
                     >
                       {data?.teams &&

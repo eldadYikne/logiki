@@ -10,16 +10,12 @@ import {
   Checkbox,
 } from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
-import { CombinedKeys, Item, ItemType } from "../types/table";
-import {
-  ItemTranslate,
-  sizeTranslate,
-  teamOptions,
-  teamTranslate,
-} from "../const";
-import { Size, Soldier, Team } from "../types/soldier";
+import { CombinedKeys, Item, ItemType, TableData } from "../types/table";
+import { ItemTranslate, sizeTranslate } from "../const";
+import { NewTeam, Size, Soldier } from "../types/soldier";
 import { v4 as uuidv4 } from "uuid";
 import { UploadWidget } from "./UploadWidget";
+import { getBoardByIdWithCallback } from "../service/board";
 
 type FormData = Item | Soldier;
 interface NewForm {
@@ -30,7 +26,7 @@ interface NewForm {
   profileImage?: string;
   itemType?: ItemType;
   size?: Size;
-  team?: Team | "";
+  team?: NewTeam | "";
   isExclusiveItem?: boolean;
   numberOfUnExclusiveItems?: number;
 }
@@ -45,6 +41,8 @@ const DynamicForm: React.FC<Props> = ({
   const [tryConfirm, setTryConfirm] = useState<boolean>(false);
   const toaster = useToaster();
   const formRef = useRef<any>();
+  const [data, setData] = useState<TableData>();
+
   useEffect(() => {
     if (itemToEdit) {
       setNewForm(itemToEdit);
@@ -52,6 +50,18 @@ const DynamicForm: React.FC<Props> = ({
     } else {
       setNewForm(defaultFormValues);
     }
+    async function fetchData() {
+      await getBoardByIdWithCallback(
+        "hapak162",
+        ["soldiers", "items", "itemsTypes", "teams"],
+        (a) => {
+          console.log("a", a);
+          setData((prev) => ({ ...prev, ...a } as TableData));
+        }
+      );
+    }
+
+    fetchData();
   }, []);
   const defaultFormValues: NewForm =
     type === "item"
@@ -72,9 +82,6 @@ const DynamicForm: React.FC<Props> = ({
   const firstInputRef = useRef<any>();
   const seconedInputRef = useRef<any>();
   useEffect(() => {
-    // if (firstInputRef.current) {
-    //   firstInputRef.current.focus();
-    // }
     console.log("newForm", itemToEdit ?? newForm);
   }, [newForm]);
 
@@ -334,29 +341,28 @@ const DynamicForm: React.FC<Props> = ({
                 {field === "team" && (
                   <div className="w-full add-soldier-dropdown">
                     <Dropdown
-                      title={
-                        teamTranslate[(newForm as Soldier).team] ?? "בחר צוות"
-                      }
+                      title={(newForm as Soldier).team.name ?? "בחר צוות"}
                       style={{ width: "100%" }}
                     >
-                      {teamOptions.map((team) => {
-                        return (
-                          <Dropdown.Item
-                            style={{ width: "100%" }}
-                            key={team}
-                            onSelect={() => {
-                              console.log(team);
-                              setNewForm((value) => ({
-                                ...value,
-                                team,
-                              }));
-                            }}
-                            value={team}
-                          >
-                            {teamTranslate[team as Team]}
-                          </Dropdown.Item>
-                        );
-                      })}
+                      {data?.teams &&
+                        data?.teams.map((team) => {
+                          return (
+                            <Dropdown.Item
+                              style={{ width: "100%" }}
+                              key={team.id}
+                              onSelect={() => {
+                                console.log(team);
+                                setNewForm((value) => ({
+                                  ...value,
+                                  team,
+                                }));
+                              }}
+                              value={team.id}
+                            >
+                              {team.name}
+                            </Dropdown.Item>
+                          );
+                        })}
                     </Dropdown>
                     {formRef.current &&
                       !formRef.current.team &&
@@ -495,7 +501,7 @@ const getValidationModel = (type: "item" | "soldier", newForm: NewForm) => {
         })
     : Schema.Model({
         name: StringType().isRequired("שדה חובה"),
-        team: StringType().isRequired("שדה חובה"),
+        team: ObjectType().isRequired("שדה חובה"),
         profileImage: StringType().isRequired("שדה חובה"),
         personalNumber: NumberType("רשום מספרים בלבד")
           .isRequired("שדה חובה")

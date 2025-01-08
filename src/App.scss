@@ -217,24 +217,27 @@ body {
   box-shadow: 1px 15px 13px -11px rgba(104, 119, 240, 0.46);
 }
 .sidebar {
-  background-color: white;
-  color: #318ce7;
-  height: 100%;
-  overflow-x: hidden;
-  padding-top: 60px;
-  position: fixed;
-  right: 0;
-  top: 0;
-  transition: 0.5s;
-  z-index: 10;
+  // width: 100%;
 }
 @media screen and (max-width: 640px) {
+  .sidebar {
+    background-color: white;
+    color: #318ce7;
+    height: 100%;
+    overflow-x: hidden;
+    padding-top: 60px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: 0.5s;
+    z-index: 10;
+  }
   .slidebar-shadow {
     box-shadow: -31px -60px 63px 219px rgba(84, 119, 240, 0.46);
   }
 }
 .slidebar-shadow {
-  box-shadow: 15px 15px 15px 15px;
+  // box-shadow: 15px 15px 15px 15px;
 }
 /* HTML: <div class="loader"></div> */
 .loader {
@@ -262,5 +265,10 @@ body {
   }
   100% {
     background-size: 20% 100%, 20% 100%, 20% 100%;
+  }
+}
+.trash-icon:hover {
+  & path:nth-last-child(-n + 3) {
+    color: rgb(165, 163, 163) !important;
   }
 }

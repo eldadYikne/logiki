@@ -1,16 +1,16 @@
 import { Button, Input } from "rsuite";
 import { FilterObject, FilterOption, FilterOptions } from "../types/filter";
-import { ItemTranslate, teamOptions, teamTranslate } from "../const";
+import { ItemTranslate } from "../const";
 import { CombinedKeys } from "../types/table";
 import { useEffect, useRef, useState } from "react";
-import { Team } from "../types/soldier";
+import { NewTeam } from "../types/soldier";
 import PeoplesIcon from "@rsuite/icons/Peoples";
 
 export default function Filter({
   filterType,
   onFilter,
   filters,
-
+  teams,
   dataLength,
 }: Props) {
   const inputRefs = useRef<any[]>([]);
@@ -34,9 +34,9 @@ export default function Filter({
           {
             key: "team",
             type: "options",
-            options: teamOptions.map((team) => ({
-              id: team,
-              key: teamTranslate[team as Team],
+            options: teams.map((team) => ({
+              id: team.id,
+              key: team.name,
             })),
           },
         ]
@@ -100,9 +100,7 @@ export default function Filter({
                         )
                       }
                     >
-                      {filters?.team
-                        ? teamTranslate[filters?.team as Team]
-                        : "בחר צוות"}
+                      {filters?.team ? filters?.team.name : "בחר צוות"}
                     </Button>
                   </div>
                 )}
@@ -121,21 +119,21 @@ export default function Filter({
       </div>
       {FilterOptionsOpen && (
         <div className="flex relative  z-10 h-11 items-center w-full max-w-full overflow-x-auto  gap-4 ">
-          {teamOptions.map((team) => {
+          {teams.map((team) => {
             return (
               <div
                 className="text-nowrap w-32 cursor-pointer"
-                key={team}
+                key={team.id}
                 onClick={() => {
                   console.log(team);
 
                   onFilter({
                     ...filters,
-                    team,
+                    team: team,
                   });
                 }}
               >
-                {teamTranslate[team as Team]}
+                {team.name}
               </div>
             );
           })}
@@ -151,4 +149,5 @@ interface Props {
   setFilters: Function;
   filters: FilterObject;
   dataLength: number;
+  teams: NewTeam[];
 }

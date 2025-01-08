@@ -28,7 +28,7 @@ function MaiEquipment(props: Props) {
     async function fetchData() {
       await getBoardByIdWithCallback(
         "hapak162",
-        ["soldiers", "items", "itemsTypes"],
+        ["soldiers", "items", "itemsTypes", "teams"],
         (a) => {
           console.log("a", a);
           setData((prev) => ({ ...prev, ...a } as TableData));
@@ -160,6 +160,7 @@ function MaiEquipment(props: Props) {
                 }}
               >
                 <Filter
+                  teams={data?.teams ?? []}
                   setFilters={setFilters}
                   filters={filters}
                   onFilter={onFilter}

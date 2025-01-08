@@ -1,6 +1,5 @@
 import React from "react";
 import { Soldier } from "../types/soldier";
-import { teamTranslate } from "../const";
 
 interface ProfileHeaderProps {
   soldier: Soldier;
@@ -24,7 +23,7 @@ const ProfileSoldierHeader: React.FC<ProfileHeaderProps> = ({ soldier }) => {
           <strong>פלאפון:</strong> {soldier.phoneNumber}
         </p>
         <p>
-          <strong>צוות:</strong> {teamTranslate[soldier.team]}
+          <strong>צוות:</strong> {soldier.team.name}
         </p>
         <p>
           <strong> מידות:</strong> {soldier.size.pance} מכנס /{" "}

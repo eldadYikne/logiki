@@ -1,8 +1,13 @@
-@media screen and (max-width: 640px) {
-}
 .items-type-table {
   display: grid;
   padding: 15px;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 10px;
+}
+@media screen and (max-width: 640px) {
+  .items-type-table {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
 }

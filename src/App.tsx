@@ -18,10 +18,10 @@ import Footer from "./components/Footer";
 
 import PersonalArea from "./components/PersonalArea";
 
-import ItemTypePage from "./pages/ItemTypePage";
 import Cart from "./components/Cart";
 import SignaNatureModal from "./components/SignaNatureModal";
 import SoldierProfilePage from "./pages/SoldierProfilePage";
+import ErrorPage from "./pages/ErrorPage";
 
 export default function App() {
   const [user, setUser] = useState<User>();
@@ -58,7 +58,7 @@ export default function App() {
       <Navbar setUser={setUser} user={user} />
       <div className="content-wrap">
         <Routes>
-          <Route path="/" element={<Navigate to="/soldiers" replace />} />
+          <Route path="/" element={<Navigate to={`/soldiers`} replace />} />
           <Route
             path="/:type"
             element={
@@ -72,13 +72,13 @@ export default function App() {
           <Route path="/soldier-profile" element={<SoldierProfilePage />} />
           <Route path="/add/:type" element={<Create />} />
           {user && <Route path="/cart" element={<Cart user={user} />} />}
-          <Route path="/items-type" element={<ItemTypePage />} />
           {user && <Route path="/personal-area" element={<PersonalArea />} />}
 
           {user && (
             <Route path="/:type/details/:id" element={<DetailsPreview />} />
           )}
           {user && <Route path="/admin" element={<AdminPage user={user} />} />}
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
       </div>
       {user && <SignaNatureModal user={user} />}

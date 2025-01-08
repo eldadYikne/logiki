@@ -17,8 +17,15 @@ export default function Navbar({ user }: Props) {
     <div className="h-16 sticky  z-30 overflow-x-hidden cursor-pointer shadow-md shadow-blue-50 justify-between items-center flex sm:p-4 px-4 sm:px-6">
       {user && (
         <MenuIcon
+          className="sm:hidden"
           onClick={() => setIsMenuOpen((prev) => !prev)}
           style={{ fontSize: "25px" }}
+        />
+      )}
+      {user && (
+        <Menu
+          isMenuOpen={isMenuOpen}
+          onCloseMenu={() => setIsMenuOpen(false)}
         />
       )}
       <div className="flex gap-5 items-center justify-center">
@@ -52,13 +59,6 @@ export default function Navbar({ user }: Props) {
           </span>
         )}
       </div>
-
-      {user && (
-        <Menu
-          isMenuOpen={isMenuOpen}
-          onCloseMenu={() => setIsMenuOpen(false)}
-        />
-      )}
     </div>
   );
 }

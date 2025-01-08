@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-import { Soldier, Team } from "../types/soldier";
+import { Soldier } from "../types/soldier";
 import { Item } from "../types/table";
-import {
-  ItemTranslate,
-  statusColors,
-  statusTranslate,
-  teamTranslate,
-} from "../const";
+import { ItemTranslate, statusColors, statusTranslate } from "../const";
 
 import SortDownIcon from "@rsuite/icons/SortDown";
 import SortUpIcon from "@rsuite/icons/SortUp";
@@ -177,7 +172,6 @@ function renderCellData(header: string, row: Soldier | Item) {
               }-300 p-1 rounded`}
               style={{ background: statusColors[(row as Item).status] }}
             >
-              {" "}
               {statusTranslate[(row as Item).status]}
             </button>
           </span>
@@ -185,11 +179,13 @@ function renderCellData(header: string, row: Soldier | Item) {
       } else if (header === "owner") {
         return <span>{value ?? "-"}</span>;
       } else if (header === "team") {
-        return <span>{teamTranslate[value as Team]}</span>;
+        return <span>{(row as Soldier).team.name} </span>;
       } else if (header === "profileImage") {
         return (
           <span className=" sm:flex justify-center profile-image  ">
             <img
+              height={80}
+              width={80}
               loading="lazy"
               alt={`${row.name ?? ""}`}
               className="sm:h-10 sm:w-10 w-20 h-20 max-w-20  bg-white rounded-full"

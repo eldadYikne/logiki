@@ -5,18 +5,19 @@ import FormGroup from "rsuite/esm/FormGroup";
 import { ItemTranslate } from "../const";
 import { Item } from "../types/table";
 
-export default function ItemTypeForm() {
+export default function ItemTypeForm({ formType }: Props) {
   const inputs = ["id", "name"];
   interface FormType {
     name: string;
     id: string;
   }
+
   const toaster = useToaster();
   const [newForm, setNewForm] = useState<FormType>({ id: "", name: "" });
   const onAddItems = async () => {
     try {
       if (newForm.name) {
-        await createDynamic("hapak162", "itemsTypes", {
+        await createDynamic("hapak162", formType, {
           name: newForm.name,
           id: "",
         });
@@ -37,7 +38,7 @@ export default function ItemTypeForm() {
     } catch (err) {}
   };
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex flex-col gap-2 justify-center items-center">
       <Form>
         {inputs.map((input) => {
           return (
@@ -58,8 +59,13 @@ export default function ItemTypeForm() {
             )
           );
         })}
-        <Button onClick={onAddItems}>הוסף קבוצת פריטים</Button>
       </Form>
+      <Button appearance="primary" onClick={onAddItems}>
+        {formType === "teams" ? "הוסף צוות" : "הוסף קבוצת פריטים"}
+      </Button>
     </div>
   );
+}
+interface Props {
+  formType: "itemsTypes" | "teams";
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   CombinedKeys,
@@ -13,7 +13,7 @@ import {
   ItemNotExclusive,
   Size,
   Soldier,
-  Team,
+  NewTeam,
 } from "../types/soldier";
 import FileDownloadIcon from "@rsuite/icons/FileDownload";
 import ArowBackIcon from "@rsuite/icons/ArowBack";
@@ -25,7 +25,6 @@ import {
   sizeIcons,
   statusColors,
   statusTranslate,
-  teamTranslate,
 } from "../const";
 import PhoneFillIcon from "@rsuite/icons/PhoneFill";
 import {
@@ -67,17 +66,18 @@ export default function DetailsPreview() {
   const [item, setItem] = useState<DetailsItem>();
   const [modalOpen, setModalOpen] = useState(false);
   const [editSoldier, setEditSoldier] = useState<boolean>(false);
+  const [isSignaturedSoldiersModalOpen, setIsSignaturedSoldiersModalOpen] =
+    useState<boolean>(false);
   const [soldierItems, setSoldierItems] = useState<Item[]>();
   const [soldierItemToBack, setSoldierItemToBack] =
     useState<ItemNotExclusive>();
   const [user, setUser] = useState<User>();
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
-
   const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
   const naigate = useNavigate();
   const toaster = useToaster();
   const [isLoading, setIsLoading] = useState(false);
-
+  setIsSignaturedSoldiersModalOpen;
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
     "profileImage",
@@ -405,7 +405,7 @@ export default function DetailsPreview() {
       : ({
           ...item,
           size: (item as Soldier).size ?? { pance: "", short: "", shoes: "" },
-          team: (item as Soldier).team ?? "",
+          team: (item as Soldier).team ?? { id: "", name: "" },
         } as Soldier);
   };
   const onDelete = async () => {
@@ -423,9 +423,10 @@ export default function DetailsPreview() {
               </Message>,
               { placement: "topCenter" }
             );
-            naigate(`/${type}`);
-
             await removeDynamicById("hapak162", key, item?.id ?? "");
+            naigate(
+              `/${key === "items" ? (item as Item).itemType.id : "soldiers"}`
+            );
           }
         } else {
           toaster.push(
@@ -440,7 +441,13 @@ export default function DetailsPreview() {
   };
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
-
+  const getSoldiersAreSignaturedItem = useMemo(() => {
+    if (!item) return [];
+    return data?.soldiers.filter(
+      (soldier) =>
+        !!soldier.items.find((itemSoldier) => itemSoldier.id === item.id)
+    );
+  }, [data?.soldiers, item]);
   const onAddItemToCart = () => {
     if (
       !(item as Item).isExclusiveItem &&
@@ -506,7 +513,7 @@ export default function DetailsPreview() {
           <div className="border relative border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
             <div className="flex sm:flex-row p-4  gap-3">
               {item && (
-                <div dir="rtl" className="flex flex-col gap-4 ">
+                <div dir="rtl" className="flex flex-col sm:gap-4 gap-2 ">
                   {
                     <div className="absolute top-0 right-2 edit-dropdown">
                       <Dropdown
@@ -553,7 +560,7 @@ export default function DetailsPreview() {
                         style={{
                           background: statusColors[(item as Item).status],
                         }}
-                        className="sm:text-xl sm:p-2 p-1 sm:w-1/2 text-white text-sm font-thin rounded-md shadow-sm max-h-7 sm:max-h-12"
+                        className=" sm:p-2 p-1 sm:w-1/2 text-white flex justify-center text-sm font-thin rounded-md shadow-sm max-h-7 sm:max-h-12"
                       >
                         {statusTranslate[(item as Item).status]}
                       </div>
@@ -569,6 +576,21 @@ export default function DetailsPreview() {
                       )
                     );
                   })}
+                  {(item as Item).history &&
+                    item &&
+                    !(item as Item).isExclusiveItem && (
+                      <>
+                        <div className="flex gap-1">
+                          <span>חתומים:</span>
+                          {getSoldiersAreSignaturedItem?.length}
+                        </div>
+                        <div className="flex gap-1">
+                          <span>סכ"ה:</span>
+                          {(getSoldiersAreSignaturedItem?.length ?? 0) +
+                            (item as Item).numberOfUnExclusiveItems}
+                        </div>
+                      </>
+                    )}
                   {(item as Soldier).size && (
                     <div className="flex gap-1">
                       {Object.keys((item as Soldier).size).map((size, i) => {
@@ -816,6 +838,7 @@ export default function DetailsPreview() {
           }}
         />
       )}
+      {isSignaturedSoldiersModalOpen && <div></div>}
       {editSoldier && (
         <div className=" relative w-full flex flex-col items-center justify-center">
           <ArowBackIcon
@@ -861,7 +884,7 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
   } else if (key === "isExclusiveItem") {
     return (item as Item).isExclusiveItem ? "אינ" : "";
   } else if (key === "team") {
-    return teamTranslate[(item as Soldier).team as Team];
+    return ((item as Soldier).team as NewTeam).name;
   } else if (key === "phoneNumber") {
     return (
       <span className="flex gap-2 items-center">

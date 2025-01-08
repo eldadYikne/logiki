@@ -6,7 +6,7 @@ export default function SlideItemTypes({ itemsTypes, selecteTable }: Props) {
 
   return (
     <div className="flex relative z-10 shadow-lg h-11 items-center w-full max-w-full overflow-x-auto  gap-4 ">
-      <div
+      {/* <div
         className={`text-blue-500 cursor-pointer p-2 hover:bg-slate-50 ${
           selecteTable === "soldiers"
             ? "font-semibold border-b-2 border-blue-500"
@@ -15,7 +15,10 @@ export default function SlideItemTypes({ itemsTypes, selecteTable }: Props) {
         onClick={() => navigate("/soldiers")}
       >
         חיילים
-      </div>
+      </div> */}
+      {/* <div className="text-blue-500 p-2 text-nowrap cursor-pointer bg-slate-50 sticky select-none ">
+        קבוצת פריטים
+      </div> */}
       {itemsTypes &&
         itemsTypes.map((itemType) => {
           return (
@@ -26,7 +29,7 @@ export default function SlideItemTypes({ itemsTypes, selecteTable }: Props) {
                 selecteTable === itemType.id
                   ? "font-semibold border-b-2 border-blue-500"
                   : ""
-              }
+              } select-none
               `}
               onClick={() => {
                 console.log((itemType as ItemType).id);

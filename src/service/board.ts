@@ -12,7 +12,7 @@ import { Soldier } from "../types/soldier";
 
 export const createDynamic = async (
   boardId: string,
-  collectionName: "items" | "soldiers" | "itemsTypes",
+  collectionName: "items" | "soldiers" | "itemsTypes" | "teams",
   item: Item | Soldier | ItemType
 ) => {
   try {
@@ -48,7 +48,7 @@ export const updateDynamic = async (
 };
 export const removeDynamicById = async (
   boardId: string,
-  collectionName: "items" | "soldiers",
+  collectionName: "items" | "soldiers" | "itemsTypes" | "teams",
   itemId: string
 ) => {
   try {

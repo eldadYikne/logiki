@@ -9,7 +9,7 @@ export interface Soldier {
   phoneNumber: number;
   profileImage: string;
   size: Size;
-  team: Team;
+  team: NewTeam;
 }
 export interface ItemNotExclusive {
   id: string;
@@ -35,20 +35,7 @@ export interface Size {
 export type SoldierItem = Item | Soldier;
 export type DetailsItem = Item | Soldier;
 export type AdminItemSoldier = Item | Soldier | Admin;
-export type Team =
-  | "contact"
-  | "logistics"
-  | "agam"
-  | "medical"
-  | "yoni"
-  | "adiel"
-  | "ben-shooshan"
-  | "eden"
-  | "command"
-  | "asaf"
-  | "mobility"
-  | "nemerim";
 export interface NewTeam {
-  teamName: string;
+  name: string;
   id: string;
 }

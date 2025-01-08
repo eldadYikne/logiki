@@ -1,4 +1,4 @@
-import { Size, Soldier, Team } from "./types/soldier";
+import { NewTeam, Size, Soldier } from "./types/soldier";
 import {
   Admin,
   CombinedKeys,
@@ -29,7 +29,7 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   size: "מידות",
   team: "צוות",
   isExclusiveItem: "פריט בודד",
-  numberOfUnExclusiveItems: "מספר פריטים",
+  numberOfUnExclusiveItems: "מאופסנים",
 };
 
 export const itemsKeys = Object.keys({
@@ -79,7 +79,7 @@ export const historyTranslate: { [key in keyof ItemHistory]: string } = {
   soldierId: "מזהה חייל",
   pdfFileSignature: "טופס חתימה",
 };
-export const teamTranslate: { [key in Team]: string } = {
+export const teamTranslate: any = {
   "ben-shooshan": "בן שושן ⚔️",
   adiel: "עדיאל ⚔️",
   eden: " עדן ⚔️",
@@ -111,7 +111,7 @@ export const soldierKeys = Object.keys({
   notes: "",
   id: "",
   phoneNumber: 0,
-  team: "adiel",
+  team: { id: "", name: "" },
   size: { pance: "", shoes: "", short: "" },
 } as Soldier) as (keyof Soldier)[];
 
@@ -123,7 +123,7 @@ export const statusColors: Record<Status, string> = {
   signed: "#a1a5ac",
   stored: "#269d26",
 };
-export const teamOptions: Team[] = [
+export const teamOptions: any = [
   "contact",
   "logistics",
   "agam",

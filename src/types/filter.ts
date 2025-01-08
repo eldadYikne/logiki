@@ -1,3 +1,4 @@
+import { NewTeam } from "./soldier";
 import { CombinedKeys, Item, ItemType } from "./table";
 
 export interface FilterOptions {
@@ -24,5 +25,5 @@ export interface FilterObject {
   items?: Item[];
   notes?: string;
   phoneNumber?: number;
-  team?: string;
+  team?: NewTeam;
 }

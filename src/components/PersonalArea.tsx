@@ -104,6 +104,32 @@ export default function PersonalArea() {
               );
             })}
         </div>
+        <div
+          onClick={() => {
+            toaster.push(
+              <Message type="info" showIcon>
+                לא ניתן לשנות חתימה
+              </Message>,
+              { placement: "topCenter" }
+            );
+          }}
+          className="w-1/2 h-1/2 flex flex-col"
+        >
+          <span>חתימה:</span>
+          <img className="w-full" src={admin?.signature} alt="" />
+          {/* {admin && (
+            <Button
+              onClick={async () => {
+                await updateDynamic("hapak162", admin.id, "admins", {
+                  ...admin,
+                  signature: "",
+                });
+              }}
+            >
+              מחק חתימה
+            </Button>
+          )} */}
+        </div>
       </div>
       <div className="flex gap-2">
         <span onClick={() => navigat("/")}>

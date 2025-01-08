@@ -580,10 +580,13 @@ export default function DetailsPreview() {
                     item &&
                     !(item as Item).isExclusiveItem && (
                       <>
-                        <div className="flex gap-1">
+                        <Button
+                          onClick={() => setIsSignaturedSoldiersModalOpen(true)}
+                          className="flex gap-1 w-20 p-1"
+                        >
                           <span>חתומים:</span>
                           {getSoldiersAreSignaturedItem?.length}
-                        </div>
+                        </Button>
                         <div className="flex gap-1">
                           <span>סכ"ה:</span>
                           {(getSoldiersAreSignaturedItem?.length ?? 0) +

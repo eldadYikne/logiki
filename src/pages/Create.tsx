@@ -4,13 +4,12 @@ import { Soldier } from "../types/soldier";
 import CheckRoundIcon from "@rsuite/icons/CheckRound";
 import { useNavigate, useParams } from "react-router-dom";
 import { Item, ItemType, TableData } from "../types/table";
-import { Button, Loader, Message, useToaster } from "rsuite";
+import { Loader, Message, useToaster } from "rsuite";
 import { createItem } from "../service/item";
-import { createSoldier, updateSoldier } from "../service/soldier";
+import { createSoldier } from "../service/soldier";
 import { getBoardByIdWithCallback, removeDynamicById } from "../service/board";
 import ItemTypeForm from "../components/ItemTypeForm";
 import TrashIcon from "@rsuite/icons/Trash";
-import { teamTranslate } from "../const";
 export default function Create() {
   const { type } = useParams();
   console.log("type", type);
@@ -107,27 +106,7 @@ export default function Create() {
     teams: "צוות",
     itemsTypes: "קבוצת פריטים",
   };
-  const onUpdateSoldiers = () => {
-    // data?.soldiers.map(async (soldier) => {
-    //   let newTeam = data.teams.find((team) => {
-    //     if (teamTranslate[soldier.team as string] === team.name) {
-    //       // console.log(teamTranslate[soldier.team as string], "===", team.name);
-    //     }
-    //     // console.log(teamTranslate[soldier.team as string].replace(/\s/g, ""));
-    //     return (
-    //       teamTranslate[soldier.team as string].replace(/\s/g, "") ===
-    //       team.name.replace(/\s/g, "")
-    //     );
-    //   });
-    //   if (newTeam) {
-    //     try {
-    //       console.log("soldier.name, newTeam");
-    //     } catch (err) {
-    //       console.log(err);
-    //     }
-    //   }
-    // });
-  };
+
   return (
     <div className="flex p-5 px-5 bg-gradient-to-r from-white to-slate-100  w-full pt-8 flex-col  items-center h-screens ">
       {/* <Button onClick={onUpdateSoldiers}>onUpdateSoldiers</Button> */}

@@ -1,4 +1,4 @@
-import { NewTeam, Size, Soldier } from "./types/soldier";
+import { Size, Soldier } from "./types/soldier";
 import {
   Admin,
   CombinedKeys,

@@ -1,7 +1,6 @@
 import { Button } from "rsuite";
 import { Soldier } from "../types/soldier";
 import FileDownloadIcon from "@rsuite/icons/FileDownload";
-import { teamTranslate } from "../const";
 import * as XLSX from "xlsx";
 
 export default function SoldierXcelDownload({ data }: Props) {
@@ -17,7 +16,7 @@ export default function SoldierXcelDownload({ data }: Props) {
     // Prepare rows with RTL support
     const rows = sortedData.map((item: Soldier) => [
       item.name || "", // Name column should be the first column (RTL)
-      teamTranslate[item.team] || "",
+      item.team.name || "",
       item.personalNumber ?? "",
       item.size?.pance ?? "",
       item.size?.shoes ?? "", // Handle empty shoes size

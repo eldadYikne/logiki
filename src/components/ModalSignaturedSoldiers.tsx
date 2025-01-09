@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal } from "rsuite";
 import { Soldier } from "../types/soldier";
+import { useNavigate } from "react-router-dom";
 
 interface ModalSignaturedSoldiersProps {
   soldiers: Soldier[];
@@ -17,6 +18,7 @@ const ModalSignaturedSoldiers: React.FC<ModalSignaturedSoldiersProps> = ({
     onCancel();
   };
   soldiers;
+  const navigate = useNavigate();
   return (
     <Modal open={isOpen} onClose={handleCancel} size="xs">
       <Modal.Header>
@@ -26,6 +28,10 @@ const ModalSignaturedSoldiers: React.FC<ModalSignaturedSoldiersProps> = ({
         <div dir="rtl" className=" p-4">
           {soldiers.map((soldier) => (
             <div
+              onClick={() => {
+                navigate(`/soldiers/details/${soldier.id}`);
+                onCancel();
+              }}
               key={soldier.id}
               className="border p-4 rounded shadow-lg gap-3  w-full flex items-center space-x-4"
             >

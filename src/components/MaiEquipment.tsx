@@ -7,8 +7,8 @@ import Filter from "./Filter";
 import { User } from "firebase/auth";
 import { Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
-import PlusRoundIcon from "@rsuite/icons/PlusRound";
-import { useNavigate, useParams } from "react-router-dom";
+
+import { useParams } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
@@ -20,7 +20,6 @@ function MaiEquipment(props: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(true);
   const [headers, setHeaders] = useState<TableHeaders>();
   const [data, setData] = useState<TableData>();
-  const navigate = useNavigate();
   useEffect(() => {
     if (type) setSelectedTable(type);
   }, [type]);
@@ -237,21 +236,6 @@ function MaiEquipment(props: Props) {
           </div>
         </div>
       </div>
-      <PlusRoundIcon
-        color="#1e3a8a"
-        className="fixed bottom-3 z-40 left-3"
-        style={{
-          fontSize: "40px",
-          fontWeight: "200",
-          background: "white",
-          borderRadius: "50%",
-        }}
-        onClick={() => {
-          navigate(
-            `${selecteTable === "soldiers" ? "add/soldier" : "add/item"}`
-          );
-        }}
-      />
     </div>
   );
 }

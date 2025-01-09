@@ -60,6 +60,7 @@ import {
   updateSoldier,
 } from "../service/soldier";
 import { getItemById, updateItem } from "../service/item";
+import ModalSignaturedSoldiers from "./ModalSignaturedSoldiers";
 export default function DetailsPreview() {
   const { id, type } = useParams();
   const [data, setData] = useState<TableData>();
@@ -841,7 +842,15 @@ export default function DetailsPreview() {
           }}
         />
       )}
-      {isSignaturedSoldiersModalOpen && <div></div>}
+      {data && getSoldiersAreSignaturedItem && (
+        <div>
+          <ModalSignaturedSoldiers
+            onCancel={() => setIsSignaturedSoldiersModalOpen(false)}
+            soldiers={getSoldiersAreSignaturedItem}
+            isOpen={isSignaturedSoldiersModalOpen}
+          />
+        </div>
+      )}
       {editSoldier && (
         <div className=" relative w-full flex flex-col items-center justify-center">
           <ArowBackIcon

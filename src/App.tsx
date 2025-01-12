@@ -26,6 +26,7 @@ import ErrorPage from "./pages/ErrorPage";
 export default function App() {
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -44,9 +45,6 @@ export default function App() {
 
   if (loading) {
     return (
-      // <PlaceholderParagraph rows={8}>
-      //   <Loader center content="loading" />
-      // </PlaceholderParagraph>
       <div className="h-screen w-full flex justify-center items-center">
         <div className="loader"></div>
       </div>
@@ -55,7 +53,18 @@ export default function App() {
 
   return (
     <div className="site-container" dir="rtl">
-      <Navbar setUser={setUser} user={user} />
+      <Navbar
+        setIsMenuOpen={setIsMenuOpen}
+        isMenuOpen={isMenuOpen}
+        setUser={setUser}
+        user={user}
+      />
+      {isMenuOpen && user && (
+        <div
+          onClick={() => setIsMenuOpen(false)}
+          className="fixed sm:hidden text-white h-svh w-full gap-2 bg-gray-800 opacity-50 z-20 "
+        ></div>
+      )}
       <div className="content-wrap">
         <Routes>
           <Route path="/" element={<Navigate to={`/soldiers`} replace />} />

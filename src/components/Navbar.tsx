@@ -2,14 +2,12 @@ import { User } from "firebase/auth";
 import Logo from "../assets/logo.png";
 import { useNavigate } from "react-router";
 import MenuIcon from "@rsuite/icons/Menu";
-import { useState } from "react";
 import Menu from "./Menu";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 
-export default function Navbar({ user }: Props) {
+export default function Navbar({ setIsMenuOpen, user, isMenuOpen }: Props) {
   const navigat = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartItemCount = cartItems.length;
 
@@ -18,7 +16,7 @@ export default function Navbar({ user }: Props) {
       {user && (
         <MenuIcon
           className="sm:hidden"
-          onClick={() => setIsMenuOpen((prev) => !prev)}
+          onClick={() => setIsMenuOpen((prev: boolean) => !prev)}
           style={{ fontSize: "25px" }}
         />
       )}
@@ -28,6 +26,7 @@ export default function Navbar({ user }: Props) {
           onCloseMenu={() => setIsMenuOpen(false)}
         />
       )}
+
       <div className="flex gap-5 items-center justify-center">
         {user && (
           <div className="relative">
@@ -65,4 +64,6 @@ export default function Navbar({ user }: Props) {
 interface Props {
   user?: User;
   setUser: Function;
+  isMenuOpen: boolean;
+  setIsMenuOpen: Function;
 }

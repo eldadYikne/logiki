@@ -327,7 +327,6 @@ export default function DetailsPreview() {
             (itemNoExlusive) => itemNoExlusive.id === itemToUpdate.id
           );
           notExslusiveItems.splice(notExslusiveItemIndex, 1);
-
           const newItemnow: Item = {
             id: itemToUpdate.id,
             history: itemToUpdate.history,
@@ -356,6 +355,15 @@ export default function DetailsPreview() {
               items: notExslusiveItems,
             });
           }
+          // const historyAction:HistoryAction={
+          //   id:'',
+          //   date:getCurrentDate(),
+          //   items:[],
+          //   soldier:{},
+          //   admin:{id:'',name:'',profilePicture:''},
+
+          // }
+          // await createDynamic('hapak162','actions',{} as HistoryAction)
           setIsLoading(false);
           setSoldierItemToBack(undefined);
 

@@ -52,7 +52,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       name: "חיילים",
       icon: getIconComponent("soldiers"),
     },
-    // { link: "/", name: "פריטים", icon: getIconComponent("homepage") },
+    // { link: "/", name: "פריטים", icon: getIconComponent("homepage") ,type:''},,
     {
       type: "soldier",
       link: "/add/soldier",
@@ -90,7 +90,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
 
   return (
     <div
-      className={`transition-all flex flex-col sm:flex-row gap-3 ${
+      className={`transition-all  z-50 flex flex-col sm:flex-row gap-3 ${
         isMenuOpen ? "w-[250px]  p-4 slidebar-shadow" : "w-0"
       } sidebar sm:w-full`}
     >

@@ -8,6 +8,7 @@ import { getAdminByEmail, updateAdmin } from "../service/admin";
 export default function SignaNatureModal({ user }: Props) {
   const [signatureUrl, setSignatureUrl] = useState<string>();
   const [admin, setAdmin] = useState<Admin>();
+  const [isSignatured, setIsSignatured] = useState<boolean>(false);
   const toaster = useToaster();
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function SignaNatureModal({ user }: Props) {
           </Message>,
           { placement: "topCenter" }
         );
+        setIsSignatured(true);
       }
     } catch (err) {}
   };
@@ -41,7 +43,7 @@ export default function SignaNatureModal({ user }: Props) {
   }
   return (
     <div>
-      {!admin.signature && (
+      {!admin.signature && !isSignatured && (
         <Modal
           size={"xs"}
           open={!admin.signature}

@@ -9,11 +9,12 @@ import {
 import { db } from "../main";
 import { Admin, Item, ItemType, TableData } from "../types/table";
 import { Soldier } from "../types/soldier";
+import { HistoryAction } from "../types/history";
 
 export const createDynamic = async (
   boardId: string,
-  collectionName: "items" | "soldiers" | "itemsTypes" | "teams",
-  item: Item | Soldier | ItemType
+  collectionName: "items" | "soldiers" | "itemsTypes" | "teams" | "actions",
+  item: Item | Soldier | ItemType | HistoryAction
 ) => {
   try {
     // Reference to the items subcollection inside the board document
@@ -22,7 +23,7 @@ export const createDynamic = async (
     // Add the item to the collection
     const docRef = await addDoc(itemsRef, item);
 
-    console.log(" successfully created:", item?.name);
+    console.log(" successfully created:", item);
     return docRef.id; // Return the ID of the created item
   } catch (error) {
     console.error("Error creating item:", error);

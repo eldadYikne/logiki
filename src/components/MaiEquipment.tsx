@@ -139,7 +139,7 @@ function MaiEquipment(props: Props) {
   return (
     <div dir="rtl" className="flex flex-col w-full">
       <div className="">
-        <div className="absolute left-2"></div>
+        {/* <div className="absolute left-2"></div> */}
         {data && data.itemsTypes && (
           <SlideItemTypes
             selecteTable={selecteTable}
@@ -155,7 +155,7 @@ function MaiEquipment(props: Props) {
                 style={{
                   boxShadow: "1px 15px 13px -11px rgba(104, 119, 240, 0.46)",
                   overflow: "hidden",
-                  padding: 8,
+                  padding: "8px 4.5vw 8px 4.5vw",
                 }}
               >
                 <Filter

@@ -5,7 +5,7 @@ export default function SlideItemTypes({ itemsTypes, selecteTable }: Props) {
   const navigate = useNavigate();
 
   return (
-    <div className="flex relative z-10 shadow-lg h-11 items-center w-full max-w-full overflow-x-auto  gap-4 ">
+    <div className="flex px-4 sm:px-10 relative z-10 shadow-lg h-11 items-center w-full max-w-full overflow-x-auto  gap-4 ">
       {/* <div
         className={`text-blue-500 cursor-pointer p-2 hover:bg-slate-50 ${
           selecteTable === "soldiers"
@@ -40,6 +40,13 @@ export default function SlideItemTypes({ itemsTypes, selecteTable }: Props) {
             </div>
           );
         })}
+      {!itemsTypes && (
+        <div
+          className={`text-blue-500 p-2 text-nowrap cursor-pointer hover:bg-slate-50 `}
+        >
+          הוסף קבוצת פריטים
+        </div>
+      )}
     </div>
   );
 }

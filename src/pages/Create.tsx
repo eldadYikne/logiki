@@ -141,7 +141,10 @@ export default function Create() {
                 <div className="w-2/3 flex flex-col justify-center items-center">
                   <span className="text-xl text-blue-400">
                     {" "}
-                    קבוצת פריטים שלך
+                    {type === "itemsTypes"
+                      ? "קבוצות פריטים שלך"
+                      : "הצוותים שלך"}{" "}
+                    ק
                   </span>
 
                   <div className=" w-full items-type-table sm:grid-cols-3">

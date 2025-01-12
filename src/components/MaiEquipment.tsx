@@ -121,8 +121,8 @@ function MaiEquipment(props: Props) {
     props.user.email &&
     props.user.email !== "hapakmaog162@gmail.com" &&
     !data?.admins
-      .map((admin) => (admin as Admin).email)
-      .includes(props.user.email)
+      .map((admin) => (admin as Admin).email.toLowerCase())
+      .includes(props.user.email.toLowerCase())
   ) {
     return (
       <div

@@ -27,7 +27,7 @@ function MaiEquipment(props: Props) {
     async function fetchData() {
       await getBoardByIdWithCallback(
         "hapak162",
-        ["soldiers", "items", "itemsTypes", "teams"],
+        ["soldiers", "items", "itemsTypes", "teams", "admins"],
         (a) => {
           console.log("a", a);
           setData((prev) => ({ ...prev, ...a } as TableData));

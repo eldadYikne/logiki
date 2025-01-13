@@ -159,7 +159,7 @@ function renderCellData(header: string, row: Soldier | Item) {
         ));
       } else if (header === "numberOfUnExclusiveItems") {
         return (row as Item).isExclusiveItem ? (
-          "-"
+          ""
         ) : (
           <span className="font-semibold">{value}</span>
         );
@@ -177,7 +177,9 @@ function renderCellData(header: string, row: Soldier | Item) {
           </span>
         );
       } else if (header === "owner") {
-        return <span>{value ?? "-"}</span>;
+        return (
+          <span>{(row as Item).isExclusiveItem ? value ?? "-" : "-"}</span>
+        );
       } else if (header === "team") {
         return <span>{(row as Soldier).team.name} </span>;
       } else if (header === "profileImage") {

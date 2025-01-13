@@ -32,7 +32,7 @@ const ModalSignaturedSoldiers: React.FC<ModalSignaturedSoldiersProps> = ({
                 onCancel();
               }}
               key={soldier.id}
-              className="border p-4 rounded shadow-lg gap-3  w-full flex items-center justify-between cursor-pointer space-x-4"
+              className="border p-3 rounded shadow-lg gap-3  w-full flex items-center justify-between cursor-pointer space-x-4"
             >
               <div className="flex justify-center items-center gap-2">
                 <img

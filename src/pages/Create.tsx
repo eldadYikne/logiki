@@ -144,7 +144,6 @@ export default function Create() {
                     {type === "itemsTypes"
                       ? "קבוצות פריטים שלך"
                       : "הצוותים שלך"}{" "}
-                    ק
                   </span>
 
                   <div className=" w-full items-type-table sm:grid-cols-3">

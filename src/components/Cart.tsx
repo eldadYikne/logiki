@@ -154,7 +154,22 @@ const CartPage = ({ user }: Props) => {
       }
     }
   };
+  const removeSimilarItemFromCart = (item: Item) => {
+    dispatch(removeOneItemFromCart(item.id));
+  };
+  const addSimilarItemToCart = (item: Item) => {
+    if (item.numberOfUnExclusiveItems <= cartItemsAfterJoin[item.id].sum) {
+      return toaster.push(
+        <Message type="info" showIcon>
+          לא נותרו פריטים מאופסנים לחתימה
+        </Message>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
 
+    dispatch(addOnMoreItemToCart(item));
+  };
   return (
     <div className="container flex flex-col items-center justify-around mx-auto p-4">
       <div className="max-w-5xl mx-auto w-full">
@@ -213,7 +228,7 @@ const CartPage = ({ user }: Props) => {
                           className="text-blue-500 hover:text-blue-700 px-2 py-1 border rounded-md"
                           onClick={(e) => {
                             e.stopPropagation();
-                            dispatch(removeOneItemFromCart(item.id));
+                            removeSimilarItemFromCart(item);
                           }}
                         >
                           -
@@ -223,8 +238,7 @@ const CartPage = ({ user }: Props) => {
                           className="text-blue-500 hover:text-blue-700 px-2 py-1 border rounded-md"
                           onClick={(e) => {
                             e.stopPropagation();
-
-                            dispatch(addOnMoreItemToCart(item));
+                            addSimilarItemToCart(item);
                           }}
                         >
                           +

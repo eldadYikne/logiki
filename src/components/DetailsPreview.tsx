@@ -493,6 +493,18 @@ export default function DetailsPreview() {
       return;
     }
     if (
+      !(item as Item).isExclusiveItem &&
+      cartItems.filter((cartItem) => cartItem.id === item?.id).length >=
+        (item as Item).numberOfUnExclusiveItems
+    ) {
+      return toaster.push(
+        <Message type="info" showIcon>
+          לא נותרו פריטים מאופסנים לחתימה
+        </Message>,
+        { placement: "topCenter" }
+      );
+    }
+    if (
       !cartItems.find((itemCart) => item?.id === itemCart.id)
         ?.isExclusiveItem &&
       (item as Item).history

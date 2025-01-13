@@ -25,7 +25,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
   }
   const location = useLocation();
   useEffect(() => {}, [location.pathname]);
-  console.log('location.pathname.split("/")', location.pathname.split("/"));
+  // console.log('location.pathname.split("/")', location.pathname.split("/"));
 
   const getIconComponent = (key: string) => {
     if (key === "item") {

@@ -471,7 +471,8 @@ export default function DetailsPreview() {
       return;
     }
     if (
-      !cartItems.find((itemCart) => item?.id === itemCart.id) &&
+      !cartItems.find((itemCart) => item?.id === itemCart.id)
+        ?.isExclusiveItem &&
       (item as Item).history
     ) {
       if ((item as Item).soldierId) {

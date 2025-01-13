@@ -23,6 +23,17 @@ const cartSlice = createSlice({
     removeItemFromCart: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item.id !== action.payload); // Filter out item by id
     },
+    removeOneItemFromCart: (state, action: PayloadAction<string>) => {
+      const index = state.items.findIndex((item) => item.id === action.payload);
+      if (index !== -1) {
+        state.items.splice(index, 1); // Remove the first matching item
+      }
+    },
+    addOnMoreItemToCart: (state, action: PayloadAction<Item>) => {
+      // const index = state.items.findIndex((item) => item.id === action.payload);
+      state.items.push(action.payload);
+    },
+
     removeAllItemFromCart: (state) => {
       state.items = []; // Filter out item by id
     },
@@ -39,6 +50,8 @@ export const {
   removeAllItemFromCart,
   removeItemFromCart,
   clearCart,
+  removeOneItemFromCart,
+  addOnMoreItemToCart,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { removeAllItemFromCart, removeItemFromCart } from "../store/cartSlice";
+import {
+  addOnMoreItemToCart,
+  removeAllItemFromCart,
+  removeItemFromCart,
+  removeOneItemFromCart,
+} from "../store/cartSlice";
 import TrashIcon from "@rsuite/icons/Trash";
 import { statusTranslate } from "../const";
 import { Button, Loader, Message, useToaster } from "rsuite";
@@ -44,6 +49,20 @@ const CartPage = ({ user }: Props) => {
   const removeAllItem = () => {
     dispatch(removeAllItemFromCart());
   };
+
+  const cartItemsAfterJoin = cartItems.reduce<{
+    [key: string]: { sum: number; item: Item };
+  }>((acc, itemCart: Item) => {
+    if (acc[itemCart?.id as string]) {
+      acc[itemCart?.id] = { sum: acc[itemCart.id].sum + 1, item: itemCart };
+    } else {
+      acc[itemCart.id] = { sum: 1, item: itemCart };
+    }
+    return acc;
+  }, {} as any);
+  console.log("cartItemsAfterJoin", cartItemsAfterJoin);
+  console.log("cartItems", cartItems);
+
   const onSignature = async (itemsToSignature: Item[]) => {
     console.log("onSignature ", itemsToSignature);
 
@@ -151,48 +170,77 @@ const CartPage = ({ user }: Props) => {
           <p className="text-center text-lg">עגלת ההחתמות ריקה</p>
         ) : (
           <div className="space-y-4">
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-4 border rounded-lg shadow-sm bg-white"
-              >
-                <div className="flex items-center gap-4">
-                  <img
-                    src={item.profileImage}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
-                  <div>
-                    <h3 className="text-lg font-medium">{item.name}</h3>
+            {Object.values(cartItemsAfterJoin).map(({ sum, item }) => {
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-4 border rounded-lg shadow-sm bg-white"
+                  onClick={() => navigate(`/items/details/${item.id}`)}
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={item.profileImage}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover rounded-md"
+                    />
+                    <div>
+                      <h3 className="text-lg font-medium">{item.name}</h3>
 
-                    {/* Show Serial Number only if it's available */}
-                    {item.serialNumber && (
+                      {/* Show Serial Number only if it's available */}
+                      {item.serialNumber && (
+                        <p className="text-sm text-gray-500">
+                          קוד מזהה: {item.serialNumber}
+                        </p>
+                      )}
+
                       <p className="text-sm text-gray-500">
-                        קוד מזהה: {item.serialNumber}
+                        סוג פריט: {item.itemType.name}
                       </p>
-                    )}
+                      <p className="text-sm text-gray-500">
+                        סטטוס: {statusTranslate[item.status]}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        פריט יחודי: {item.isExclusiveItem ? "כן" : "לא"}
+                      </p>
+                    </div>
+                  </div>
 
-                    <p className="text-sm text-gray-500">
-                      סוג פריט: {item.itemType.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      סטטוס: {statusTranslate[item.status]}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      פריט יחודי: {item.isExclusiveItem ? "כן" : "לא"}
-                    </p>
+                  {/* Remove Item Button */}
+                  <div className="flex sm:flex-row flex-col items-center  gap-5 sm:gap-10">
+                    {!item.isExclusiveItem && (
+                      <div className="flex gap-1">
+                        <button
+                          className="text-blue-500 hover:text-blue-700 px-2 py-1 border rounded-md"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(removeOneItemFromCart(item.id));
+                          }}
+                        >
+                          -
+                        </button>
+                        <span className="text-lg font-medium">{sum}</span>
+                        <button
+                          className="text-blue-500 hover:text-blue-700 px-2 py-1 border rounded-md"
+                          onClick={(e) => {
+                            e.stopPropagation();
+
+                            dispatch(addOnMoreItemToCart(item));
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => handleRemoveItem(item.id)}
+                    >
+                      <TrashIcon />
+                    </button>
                   </div>
                 </div>
-
-                {/* Remove Item Button */}
-                <button
-                  className="text-red-500 hover:text-red-700"
-                  onClick={() => handleRemoveItem(item.id)}
-                >
-                  <TrashIcon />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

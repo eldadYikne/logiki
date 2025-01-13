@@ -14,6 +14,7 @@ import {
   Size,
   Soldier,
   NewTeam,
+  SoldiersAreSignaturedItem,
 } from "../types/soldier";
 import FileDownloadIcon from "@rsuite/icons/FileDownload";
 import ArowBackIcon from "@rsuite/icons/ArowBack";
@@ -75,7 +76,7 @@ export default function DetailsPreview() {
   const [user, setUser] = useState<User>();
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
   const [isModalImprovalOpen, setIsModalImprovalOpen] = useState(false);
-  const naigate = useNavigate();
+  const navigate = useNavigate();
   const toaster = useToaster();
   const [isLoading, setIsLoading] = useState(false);
   setIsSignaturedSoldiersModalOpen;
@@ -433,7 +434,7 @@ export default function DetailsPreview() {
               { placement: "topCenter" }
             );
             await removeDynamicById("hapak162", key, item?.id ?? "");
-            naigate(
+            navigate(
               `/${key === "items" ? (item as Item).itemType.id : "soldiers"}`
             );
           }
@@ -450,13 +451,34 @@ export default function DetailsPreview() {
   };
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
-  const getSoldiersAreSignaturedItem = useMemo(() => {
-    if (!item) return [];
-    return data?.soldiers.filter(
-      (soldier) =>
-        !!soldier.items.find((itemSoldier) => itemSoldier.id === item.id)
+  const getSoldiersAreSignaturedItem =
+    useMemo<SoldiersAreSignaturedItem>(() => {
+      if (!item) return [];
+      return data?.soldiers.reduce((acc, soldier) => {
+        if (soldier.items.find((itemSoldier) => itemSoldier.id === item.id)) {
+          soldier.items.forEach((itemSol) => {
+            if (itemSol.id !== item.id) return;
+            if (acc[soldier.id]) {
+              acc[soldier.id] = { sum: acc[soldier.id].sum + 1, soldier };
+            } else {
+              acc[soldier.id] = { sum: 1, soldier };
+            }
+          });
+        }
+        return acc;
+      }, {} as any);
+
+      // return data?.soldiers.filter(
+      //   (soldier) =>
+      //     !!soldier.items.find((itemSoldier) => itemSoldier.id === item.id)
+      // );
+    }, [data?.soldiers, item]);
+  function calculateTotalSum() {
+    return Object.values(getSoldiersAreSignaturedItem).reduce(
+      (total, item) => total + item.sum,
+      0
     );
-  }, [data?.soldiers, item]);
+  }
   const onAddItemToCart = () => {
     if (
       !(item as Item).isExclusiveItem &&
@@ -595,12 +617,12 @@ export default function DetailsPreview() {
                           className="flex gap-1 w-20 p-1"
                         >
                           <span>חתומים:</span>
-                          {getSoldiersAreSignaturedItem?.length}
+                          {calculateTotalSum()}
                         </Button>
                         <div className="flex gap-1">
                           <span>סכ"ה:</span>
-                          {(getSoldiersAreSignaturedItem?.length ?? 0) +
-                            (item as Item).numberOfUnExclusiveItems}
+                          {(calculateTotalSum() ?? 0) +
+                            Number((item as Item).numberOfUnExclusiveItems)}
                         </div>
                       </>
                     )}
@@ -726,7 +748,7 @@ export default function DetailsPreview() {
                                 <Button
                                   size="xs"
                                   onClick={() =>
-                                    naigate(`/items/details/${soldierItem.id}`)
+                                    navigate(`/items/details/${soldierItem.id}`)
                                   }
                                 >
                                   הצג
@@ -929,6 +951,15 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
           item[key as keyof DetailsItem]
         : ""
       : "";
+  } else if (key === "owner" && (item as Item).soldierId) {
+    return (
+      <div className="flex gap-1">
+        {ItemTranslate[key as CombinedKeys]}:
+        <a href={`/soldiers/details/${(item as Item).soldierId}`}>
+          {item[key as keyof DetailsItem]}
+        </a>
+      </div>
+    );
   } else if (key === "status") {
     return (
       ItemTranslate[key as CombinedKeys] +

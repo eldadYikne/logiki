@@ -65,7 +65,6 @@ const CartPage = ({ user }: Props) => {
 
   const onSignature = async (itemsToSignature: Item[]) => {
     console.log("onSignature ", itemsToSignature);
-
     setIsLoading(true);
     const exclusiveItems = itemsToSignature.filter(
       (item) => item.isExclusiveItem
@@ -114,6 +113,7 @@ const CartPage = ({ user }: Props) => {
                 } as ItemNotExclusive)
             );
             signedSoldier?.items.push(...soldierItems);
+
             const notExclusiveItemsToSignature = notExclusiveItems.map(
               (item) =>
                 ({
@@ -125,9 +125,9 @@ const CartPage = ({ user }: Props) => {
                   soldierPersonalNumber: 0,
                   status: "stored",
                   representative: "",
-                  numberOfUnExclusiveItems: Number(
-                    item.numberOfUnExclusiveItems - 1
-                  ),
+                  numberOfUnExclusiveItems:
+                    Number(item.numberOfUnExclusiveItems) -
+                    Number(cartItemsAfterJoin[item.id].sum),
                 } as Item)
             );
 

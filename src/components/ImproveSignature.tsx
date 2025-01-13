@@ -149,7 +149,7 @@ const ImproveSignature: React.FC<DynamicTableProps> = ({
                 <div className="w-full  justify-center text-center text-2xl">
                   שובר השאלת אפסניה
                 </div>
-                <div className="text-xl px-6 border-black border-t-[1px] flex justify-between">
+                <div className="text-md px-6 border-black border-t-[1px] flex justify-between">
                   <span>
                     <span>מאת: </span>
                     <span>

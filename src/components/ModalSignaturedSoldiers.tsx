@@ -1,10 +1,10 @@
 import React from "react";
 import { Modal } from "rsuite";
-import { Soldier } from "../types/soldier";
+import { SoldiersAreSignaturedItem } from "../types/soldier";
 import { useNavigate } from "react-router-dom";
 
 interface ModalSignaturedSoldiersProps {
-  soldiers: Soldier[];
+  soldiers: SoldiersAreSignaturedItem;
   onCancel: Function;
   isOpen: boolean;
 }
@@ -17,7 +17,6 @@ const ModalSignaturedSoldiers: React.FC<ModalSignaturedSoldiersProps> = ({
   const handleCancel = () => {
     onCancel();
   };
-  soldiers;
   const navigate = useNavigate();
   return (
     <Modal open={isOpen} onClose={handleCancel} size="xs">
@@ -26,14 +25,14 @@ const ModalSignaturedSoldiers: React.FC<ModalSignaturedSoldiersProps> = ({
       </Modal.Header>
       <Modal.Body>
         <div dir="rtl" className=" p-4">
-          {soldiers.map((soldier) => (
+          {Object.values(soldiers).map(({ soldier, sum }) => (
             <div
               onClick={() => {
                 navigate(`/soldiers/details/${soldier.id}`);
                 onCancel();
               }}
               key={soldier.id}
-              className="border p-4 rounded shadow-lg gap-3  w-full flex items-center space-x-4"
+              className="border p-4 rounded shadow-lg gap-3  w-full flex items-center cursor-pointer space-x-4"
             >
               <img
                 src={soldier.profileImage}
@@ -45,6 +44,9 @@ const ModalSignaturedSoldiers: React.FC<ModalSignaturedSoldiersProps> = ({
                 <p className="text-gray-600">
                   מספר אישי: {soldier.personalNumber}
                 </p>
+              </div>
+              <div className="flex gap-1 text-gray-600 whitespace-nowrap ">
+                כמות: {sum}
               </div>
             </div>
           ))}

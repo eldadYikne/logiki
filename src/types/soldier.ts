@@ -39,3 +39,6 @@ export interface NewTeam {
   name: string;
   id: string;
 }
+export interface SoldiersAreSignaturedItem {
+  [key: string]: { sum: number; soldier: Soldier };
+}

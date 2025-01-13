@@ -65,6 +65,7 @@ export default function App() {
           className="fixed sm:hidden text-white h-svh w-full gap-2 bg-gray-800 opacity-50 z-20 "
         ></div>
       )}
+
       <div className="content-wrap">
         <Routes>
           <Route path="/" element={<Navigate to={`/soldiers`} replace />} />

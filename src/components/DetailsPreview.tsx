@@ -784,45 +784,51 @@ export default function DetailsPreview() {
             </div>
           )}
 
-          {(item as Item).history && (item as Item).history.length > 0 && (
-            <div className="flex flex-col  items-center ">
-              <span className="text-xl text-blue-950 p-2 w-full text-center shadow-md bg-white">
-                היסטוריה
-              </span>
+          {(item as Item).history &&
+            (item as Item).history.length > 0 &&
+            (item as Item).isExclusiveItem && (
+              <div className="flex flex-col  items-center ">
+                <span className="text-xl text-blue-950 p-2 w-full text-center shadow-md bg-white">
+                  היסטוריה
+                </span>
 
-              <Table className="history-table">
-                <Thead>
-                  <Tr>
-                    {historyTh.map((historyKey) => {
-                      return (
-                        historyKey !== "soldierId" && (
-                          <Th key={historyKey}>
-                            {historyTranslate[historyKey as keyof ItemHistory]}
-                          </Th>
-                        )
-                      );
-                    })}
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {(item as Item).history
-                    .slice(
-                      (item as Item).history.length - 4,
-                      (item as Item).history.length
-                    )
-                    .map((history, i) => {
-                      return (
-                        <HistoryItem
-                          item={item as Item}
-                          key={i}
-                          history={history}
-                        />
-                      );
-                    })}
-                </Tbody>
-              </Table>
-            </div>
-          )}
+                <Table className="history-table">
+                  <Thead>
+                    <Tr>
+                      {historyTh.map((historyKey) => {
+                        return (
+                          historyKey !== "soldierId" && (
+                            <Th key={historyKey}>
+                              {
+                                historyTranslate[
+                                  historyKey as keyof ItemHistory
+                                ]
+                              }
+                            </Th>
+                          )
+                        );
+                      })}
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {(item as Item).history
+                      .slice(
+                        (item as Item).history.length - 4,
+                        (item as Item).history.length
+                      )
+                      .map((history, i) => {
+                        return (
+                          <HistoryItem
+                            item={item as Item}
+                            key={i}
+                            history={history}
+                          />
+                        );
+                      })}
+                  </Tbody>
+                </Table>
+              </div>
+            )}
         </div>
       )}
       {isModalConfirmOpen && item && (item as Item).owner && (

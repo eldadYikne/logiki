@@ -49,7 +49,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
     {
       type: "soldiers",
       link: "/soldiers",
-      name: "חיילים",
+      name: "רשימות",
       icon: getIconComponent("soldiers"),
     },
     // { link: "/", name: "פריטים", icon: getIconComponent("homepage") ,type:''},,

@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { getBoardByIdWithCallback, removeDynamicById } from "../service/board";
 import { CollectionName, TableData } from "../types/table";
 import { TranslateHistoryType } from "../const";
-import { Button } from "rsuite";
+import { Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import TrashIcon from "@rsuite/icons/Trash";
 
 const HistoryActionsPage: React.FC<Props> = () => {
   const [data, setData] = useState<TableData>();
-
+  const toaster = useToaster();
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
@@ -22,6 +23,12 @@ const HistoryActionsPage: React.FC<Props> = () => {
   const removeAction = async (actionId: string) => {
     try {
       await removeDynamicById("hapak162", "actions", actionId);
+      toaster.push(
+        <Message type="success" showIcon>
+          הפעולה בוצעה בהצלחה!
+        </Message>,
+        { placement: "topCenter" }
+      );
     } catch (err) {}
   };
   const collectionName: { [key in CollectionName]: string } = {
@@ -45,7 +52,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
     return navigate(`${collectionName[name]}${id}`);
   };
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 flex flex-col justify-center items-center">
       <h1 className="text-2xl font-bold mb-4">היסטוריית פעולות</h1>
       <div className="grid gap-4">
         {data &&
@@ -57,9 +64,20 @@ const HistoryActionsPage: React.FC<Props> = () => {
             .map((action) => (
               <div
                 key={action.id}
-                className="p-4 border relative rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white"
+                className="p-4  border whitespace-nowrap  items-center relative rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white"
               >
-                <div className="mb-2 flex gap-1">
+                <div className="mb-2 flex items-center gap-1">
+                  {(action.items || action.soldier) && (
+                    <img
+                      src={
+                        action.items?.length! > 0
+                          ? action.items![0].profileImage
+                          : action.soldier?.profileImage
+                      }
+                      className="h-10 w-10 rounded-full"
+                      alt=""
+                    />
+                  )}
                   <span className="font-bold">{action.admin.name}</span>{" "}
                   <span className="font-bold">
                     {TranslateHistoryType[action.type]}
@@ -150,9 +168,12 @@ const HistoryActionsPage: React.FC<Props> = () => {
                   </div>
                 )}
                 {
-                  <Button className="" onClick={() => removeAction(action.id)}>
-                    מחק{" "}
-                  </Button>
+                  <TrashIcon
+                    color="red"
+                    style={{ fontSize: "15px" }}
+                    className="absolute left-2 top-2 "
+                    onClick={() => removeAction(action.id)}
+                  />
                 }
               </div>
             ))}

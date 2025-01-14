@@ -1,3 +1,4 @@
+import { HistoryAction } from "./history";
 import { NewTeam, Soldier } from "./soldier";
 
 export interface Item {
@@ -41,6 +42,7 @@ export interface TableData {
   admins: Admin[];
   teams: NewTeam[];
   itemsTypes: ItemType[];
+  actions: HistoryAction[];
 }
 export interface Admin {
   id: string;
@@ -57,3 +59,9 @@ export interface ItemType {
   id: string;
 }
 export type CombinedKeys = keyof Item | keyof Soldier; // Union of keys from both Item and Soldier
+export type CollectionName =
+  | "items"
+  | "soldiers"
+  | "itemsTypes"
+  | "teams"
+  | "actions";

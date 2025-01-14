@@ -1,7 +1,6 @@
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -10,7 +9,7 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { Item } from "../types/table";
+import { Admin, Item } from "../types/table";
 import { db } from "../main";
 
 export const getItemById = async (boardId: string, itemId: string) => {
@@ -35,49 +34,22 @@ export const getItemById = async (boardId: string, itemId: string) => {
     console.error("Error fetching item:", error);
   }
 };
-export const createItem = async (boardId: string, item: Item) => {
-  try {
-    // Reference to the items subcollection inside the board document
-    const itemsRef = collection(db, `boards/${boardId}/items`);
 
-    // Add the item to the collection
-    const docRef = await addDoc(itemsRef, item);
-
-    console.log("Item successfully created with ID:");
-    return docRef.id; // Return the ID of the created item
-  } catch (error) {
-    console.error("Error creating item:", error);
-    throw error; // Re-throw the error to handle it where the function is called
-  }
-};
 export const updateItem = async (
   boardId: string,
   itemId: string, // Custom ID in your documents
-  updates: Partial<Item>
+  updates: Partial<Item>,
+  admin?: Admin
 ) => {
   try {
     const itemRef = doc(db, `boards/${boardId}/items`, itemId);
-
+    admin;
     await updateDoc(itemRef, updates);
 
     console.log("Item successfully updated");
   } catch (error) {
     console.error("Error updating item:", error);
     throw error;
-  }
-};
-export const removeItem = async (boardId: string, itemId: string) => {
-  try {
-    // Reference to the specific item document
-    const itemRef = doc(db, `boards/${boardId}/items`, itemId);
-
-    // Delete the document
-    await deleteDoc(itemRef);
-
-    console.log("Item successfully deleted");
-  } catch (error) {
-    console.error("Error deleting item:", error);
-    throw error; // Re-throw the error to handle it where the function is called
   }
 };
 

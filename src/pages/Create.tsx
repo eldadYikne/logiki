@@ -5,11 +5,15 @@ import CheckRoundIcon from "@rsuite/icons/CheckRound";
 import { useNavigate, useParams } from "react-router-dom";
 import { Item, ItemType, TableData } from "../types/table";
 import { Loader, Message, useToaster } from "rsuite";
-import { createItem } from "../service/item";
-import { createSoldier } from "../service/soldier";
-import { getBoardByIdWithCallback, removeDynamicById } from "../service/board";
+import {
+  createDynamic,
+  getBoardByIdWithCallback,
+  removeDynamicById,
+} from "../service/board";
 import ItemTypeForm from "../components/ItemTypeForm";
 import TrashIcon from "@rsuite/icons/Trash";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 export default function Create() {
   const { type } = useParams();
   console.log("type", type);
@@ -18,6 +22,7 @@ export default function Create() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const toaster = useToaster();
+  const { admin } = useSelector((state: RootState) => state.admin);
 
   useEffect(() => {
     async function fetchData() {
@@ -39,11 +44,11 @@ export default function Create() {
     try {
       let sildierId;
       if (type === "item") {
-        sildierId = await createItem("hapak162", soldier as Item);
+        sildierId = await createDynamic("hapak162", "items", soldier, admin);
         setIsFormOpen(false);
         navigate(`/items/details/${sildierId}`);
       } else if (type === "soldier") {
-        sildierId = await createSoldier("hapak162", soldier as Soldier);
+        sildierId = await createDynamic("hapak162", "soldiers", soldier, admin);
         navigate(`/soldiers/details/${sildierId}`);
         setIsFormOpen(false);
       } else if (type === "team") {
@@ -91,7 +96,12 @@ export default function Create() {
         );
         return;
       }
-      await removeDynamicById("hapak162", type as "itemsTypes", itemType.id);
+      await removeDynamicById(
+        "hapak162",
+        type as "itemsTypes",
+        itemType.id,
+        admin
+      );
       toaster.push(
         <Message type="success" showIcon>
           !הפעולה בוצעה בהצלחה

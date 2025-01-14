@@ -26,7 +26,6 @@ export default function Navbar({ setIsMenuOpen, user, isMenuOpen }: Props) {
           onCloseMenu={() => setIsMenuOpen(false)}
         />
       )}
-
       <div className="flex gap-5 items-center justify-center">
         {user && (
           <div className="relative">

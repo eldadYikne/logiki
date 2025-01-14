@@ -1,3 +1,4 @@
+import { HistoryType } from "./types/history";
 import { Size, Soldier } from "./types/soldier";
 import {
   Admin,
@@ -31,7 +32,13 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   isExclusiveItem: "פריט בודד",
   numberOfUnExclusiveItems: "מאופסנים",
 };
-
+export const TranslateHistoryType: { [key in HistoryType]: string } = {
+  create: "יצר",
+  credit: "זיכה",
+  delete: "מחק",
+  edit: "ערך",
+  signature: "החתים",
+};
 export const itemsKeys = Object.keys({
   profileImage: "",
   serialNumber: "",

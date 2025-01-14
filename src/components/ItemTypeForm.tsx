@@ -4,6 +4,8 @@ import { Button, Form, Message, useToaster } from "rsuite";
 import FormGroup from "rsuite/esm/FormGroup";
 import { ItemTranslate } from "../const";
 import { Item } from "../types/table";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 export default function ItemTypeForm({ formType }: Props) {
   const inputs = ["id", "name"];
@@ -11,16 +13,22 @@ export default function ItemTypeForm({ formType }: Props) {
     name: string;
     id: string;
   }
+  const { admin } = useSelector((state: RootState) => state.admin);
 
   const toaster = useToaster();
   const [newForm, setNewForm] = useState<FormType>({ id: "", name: "" });
   const onAddItems = async () => {
     try {
-      if (newForm.name) {
-        await createDynamic("hapak162", formType, {
-          name: newForm.name,
-          id: "",
-        });
+      if (newForm.name && admin) {
+        await createDynamic(
+          "hapak162",
+          formType,
+          {
+            name: newForm.name,
+            id: "",
+          },
+          admin
+        );
         toaster.push(
           <Message type="success" showIcon>
             !הפעולה בוצעה בהצלחה

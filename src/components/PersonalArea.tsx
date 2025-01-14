@@ -49,7 +49,14 @@ export default function PersonalArea() {
     try {
       console.log("update", admin);
       if (admin) {
-        await updateDynamic("hapak162", admin.id, "admins", admin);
+        await updateDynamic(
+          "hapak162",
+          admin.id,
+          "admins",
+          admin,
+          admin,
+          "edit"
+        );
         toaster.push(
           <Message type="success" showIcon>
             הפעולה בוצעה בהצלחה!

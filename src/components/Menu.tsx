@@ -20,6 +20,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       | "itemsTypes"
       | "soldier"
       | "item"
+      | "actions"
       | "personal-area";
     icon: ReactElement<any, any>;
   }
@@ -38,6 +39,8 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       return <TextImageIcon />;
     } else if (key === "homepage") {
       return <FunnelTimeIcon />;
+    } else if (key === "actions") {
+      return <ProjectIcon />;
     } else if (key === "items") {
       return <ProjectIcon />;
     } else {
@@ -79,6 +82,12 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       link: "/add/itemsTypes",
       name: "קבוצות פריטים",
       icon: getIconComponent("items"),
+    },
+    {
+      type: "actions",
+      link: "/actions",
+      name: "פעולות",
+      icon: getIconComponent("actions"),
     },
     {
       type: "personal-area",

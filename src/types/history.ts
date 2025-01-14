@@ -1,26 +1,31 @@
+import { CollectionName } from "./table";
+
 export interface HistoryAction {
   id: string;
-  items: HistoryItemAction[];
-  soldier: HistorySoldierAction;
+  items?: HistoryItemAction[];
+  soldier?: HistorySoldierAction;
   date: string;
-  type: "signature" | "credit";
+  type: HistoryType;
   admin: HistoryAdmin;
+  collectionName: CollectionName;
 }
 interface HistoryAdmin {
   id: string;
   name: string;
-  profilePicture: string;
+  // profilePicture: string;
+  email: string;
 }
 interface HistoryItemAction {
   id: string;
   itemId: string;
   name: string;
-  profilePicture: string;
+  profileImage: string;
 }
 interface HistorySoldierAction {
   id: string;
   soldierId: string;
   name: string;
-  profilePicture: string;
-  personalNumber: string;
+  profileImage: string;
+  personalNumber: number;
 }
+export type HistoryType = "signature" | "credit" | "create" | "delete" | "edit";

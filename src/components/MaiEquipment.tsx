@@ -87,7 +87,6 @@ function MaiEquipment(props: Props) {
     admins: Admin[];
   }
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
-    console.log("filters", filters);
     setFilters(filters as FilterObject);
     if (dataToTable && selecteTable && dataToTableFilter) {
       setDataToTable((prevData: any) => {

@@ -1,7 +1,5 @@
 import {
-  addDoc,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -136,20 +134,6 @@ export const getSoldierItemsById = async (
   }
 };
 
-export const createSoldier = async (boardId: string, soldier: Soldier) => {
-  try {
-    const soldiersRef = collection(db, `boards/${boardId}/soldiers`);
-
-    const docRef = await addDoc(soldiersRef, soldier);
-
-    console.log("Soldier successfully created with ID:", docRef.id);
-    return docRef.id; // Return the ID of the created soldier
-  } catch (error) {
-    console.error("Error creating soldier:", error);
-    throw error;
-  }
-};
-
 export const updateSoldier = async (
   boardId: string,
   soldierId: string,
@@ -163,18 +147,6 @@ export const updateSoldier = async (
     console.log("Soldier successfully updated");
   } catch (error) {
     console.error("Error updating soldier:", error);
-    throw error;
-  }
-};
-export const removeSoldier = async (boardId: string, soldierId: string) => {
-  try {
-    const soldierRef = doc(db, `boards/${boardId}/soldiers`, soldierId);
-
-    await deleteDoc(soldierRef);
-
-    console.log("Soldier successfully deleted");
-  } catch (error) {
-    console.error("Error deleting soldier:", error);
     throw error;
   }
 };

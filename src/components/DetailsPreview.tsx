@@ -60,7 +60,7 @@ import {
   getSoldierItemsById,
   updateSoldier,
 } from "../service/soldier";
-import { getItemById, updateItem } from "../service/item";
+import { getItemById } from "../service/item";
 import ModalSignaturedSoldiers from "./ModalSignaturedSoldiers";
 export default function DetailsPreview() {
   const { id, type } = useParams();
@@ -80,6 +80,8 @@ export default function DetailsPreview() {
   const toaster = useToaster();
   const [isLoading, setIsLoading] = useState(false);
   setIsSignaturedSoldiersModalOpen;
+  const { admin } = useSelector((state: RootState) => state.admin);
+
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
     "profileImage",
@@ -124,8 +126,6 @@ export default function DetailsPreview() {
   useEffect(() => {
     async function fetchItem() {
       if (data && id) {
-        //   console.log("data", data);
-        //   console.log("id", id);
         const newItem: Item | Soldier | undefined = await findObjectById(id);
         console.log("newItem", newItem);
         if (newItem) {
@@ -200,11 +200,19 @@ export default function DetailsPreview() {
         );
 
         if (itemToSignature.isExclusiveItem && signedSoldier) {
-          await updateItem("hapak162", itemToSignature.id, {
-            ...itemToSignature,
-            soldierId: itemToSignature.owner ? "" : itemToSignature.soldierId,
-            owner: signedSoldier?.name ?? "",
-          });
+          await updateDynamic(
+            "hapak162",
+            itemToSignature.id,
+            "items",
+            {
+              ...itemToSignature,
+              soldierId: itemToSignature.owner ? "" : itemToSignature.soldierId,
+              owner: signedSoldier?.name ?? "",
+            },
+            admin,
+            "signature",
+            { soldierId: signedSoldier?.id, name: signedSoldier?.name }
+          );
           toaster.push(
             <Message type="success" showIcon>
               הפעולה בוצעה בהצלחה!
@@ -231,19 +239,28 @@ export default function DetailsPreview() {
               numberOfUnExclusiveItems:
                 itemToSignature.numberOfUnExclusiveItems,
             } as ItemNotExclusive);
-            await updateItem("hapak162", itemToSignature.id, {
-              ...itemToSignature,
-              soldierId: "",
-              owner: "",
-              pdfFileSignature: "",
-              signtureDate: "",
-              soldierPersonalNumber: 0,
-              status: "stored",
-              representative: "",
-              numberOfUnExclusiveItems: Number(
-                itemToSignature.numberOfUnExclusiveItems - 1
-              ),
-            });
+
+            await updateDynamic(
+              "hapak162",
+              itemToSignature.id,
+              "items",
+              {
+                ...itemToSignature,
+                soldierId: "",
+                owner: "",
+                pdfFileSignature: "",
+                signtureDate: "",
+                soldierPersonalNumber: 0,
+                status: "stored",
+                representative: "",
+                numberOfUnExclusiveItems: Number(
+                  itemToSignature.numberOfUnExclusiveItems - 1
+                ),
+              },
+              admin,
+              "signature",
+              { soldierId: signedSoldier?.id, name: signedSoldier?.name }
+            );
             await updateSoldier("hapak162", signedSoldier.id, signedSoldier);
             toaster.push(
               <Message type="success" showIcon>
@@ -349,22 +366,27 @@ export default function DetailsPreview() {
               ? 0
               : Number(findItemHisBack.numberOfUnExclusiveItems + 1),
           } as Item;
-          await updateItem("hapak162", newItemnow.id, newItemnow);
+          await updateDynamic(
+            "hapak162",
+            newItemnow.id,
+            "items",
+            newItemnow,
+            admin,
+            "credit",
+            { soldierId: itemToBack.soldierId, name: itemToBack.owner }
+          );
+          console.log(
+            "soldierId: itemToUpdate.soldierId, name: itemToUpdate.owner",
+            { soldierId: itemToBack.soldierId, name: itemToBack.owner }
+          );
+
           if (!itemToUpdate.isExclusiveItem) {
             await updateSoldier("hapak162", signedSoldier.id, {
               ...signedSoldier,
               items: notExslusiveItems,
             });
           }
-          // const historyAction:HistoryAction={
-          //   id:'',
-          //   date:getCurrentDate(),
-          //   items:[],
-          //   soldier:{},
-          //   admin:{id:'',name:'',profilePicture:''},
 
-          // }
-          // await createDynamic('hapak162','actions',{} as HistoryAction)
           setIsLoading(false);
           setSoldierItemToBack(undefined);
 
@@ -401,7 +423,9 @@ export default function DetailsPreview() {
   const onEdit = async (item: Soldier | Item) => {
     console.log("item", item);
     const key: keyof TableData = (item as Item).itemType ? "items" : "soldiers";
-    await updateDynamic("hapak162", item?.id, key, item);
+    console.log("admin", admin);
+
+    await updateDynamic("hapak162", item?.id, key, item, admin, "edit");
     toaster.push(
       <Message type="success" showIcon>
         !הפעולה בוצעה בהצלחה
@@ -433,7 +457,7 @@ export default function DetailsPreview() {
               </Message>,
               { placement: "topCenter" }
             );
-            await removeDynamicById("hapak162", key, item?.id ?? "");
+            await removeDynamicById("hapak162", key, item?.id ?? "", admin);
             navigate(
               `/${key === "items" ? (item as Item).itemType.id : "soldiers"}`
             );

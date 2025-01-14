@@ -6,6 +6,7 @@ import { Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import TrashIcon from "@rsuite/icons/Trash";
+import { he } from "date-fns/locale";
 
 const HistoryActionsPage: React.FC<Props> = () => {
   const [data, setData] = useState<TableData>();
@@ -135,6 +136,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
                   >
                     {formatDistanceToNow(new Date(action.date), {
                       addSuffix: true,
+                      locale: he,
                     })}
                   </div>
                 )}

@@ -33,7 +33,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const { admin } = useSelector((state: RootState) => state.admin);
-
+  console.log("VITE_API_URL", import.meta.env.VITE_API_URL);
   const dispatch = useDispatch();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {

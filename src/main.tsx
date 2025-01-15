@@ -10,13 +10,13 @@ import { Provider } from "react-redux";
 import store from "./store/store.ts";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC6QpZcuQDkW7ZvhlXX-2Orke-jmRmyqRA",
-  authDomain: "hapakm162.firebaseapp.com",
-  projectId: "hapakm162",
-  storageBucket: "hapakm162.firebasestorage.app",
-  messagingSenderId: "1098687562359",
-  appId: "1:1098687562359:web:099ddac151be5ab7927c72",
-  measurementId: "G-2Y7H6TZP6Q",
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTHDOMAIN,
+  projectId: import.meta.env.VITE_PROJECTID,
+  storageBucket: import.meta.env.VITE_STORAGEBUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGINGSENDERID,
+  appId: import.meta.env.VITE_APPID,
+  measurementId: import.meta.env.VITE_MEASUREMENTID,
 };
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);

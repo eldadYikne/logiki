@@ -23,14 +23,17 @@ import SignaNatureModal from "./components/SignaNatureModal";
 import SoldierProfilePage from "./pages/SoldierProfilePage";
 import ErrorPage from "./pages/ErrorPage";
 import { getAdminByEmail } from "./service/admin";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAdmin } from "./store/adminSlice";
 import HistoryActionsPage from "./pages/HistoryActions";
+import { RootState } from "./store/store";
 
 export default function App() {
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const { admin } = useSelector((state: RootState) => state.admin);
+
   const dispatch = useDispatch();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -47,12 +50,13 @@ export default function App() {
       if (!user) return;
       let adminConnect = await getAdminByEmail("hapak162", user?.email ?? "");
       if (adminConnect) {
-        console.log("adminConnect", adminConnect);
+        // console.log("adminConnect", adminConnect);
         dispatch(setAdmin(adminConnect));
       }
     }
+    console.log("admin upadted from App.tsx");
     setGlobalAdmin();
-  }, []);
+  }, [user]);
   const cld = new Cloudinary({ cloud: { cloudName: "dwdpgwxqv" } });
   const myImage = cld.image("docs/models");
   myImage.resize(fill().width(250).height(250));
@@ -64,7 +68,9 @@ export default function App() {
       </div>
     );
   }
-
+  // if (!admin) {
+  //   return <div>אתה לא מנהל</div>;
+  // }
   return (
     <div className="site-container" dir="rtl">
       <Navbar
@@ -86,10 +92,10 @@ export default function App() {
           <Route
             path="/:type"
             element={
-              !user ? (
-                <Login userConnected={""} setConnectedUser={setUser} />
-              ) : (
+              user && admin ? (
                 <MaiEquipment setUser={setUser} user={user} />
+              ) : (
+                <Login userConnected={""} setConnectedUser={setUser} />
               )
             }
           />

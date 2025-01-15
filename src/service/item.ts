@@ -11,6 +11,8 @@ import {
 } from "firebase/firestore";
 import { Admin, Item } from "../types/table";
 import { db } from "../main";
+import { HistoryAction, HistoryType } from "../types/history";
+import { createHistory } from "./history";
 
 export const getItemById = async (boardId: string, itemId: string) => {
   console.log("itemId", itemId);
@@ -55,11 +57,40 @@ export const updateItem = async (
 
 export const updateItemsBatch = async (
   boardId: string,
-  items: Partial<Item>[]
+  items: Partial<Item>[],
+  action: HistoryType,
+  admin?: Admin,
+  soldier?: { soldierId: string; name: string }
 ) => {
   try {
-    // Initialize a batch
     const batch = writeBatch(db);
+    console.log(
+      "items:",
+      items,
+      "admin:",
+      admin,
+      "action:",
+      action,
+      "soldier",
+      soldier
+    );
+    let historyAction = {
+      id: "",
+      admin: { id: admin?.id, name: admin?.name, email: admin?.email },
+      soldier: {
+        id: soldier?.soldierId ?? "",
+        name: soldier?.name ?? "",
+      },
+      items: items.map((item) => ({
+        itemId: item?.id ?? "",
+        id: "",
+        name: (item as Item)?.name ?? "",
+        profileImage: (item as Item)?.profileImage ?? "",
+      })),
+      date: String(new Date()),
+      type: action ?? "create",
+      collectionName: "items",
+    } as HistoryAction;
 
     // Iterate over the items and add each update to the batch
     items.forEach((item) => {
@@ -74,7 +105,9 @@ export const updateItemsBatch = async (
 
     // Commit the batch
     await batch.commit();
-
+    if (historyAction && admin) {
+      await createHistory(boardId, historyAction);
+    }
     console.log("All items successfully updated in a single batch");
   } catch (error) {
     console.error("Error updating items in batch:", error);

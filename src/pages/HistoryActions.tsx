@@ -7,9 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import TrashIcon from "@rsuite/icons/Trash";
 import { he } from "date-fns/locale";
+import ModalSignaturedItems from "../components/ModalSignaturedItems";
 
 const HistoryActionsPage: React.FC<Props> = () => {
   const [data, setData] = useState<TableData>();
+  const [isModalItemsActive, setIsModalItemsActive] = useState<boolean>(false);
+
   const toaster = useToaster();
   const navigate = useNavigate();
   useEffect(() => {
@@ -69,15 +72,22 @@ const HistoryActionsPage: React.FC<Props> = () => {
               >
                 <div className="mb-2 flex items-center gap-1">
                   {(action.items || action.soldier) && (
-                    <img
-                      src={
-                        action.items?.length! > 0
-                          ? action.items![0].profileImage
-                          : action.soldier?.profileImage
-                      }
-                      className="h-10 w-10 rounded-full"
-                      alt=""
-                    />
+                    <div className="relative">
+                      <img
+                        src={
+                          action.items?.length! > 0
+                            ? action.items![0].profileImage
+                            : action.soldier?.profileImage
+                        }
+                        className="h-10 w-10 rounded-full"
+                        alt=""
+                      />
+                      {action.items && action.items?.length! > 2 && (
+                        <div className="bg-blue-300 absolute top-[-6px] flex right-[-6px] justify-center items-center text-white text-md font-medium h-6 w-6 rounded-full">
+                          +{action.items.length}
+                        </div>
+                      )}
+                    </div>
                   )}
                   <span className="font-bold">{action.admin.name}</span>{" "}
                   <span className="font-bold">
@@ -128,6 +138,18 @@ const HistoryActionsPage: React.FC<Props> = () => {
                         }
                       </div>
                     )}
+                  {action.items && action.items.length > 1 && (
+                    <div onClick={() => setIsModalItemsActive(true)}>הצג</div>
+                  )}
+                  {action.items &&
+                    isModalItemsActive &&
+                    action.items.length > 1 && (
+                      <ModalSignaturedItems
+                        onCancel={() => setIsModalItemsActive(false)}
+                        isOpen={isModalItemsActive}
+                        items={action.items}
+                      />
+                    )}
                 </div>
                 {action.date && !isNaN(new Date(action.date).getTime()) && (
                   <div
@@ -138,35 +160,6 @@ const HistoryActionsPage: React.FC<Props> = () => {
                       addSuffix: true,
                       locale: he,
                     })}
-                  </div>
-                )}
-                {/* <div className="mb-2">
-                <span className="font-bold">תאריך:</span> {action.date}
-              </div>
-              <div className="mb-2">
-                <span className="font-bold">מנהל:</span> {action.admin.name}
-              </div> */}
-                {/* {action.soldier && (
-                <div className="mb-2">
-                  <span className="font-bold">Soldier:</span>{" "}
-                  {action.soldier.name} {action.soldier.personalNumber}
-                </div>
-              )} */}
-                {action.items && action.items.length > 1 && (
-                  <div>
-                    {/* <span className="font-bold">פריטים:</span> */}
-                    <ul className="list-disc list-inside">
-                      {action.items.map((item) => (
-                        <li key={item.id} className="flex items-center gap-2">
-                          <img
-                            src={item.profileImage}
-                            alt={item.name}
-                            className="w-8 h-8 rounded-full border"
-                          />
-                          {item.name}
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 )}
                 {

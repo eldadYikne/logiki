@@ -15,7 +15,7 @@ interface HistoryAdmin {
   // profilePicture: string;
   email: string;
 }
-interface HistoryItemAction {
+export interface HistoryItemAction {
   id: string;
   itemId: string;
   name: string;

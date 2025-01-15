@@ -27,6 +27,7 @@ const CartPage = ({ user }: Props) => {
   const [data, setData] = useState<TableData>();
   const { id } = useParams();
   const toaster = useToaster();
+  const { admin } = useSelector((state: RootState) => state.admin);
 
   useEffect(() => {
     async function fetchData() {
@@ -37,7 +38,7 @@ const CartPage = ({ user }: Props) => {
     }
 
     fetchData();
-  }, [id]);
+  }, [id, admin]);
 
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -87,8 +88,18 @@ const CartPage = ({ user }: Props) => {
             soldierId: item.owner ? "" : item.soldierId,
             owner: signedSoldier?.name ?? "",
           }));
-
-          await updateItemsBatch("hapak162", exclusiveItemsToSignature);
+          if (admin) {
+            await updateItemsBatch(
+              "hapak162",
+              exclusiveItemsToSignature,
+              "signature",
+              admin,
+              {
+                name: signedSoldier?.name ?? "",
+                soldierId: signedSoldier?.id ?? "",
+              }
+            );
+          }
         }
         if (notExclusiveItems.length > 0) {
           console.log("signedSoldier", signedSoldier);
@@ -130,9 +141,21 @@ const CartPage = ({ user }: Props) => {
                     Number(cartItemsAfterJoin[item.id].sum),
                 } as Item)
             );
+            if (admin) {
+              await updateItemsBatch(
+                "hapak162",
+                notExclusiveItemsToSignature,
+                "signature",
+                admin,
+                {
+                  name: signedSoldier?.name ?? "",
+                  soldierId: signedSoldier?.id ?? "",
+                }
+              );
 
-            await updateItemsBatch("hapak162", notExclusiveItemsToSignature);
-            await updateSoldier("hapak162", signedSoldier.id, signedSoldier);
+              await updateSoldier("hapak162", signedSoldier.id, signedSoldier);
+            }
+
             setIsLoading(false);
 
             toaster.push(

@@ -8,10 +8,14 @@ import { formatDistanceToNow } from "date-fns";
 import TrashIcon from "@rsuite/icons/Trash";
 import { he } from "date-fns/locale";
 import ModalSignaturedItems from "../components/ModalSignaturedItems";
+import { HistoryItemAction } from "../types/history";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const HistoryActionsPage: React.FC<Props> = () => {
   const [data, setData] = useState<TableData>();
   const [isModalItemsActive, setIsModalItemsActive] = useState<boolean>(false);
+  const { admin } = useSelector((state: RootState) => state.admin);
 
   const toaster = useToaster();
   const navigate = useNavigate();
@@ -24,8 +28,18 @@ const HistoryActionsPage: React.FC<Props> = () => {
     }
     fetchData();
   }, []);
+  const [actionSignaturditems, setActionSignaturditems] =
+    useState<HistoryItemAction[]>();
   const removeAction = async (actionId: string) => {
     try {
+      if (admin?.email !== "hapakmaog162@gmail.com") {
+        return toaster.push(
+          <Message type="info" showIcon>
+            אין לך הרשאה למחיקה
+          </Message>,
+          { placement: "topCenter" }
+        );
+      }
       await removeDynamicById("hapak162", "actions", actionId);
       toaster.push(
         <Message type="success" showIcon>
@@ -68,7 +82,13 @@ const HistoryActionsPage: React.FC<Props> = () => {
             .map((action) => (
               <div
                 key={action.id}
-                className="p-4  border whitespace-nowrap  items-center relative rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white"
+                className="p-4 cursor-pointer  border whitespace-nowrap  items-center relative rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white"
+                onClick={() => {
+                  if (action.items && action.items.length > 1) {
+                    setActionSignaturditems(action.items);
+                    setIsModalItemsActive(true);
+                  }
+                }}
               >
                 <div className="mb-2 flex items-center gap-1">
                   {(action.items || action.soldier) && (
@@ -138,18 +158,9 @@ const HistoryActionsPage: React.FC<Props> = () => {
                         }
                       </div>
                     )}
-                  {action.items && action.items.length > 1 && (
+                  {/* {action.items && action.items.length > 1 && (
                     <div onClick={() => setIsModalItemsActive(true)}>הצג</div>
-                  )}
-                  {action.items &&
-                    isModalItemsActive &&
-                    action.items.length > 1 && (
-                      <ModalSignaturedItems
-                        onCancel={() => setIsModalItemsActive(false)}
-                        isOpen={isModalItemsActive}
-                        items={action.items}
-                      />
-                    )}
+                  )} */}
                 </div>
                 {action.date && !isNaN(new Date(action.date).getTime()) && (
                   <div
@@ -173,6 +184,18 @@ const HistoryActionsPage: React.FC<Props> = () => {
               </div>
             ))}
       </div>
+      {actionSignaturditems &&
+        actionSignaturditems.length > 1 &&
+        isModalItemsActive && (
+          <ModalSignaturedItems
+            onCancel={() => {
+              setActionSignaturditems(undefined);
+              setIsModalItemsActive(false);
+            }}
+            isOpen={isModalItemsActive}
+            items={actionSignaturditems}
+          />
+        )}
     </div>
   );
 };

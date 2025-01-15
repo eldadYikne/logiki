@@ -25,9 +25,9 @@ const ModalSignaturedItems: React.FC<ModalSignaturedItemsProps> = ({
       </Modal.Header>
       <Modal.Body>
         <div dir="rtl" className=" ">
-          <ul className="list-disc list-inside">
+          <div className="modal-items ">
             {items.map((item) => (
-              <li
+              <div
                 onClick={() => navigate(`/items/details/${item.itemId}`)}
                 key={item.id}
                 className="flex items-center gap-2"
@@ -38,9 +38,9 @@ const ModalSignaturedItems: React.FC<ModalSignaturedItemsProps> = ({
                   className="w-8 h-8 rounded-full border"
                 />
                 <span className="font-bold">{item.name}</span>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </Modal.Body>
     </Modal>

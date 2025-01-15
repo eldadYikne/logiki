@@ -44,7 +44,12 @@ const CartPage = ({ user }: Props) => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const navigate = useNavigate();
   // Function tCo handle item removal
-  const handleRemoveItem = (id: string) => {
+  const handleRemoveItem = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
     dispatch(removeItemFromCart(id));
   };
   const removeAllItem = () => {
@@ -270,7 +275,7 @@ const CartPage = ({ user }: Props) => {
                     )}
                     <button
                       className="text-red-500 hover:text-red-700"
-                      onClick={() => handleRemoveItem(item.id)}
+                      onClick={(e) => handleRemoveItem(e, item.id)}
                     >
                       <TrashIcon />
                     </button>

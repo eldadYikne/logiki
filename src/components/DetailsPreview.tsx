@@ -449,7 +449,20 @@ export default function DetailsPreview() {
         const key: keyof TableData = (item as Item).itemType
           ? "items"
           : "soldiers";
-
+        if (
+          (item as Item).owner ||
+          data?.soldiers.find((soldier) =>
+            soldier.items.find((soldierItem) => soldierItem.id === item?.id)
+          )
+        ) {
+          toaster.push(
+            <Message type="error" showIcon>
+              לא ניתן למחוק פריט מוחתם
+            </Message>,
+            { placement: "topCenter" }
+          );
+          return;
+        }
         if (user?.email === "hapakmaog162@gmail.com") {
           if (confirm(`אתה בטוח רוצה למחוק את ${item?.name}`)) {
             toaster.push(

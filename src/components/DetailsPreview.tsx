@@ -81,6 +81,7 @@ export default function DetailsPreview() {
   const [isLoading, setIsLoading] = useState(false);
   setIsSignaturedSoldiersModalOpen;
   const { admin } = useSelector((state: RootState) => state.admin);
+  console.log("adminadmin", admin);
 
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
@@ -142,7 +143,7 @@ export default function DetailsPreview() {
         setUser(user);
       }
     });
-  }, [id, data]);
+  }, [id, data, admin]);
   const findObjectById = async (id: string) => {
     let currentItem;
     if (type === "soldiers") {

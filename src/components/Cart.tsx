@@ -60,8 +60,8 @@ const CartPage = ({ user }: Props) => {
     }
     return acc;
   }, {} as any);
-  console.log("cartItemsAfterJoin", cartItemsAfterJoin);
-  console.log("cartItems", cartItems);
+  // console.log("cartItemsAfterJoin", cartItemsAfterJoin);
+  // console.log("cartItems", cartItems);
 
   const onSignature = async (itemsToSignature: Item[]) => {
     console.log("onSignature ", itemsToSignature);

@@ -1,7 +1,4 @@
-import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { auth } from "../main";
-
 import { Button, Input, Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { Admin } from "../types/table";
@@ -9,42 +6,32 @@ import GoogleAuth from "./GoogleAuth";
 import { updateDynamic } from "../service/board";
 import { adminTranslate } from "../const";
 import EditIcon from "@rsuite/icons/Edit";
-import { getAdminByEmail } from "../service/admin";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 export default function PersonalArea() {
-  const [user, setUser] = useState<User>();
-  const [admin, setAdmin] = useState<Admin>();
+  const [newAdmin, setNewAdmin] = useState<Admin>();
   const [isEditMode, setIsEditMode] = useState(true);
   const navigat = useNavigate();
   const toaster = useToaster();
+  const { admin } = useSelector((state: RootState) => state.admin);
 
   useEffect(() => {
     async function fetchData() {
-      let adminConnect = await getAdminByEmail("hapak162", user?.email ?? "");
-      if (adminConnect) {
-        setAdmin(adminConnect);
+      if (admin) {
+        setNewAdmin(admin);
       }
     }
     fetchData();
-  }, [user]);
+  }, []);
 
   const userKeyToPreview: Array<keyof Admin> = [
-    // "email",
     "name",
     "personalNumber",
     "phone",
     "rank",
   ];
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-        // console.log("user", user);
-      } else {
-        setUser(undefined);
-      }
-    });
-  }, []);
+
   const updateAdmin = async () => {
     try {
       console.log("update", admin);
@@ -53,7 +40,7 @@ export default function PersonalArea() {
           "hapak162",
           admin.id,
           "admins",
-          admin,
+          { ...newAdmin, email: admin.email.toLowerCase() },
           admin,
           "edit"
         );
@@ -76,7 +63,7 @@ export default function PersonalArea() {
   return (
     <div className=" relative flex gap-3  items-center w-full pb-6  flex-col">
       <div className=" bg-blue-950 p-3 justify-end flex w-full">
-        {user?.email === "hapakmaog162@gmail.com" && (
+        {newAdmin?.isSuperAdmin && (
           <Button
             onClick={() => {
               navigat("/admin");
@@ -87,24 +74,24 @@ export default function PersonalArea() {
         )}
       </div>
       <div className="flex flex-col px-5 gap-3 items-center justify-center">
-        {user?.photoURL && (
+        {/* {user?.photoURL && (
           <div>
             <img className="rounded-full" src={user?.photoURL ?? ""} alt="" />
           </div>
-        )}
+        )} */}
         <div className="flex flex-col justify-center items-center gap-4 ">
-          {admin &&
+          {newAdmin &&
             userKeyToPreview.map((key) => {
               return (
                 <Input
                   disabled={isEditMode}
                   onChange={(e) => {
-                    setAdmin({
-                      ...admin,
+                    setNewAdmin({
+                      ...newAdmin,
                       [key]: e,
                     });
                   }}
-                  value={admin[key]}
+                  value={newAdmin[key] as string}
                   placeholder={adminTranslate[key]}
                   key={key}
                 />
@@ -143,7 +130,7 @@ export default function PersonalArea() {
           <GoogleAuth
             color="red"
             setUser={() => {}}
-            userConnected={user?.displayName ?? ""}
+            userConnected={admin?.name ?? "התנתק"}
           />
         </span>
         <Button

@@ -105,55 +105,50 @@ export const updateDynamic = async (
       "soldier",
       soldier
     );
-    if (updates) {
-      if (admin) {
-        let historyAction;
-        if (collectionName === "items" || collectionName === "itemsTypes") {
-          historyAction = {
-            id: "",
-            admin: { id: admin.id, name: admin.name, email: admin.email },
-            soldier: {
-              id: (updates as Item).soldierId
-                ? (updates as Item).soldierId
-                : soldier?.soldierId ?? "",
-              name: (updates as Item).owner
-                ? (updates as Item).owner
-                : soldier?.name ?? "",
+    if (updates && admin) {
+      let historyAction;
+      if (collectionName === "items" || collectionName === "itemsTypes") {
+        historyAction = {
+          id: "",
+          admin: { id: admin.id, name: admin.name, email: admin.email },
+          soldier: {
+            id: (updates as Item).soldierId
+              ? (updates as Item).soldierId
+              : soldier?.soldierId ?? "",
+            name: (updates as Item).owner
+              ? (updates as Item).owner
+              : soldier?.name ?? "",
+          },
+          items: [
+            {
+              itemId: updates?.id ?? "",
+              id: "",
+              name: (updates as Item)?.name ?? "",
+              profileImage: (updates as Item)?.profileImage ?? "",
             },
-            items: [
-              {
-                itemId: updates?.id ?? "",
-                id: "",
-                name: (updates as Item)?.name ?? "",
-                profileImage: (updates as Item)?.profileImage ?? "",
-              },
-            ],
-            date: String(new Date()),
-            type: action ?? "create",
-            collectionName: collectionName,
-          } as HistoryAction;
-        } else if (
-          collectionName === "soldiers" ||
-          collectionName === "admins"
-        ) {
-          historyAction = {
-            id: "",
-            admin: { id: admin.id, name: admin.name, email: admin.email },
-            soldier: {
-              id: (updates as Soldier).id ?? "",
-              name: (updates as Soldier).name ?? "",
-              profileImage: (updates as Soldier).profileImage ?? "",
-              soldierId: "",
-              personalNumber: (updates as Soldier).personalNumber ?? 0,
-            },
-            date: String(new Date()),
-            type: action ?? "create",
-            collectionName: collectionName,
-          } as HistoryAction;
-        }
-        if (historyAction) {
-          await createHistory(boardId, historyAction);
-        }
+          ],
+          date: String(new Date()),
+          type: action ?? "create",
+          collectionName: collectionName,
+        } as HistoryAction;
+      } else if (collectionName === "soldiers" || collectionName === "admins") {
+        historyAction = {
+          id: "",
+          admin: { id: admin.id, name: admin.name, email: admin.email },
+          soldier: {
+            id: (updates as Soldier).id ?? "",
+            name: (updates as Soldier).name ?? "",
+            profileImage: (updates as Soldier).profileImage ?? "",
+            soldierId: "",
+            personalNumber: (updates as Soldier).personalNumber ?? 0,
+          },
+          date: String(new Date()),
+          type: action ?? "create",
+          collectionName: collectionName,
+        } as HistoryAction;
+      }
+      if (historyAction) {
+        await createHistory(boardId, historyAction);
       }
     }
     console.log(`${itemId} successfully updated`);

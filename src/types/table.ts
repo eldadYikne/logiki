@@ -53,6 +53,7 @@ export interface Admin {
   phone: string;
   personalNumber: number;
   rank: string;
+  isSuperAdmin?: boolean;
 }
 export interface ItemType {
   name: string;

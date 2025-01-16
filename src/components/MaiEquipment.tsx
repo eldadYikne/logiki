@@ -118,7 +118,6 @@ function MaiEquipment(props: Props) {
 
   if (
     props.user.email &&
-    props.user.email !== "hapakmaog162@gmail.com" &&
     !data?.admins
       .map((admin) => (admin as Admin).email.toLowerCase())
       .includes(props.user.email.toLowerCase())
@@ -225,13 +224,13 @@ function MaiEquipment(props: Props) {
                   dataType={selecteTable === "soldiers" ? "soldier" : "item"}
                 />
               )}
-            {dataToTable &&
+            {/* {dataToTable &&
               (!dataToTable[selecteTable] ||
                 dataToTable[selecteTable].length === 0) && (
                 <div className="w-full flex justify-center text-2xl">
                   לא נמצאו פריטים
                 </div>
-              )}
+              )} */}
           </div>
         </div>
       </div>

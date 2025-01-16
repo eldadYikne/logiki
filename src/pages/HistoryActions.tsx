@@ -32,7 +32,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
     useState<HistoryItemAction[]>();
   const removeAction = async (actionId: string) => {
     try {
-      if (admin?.email !== "hapakmaog162@gmail.com") {
+      if (!admin?.isSuperAdmin) {
         return toaster.push(
           <Message type="info" showIcon>
             אין לך הרשאה למחיקה
@@ -178,7 +178,11 @@ const HistoryActionsPage: React.FC<Props> = () => {
                     color="red"
                     style={{ fontSize: "15px" }}
                     className="absolute left-2 top-2 "
-                    onClick={() => removeAction(action.id)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeAction(action.id);
+                    }}
                   />
                 }
               </div>

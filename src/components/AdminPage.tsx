@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Admin, TableData } from "../types/table";
 import { Button, Input, Message, useToaster } from "rsuite";
-import { getBoardByIdWithCallback } from "../service/board";
+import { getBoardByIdWithCallback, updateDynamic } from "../service/board";
 import { User } from "@firebase/auth";
 import { createAdmin, removeAdmin } from "../service/admin";
+import StarIcon from "@rsuite/icons/Star";
 
 export default function AdminPage(props: Props) {
   const [data, setData] = useState<TableData>();
@@ -43,7 +44,10 @@ export default function AdminPage(props: Props) {
           return;
         }
         if (newAdmin) {
-          await createAdmin("hapak162", newAdmin);
+          await createAdmin("hapak162", {
+            ...newAdmin,
+            email: newAdmin.email.toLowerCase(),
+          });
         }
 
         toaster.push(
@@ -72,9 +76,16 @@ export default function AdminPage(props: Props) {
       }
     }
   };
+  const onClickStarToSuper = async (admin: Admin) => {
+    console.log("admin", admin);
+    await updateDynamic("hapak162", admin.id, "admins", {
+      ...admin,
+      isSuperAdmin: !admin.isSuperAdmin,
+    });
+  };
   if (
     props.user.email &&
-    props.user.email !== "hapakmaog162@gmail.com" &&
+    newAdmin?.isSuperAdmin &&
     !data?.admins
       .map((admin) => admin.email.toLowerCase())
       .includes(props.user.email.toLowerCase())
@@ -103,6 +114,12 @@ export default function AdminPage(props: Props) {
                     key={admin.email}
                     className="flex items-center justify-between gap-2"
                   >
+                    <StarIcon
+                      onClick={() => onClickStarToSuper(admin)}
+                      style={{
+                        color: admin.isSuperAdmin ? "#FFD700" : "withe",
+                      }}
+                    />
                     <span>{admin.email}</span>
                     <Button onClick={() => onRemoveAdmin(admin)} color="red">
                       מחק

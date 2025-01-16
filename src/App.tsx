@@ -33,7 +33,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const { admin } = useSelector((state: RootState) => state.admin);
-  console.log("VITE_API_URL", import.meta.env.VITE_API_URL);
+  // console.log("VITE_API_URL", import.meta.env.VITE_API_URL);
   const dispatch = useDispatch();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -68,27 +68,29 @@ export default function App() {
       </div>
     );
   }
-  if (!admin && user) {
-    return (
-      <div
-        dir="rtl"
-        className="flex flex-col h-screen justify-center items-center    w-full"
-      >
-        <Login userConnected={""} setConnectedUser={setUser} />
-        <span className="flex sm:p-10 p-3 mx-3 text-2xl bg-white justify-center items-center rounded-lg text-center">
-          {`למשתמש ${user.email} אין הרשאה לגשת לאתר זה בפקודה!`}
-        </span>
-      </div>
-    );
-  }
+  // if (!admin && user) {
+  //   return (
+  //     <div
+  //       dir="rtl"
+  //       className="flex flex-col h-screen justify-center items-center    w-full"
+  //     >
+  //       <Login userConnected={""} setConnectedUser={setUser} />
+  //       <span className="flex sm:p-10 p-3 mx-3 text-2xl bg-white justify-center items-center rounded-lg text-center">
+  //         {`למשתמש ${user.email} אין הרשאה לגשת לאתר זה בפקודה!`}
+  //       </span>
+  //     </div>
+  //   );
+  // }
   return (
     <div className="site-container" dir="rtl">
-      <Navbar
-        setIsMenuOpen={setIsMenuOpen}
-        isMenuOpen={isMenuOpen}
-        setUser={setUser}
-        user={user}
-      />
+      {admin && (
+        <Navbar
+          setIsMenuOpen={setIsMenuOpen}
+          isMenuOpen={isMenuOpen}
+          setUser={setUser}
+          user={user}
+        />
+      )}
       {isMenuOpen && user && (
         <div
           onClick={() => setIsMenuOpen(false)}

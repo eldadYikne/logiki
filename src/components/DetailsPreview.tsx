@@ -81,7 +81,6 @@ export default function DetailsPreview() {
   const [isLoading, setIsLoading] = useState(false);
   setIsSignaturedSoldiersModalOpen;
   const { admin } = useSelector((state: RootState) => state.admin);
-  console.log("adminadmin", admin);
 
   const notRenderKeys: Array<keyof Item | keyof Soldier> = [
     "id",
@@ -463,7 +462,7 @@ export default function DetailsPreview() {
           );
           return;
         }
-        if (user?.email === "hapakmaog162@gmail.com") {
+        if (admin?.isSuperAdmin) {
           if (confirm(`אתה בטוח רוצה למחוק את ${item?.name}`)) {
             toaster.push(
               <Message type="success" showIcon>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Input, Message, useToaster } from "rsuite";
+import { Button, Input, Loader, Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { Admin } from "../types/table";
 import GoogleAuth from "./GoogleAuth";
@@ -60,6 +60,12 @@ export default function PersonalArea() {
       );
     }
   };
+  if (!newAdmin) {
+    <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
+      <Loader size="lg" content="" />
+      טוען...
+    </div>;
+  }
   return (
     <div className=" relative flex gap-3  items-center w-full pb-6  flex-col">
       <div className=" bg-blue-950 p-3 justify-end flex w-full">

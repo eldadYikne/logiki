@@ -129,7 +129,7 @@ export default function Filter({
 
                   onFilter({
                     ...filters,
-                    team: team,
+                    team: team.id,
                   });
                 }}
               >

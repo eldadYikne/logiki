@@ -5,13 +5,16 @@ import { getBoardByIdWithCallback, updateDynamic } from "../service/board";
 import { User } from "@firebase/auth";
 import { createAdmin, removeAdmin } from "../service/admin";
 import StarIcon from "@rsuite/icons/Star";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 export default function AdminPage(props: Props) {
   const [data, setData] = useState<TableData>();
   const [newAdmin, setNewAdmin] = useState<Admin>();
   const toaster = useToaster();
+  const { admin } = useSelector((state: RootState) => state.admin);
 
-  const admin: Admin = {
+  const startAdmin: Admin = {
     id: "",
     name: "",
     email: "",
@@ -24,12 +27,13 @@ export default function AdminPage(props: Props) {
   useEffect(() => {
     async function fetchData() {
       await getBoardByIdWithCallback("hapak162", ["admins"], (a) => {
-        console.log("a", a);
         setData((prev) => ({ ...prev, ...a } as TableData));
       });
+      if (data?.admins) {
+      }
     }
     fetchData();
-  }, []);
+  }, [data?.admins]);
 
   const AddNewAdmin = async () => {
     if (data) {
@@ -64,6 +68,7 @@ export default function AdminPage(props: Props) {
   const onRemoveAdmin = async (adminToRemove: Admin) => {
     if (data) {
       try {
+        if (startAdmin.email === adminToRemove.email) return;
         await removeAdmin("hapak162", adminToRemove.id);
         toaster.push(
           <Message type="success" showIcon>
@@ -76,16 +81,26 @@ export default function AdminPage(props: Props) {
       }
     }
   };
-  const onClickStarToSuper = async (admin: Admin) => {
+  const onClickStarToSuper = async (adminToSuper: Admin) => {
     console.log("admin", admin);
-    await updateDynamic("hapak162", admin.id, "admins", {
-      ...admin,
-      isSuperAdmin: !admin.isSuperAdmin,
+    if (admin?.email === adminToSuper.email) return;
+
+    await updateDynamic("hapak162", adminToSuper.id, "admins", {
+      ...adminToSuper,
+      isSuperAdmin: !adminToSuper.isSuperAdmin,
     });
+    toaster.push(
+      <Message type="success" showIcon>
+        {adminToSuper.isSuperAdmin
+          ? "הסרת מנהל מרשימת סופר אדמין"
+          : "מנהל נוסף כסופר אדמין"}
+      </Message>,
+      { placement: "topCenter" }
+    );
   };
   if (
     props.user.email &&
-    newAdmin?.isSuperAdmin &&
+    !admin?.isSuperAdmin &&
     !data?.admins
       .map((admin) => admin.email.toLowerCase())
       .includes(props.user.email.toLowerCase())
@@ -101,6 +116,7 @@ export default function AdminPage(props: Props) {
       </div>
     );
   }
+
   return (
     <div className="flex flex-col w-full h-screen items-center pt-10">
       {data && (
@@ -108,16 +124,17 @@ export default function AdminPage(props: Props) {
           <span className="text-xl">מנהלים מורשים</span>
           {data.admins && (
             <div className="flex flex-col gap-2 ">
-              {data.admins.map((admin) => {
+              {data.admins.map((admin, i) => {
                 return (
                   <div
-                    key={admin.email}
+                    key={admin.id + i}
                     className="flex items-center justify-between gap-2"
                   >
                     <StarIcon
                       onClick={() => onClickStarToSuper(admin)}
                       style={{
-                        color: admin.isSuperAdmin ? "#FFD700" : "withe",
+                        fontSize: "30px",
+                        color: admin.isSuperAdmin ? "#FFD700" : "",
                       }}
                     />
                     <span>{admin.email}</span>
@@ -133,7 +150,7 @@ export default function AdminPage(props: Props) {
             <Input
               onChange={(e) => {
                 setNewAdmin({
-                  ...admin,
+                  ...startAdmin,
                   email: e,
                 });
               }}

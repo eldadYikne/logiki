@@ -130,7 +130,7 @@ export default function PersonalArea() {
           <GoogleAuth
             color="red"
             setUser={() => {}}
-            userConnected={admin?.name ?? "התנתק"}
+            userConnected={admin?.name}
           />
         </span>
         <Button

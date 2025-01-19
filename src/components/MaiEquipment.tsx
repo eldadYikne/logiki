@@ -1,10 +1,14 @@
 import { Item, TableData, TableHeaders, Admin } from "../types/table";
-import { AdminItemSoldier, Soldier, SoldierItem } from "../types/soldier";
+import {
+  AdminItemSoldier,
+  NewTeam,
+  Soldier,
+  SoldierItem,
+} from "../types/soldier";
 import HTable from "./HTable";
 import { useEffect, useState } from "react";
 import { itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
-import { User } from "firebase/auth";
 import { Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
 
@@ -14,12 +18,13 @@ import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
 import { getBoardByIdWithCallback } from "../service/board";
 
-function MaiEquipment(props: Props) {
+function MaiEquipment() {
   const { type } = useParams();
   const [selecteTable, setSelectedTable] = useState<string>(type ?? "");
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(true);
   const [headers, setHeaders] = useState<TableHeaders>();
   const [data, setData] = useState<TableData>();
+
   useEffect(() => {
     if (type) setSelectedTable(type);
   }, [type]);
@@ -87,6 +92,8 @@ function MaiEquipment(props: Props) {
     admins: Admin[];
   }
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
+    console.log(filters);
+
     setFilters(filters as FilterObject);
     if (dataToTable && selecteTable && dataToTableFilter) {
       setDataToTable((prevData: any) => {
@@ -97,7 +104,16 @@ function MaiEquipment(props: Props) {
               return Object.entries(filters).every(([key, value]) => {
                 if (!value) return true; // Skip empty filters
                 // Safely access the property using key
-                const itemValue = String(item[key as keyof AdminItemSoldier]);
+                const itemObject =
+                  typeof item[key as keyof AdminItemSoldier] === "object"
+                    ? (
+                        item[
+                          key as keyof AdminItemSoldier
+                        ] as unknown as NewTeam
+                      ).id
+                    : item[key as keyof AdminItemSoldier];
+                const itemValue = String(itemObject);
+                console.log("itemValue", itemValue);
                 return itemValue.includes(value); // Filter based on the value
               });
             }
@@ -116,23 +132,23 @@ function MaiEquipment(props: Props) {
     setItemToEdit(item);
   };
 
-  if (
-    props.user.email &&
-    !data?.admins
-      .map((admin) => (admin as Admin).email.toLowerCase())
-      .includes(props.user.email.toLowerCase())
-  ) {
-    return (
-      <div
-        dir="rtl"
-        className="flex flex-col h-screen justify-center items-center   w-full"
-      >
-        <span className="flex p-10 text-2xl bg-white justify-center items-center rounded-lg text-center">
-          {`למשתמש ${props.user.email} אין הרשאה לגשת לאתר זה בפקודה!`}
-        </span>
-      </div>
-    );
-  }
+  // if (
+  //   props.user.email &&
+  //   !data?.admins
+  //     .map((admin) => (admin as Admin).email.toLowerCase())
+  //     .includes(props.user.email.toLowerCase())
+  // ) {
+  //   return (
+  //     <div
+  //       dir="rtl"
+  //       className="flex flex-col h-screen justify-center items-center   w-full"
+  //     >
+  //       <span className="flex p-10 text-2xl bg-white justify-center items-center rounded-lg text-center">
+  //         {`למשתמש ${props.user.email} אין הרשאה לגשת לאתר זה בפקודה!`}
+  //       </span>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div dir="rtl" className="flex flex-col w-full">
@@ -192,24 +208,25 @@ function MaiEquipment(props: Props) {
             />
           </div>
           <div className="sm:p-12 py-5">
-            {!dataToTable && (
-              <div className="table soldier-table responsiveTable">
-                <table>
-                  <tbody>
-                    {Array.from({ length: 6 }).map((a, i) => {
-                      a;
-                      return (
-                        <tr key={i}>
-                          <td>
-                            <Placeholder.Paragraph graph="circle" active />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            {!dataToTable ||
+              (dataToTable && !dataToTable[selecteTable] && (
+                <div className="table soldier-table responsiveTable">
+                  <table>
+                    <tbody>
+                      {Array.from({ length: 6 }).map((a, i) => {
+                        a;
+                        return (
+                          <tr key={i}>
+                            <td>
+                              <Placeholder.Paragraph graph="circle" active />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
             {dataToTable &&
               dataToTable[selecteTable] &&
               headers &&
@@ -238,8 +255,4 @@ function MaiEquipment(props: Props) {
   );
 }
 
-interface Props {
-  user: User;
-  setUser: Function;
-}
 export default MaiEquipment;

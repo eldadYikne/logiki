@@ -2,7 +2,12 @@ import { Button, Message, Modal, useToaster } from "rsuite";
 import Signature from "./Signature";
 import { useEffect, useState } from "react";
 import { User } from "firebase/auth";
-import { updateAdmin } from "../service/admin";
+import {
+  addAdmin,
+  getAdminByEmail,
+  removeAdmin,
+  updateAdmin,
+} from "../service/admin";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 
@@ -15,10 +20,15 @@ export default function SignaNatureModal({ user }: Props) {
 
   useEffect(() => {
     async function fetchData() {
-      // let adminConnected = await getAdminByEmail("hapak162", user?.email ?? "");
-      // if (adminConnected) {
-      //   setAdmin(adminConnected);
-      // }
+      let adminConnected = await getAdminByEmail("hapak162", user?.email ?? "");
+      if (adminConnected && !adminConnected?.isNewId) {
+        addAdmin("hapak162", {
+          ...adminConnected,
+          id: user.uid,
+          isNewId: true,
+        });
+        removeAdmin("hapak162", adminConnected.id);
+      }
     }
     fetchData();
   }, [user]);

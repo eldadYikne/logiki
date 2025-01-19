@@ -5,6 +5,8 @@ import Signature from "./Signature";
 import { Item } from "../types/table";
 import { getCurrentDate } from "../utils";
 import { User } from "firebase/auth";
+import MessageIcon from "@rsuite/icons/Message";
+
 export default function SignatureProcessModal({
   isOpen,
   onCloseModal,
@@ -45,6 +47,7 @@ export default function SignatureProcessModal({
     onConfirm(confirmedItems);
     onCloseModal();
   };
+  const OnSendSignatureMessage = () => {};
   return (
     <Modal
       open={isOpen}
@@ -97,21 +100,36 @@ export default function SignatureProcessModal({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          onClick={onConfirmSignature}
-          appearance="primary"
-          disabled={!signatureUrl || !selectedOption?.id}
-        >
-          החתם
-        </Button>
-        <Button
-          onClick={() => {
-            onCloseModal();
-          }}
-          appearance="subtle"
-        >
-          בטל
-        </Button>
+        <div className="w-full flex justify-between items-center">
+          <div className="flex gap-3">
+            <Button
+              onClick={onConfirmSignature}
+              appearance="primary"
+              disabled={!signatureUrl || !selectedOption?.id}
+            >
+              החתם
+            </Button>
+            <Button
+              onClick={OnSendSignatureMessage}
+              appearance="primary"
+              endIcon={<MessageIcon />}
+              color="green"
+              disabled={!selectedOption?.id}
+              className="flex justify-between gap-1 items-center"
+            >
+              שלח לחתימה
+            </Button>
+          </div>
+
+          <Button
+            onClick={() => {
+              onCloseModal();
+            }}
+            appearance="subtle"
+          >
+            בטל
+          </Button>
+        </div>
       </Modal.Footer>
     </Modal>
   );

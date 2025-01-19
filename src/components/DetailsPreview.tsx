@@ -590,7 +590,11 @@ export default function DetailsPreview() {
         </div>
       )}
       {item && !editSoldier && (
-        <div className="flex flex-col gap-3 w-full">
+        <div className="flex flex-col gap-3 w-full relative">
+          <ArowBackIcon
+            onClick={() => navigate(-1)}
+            className="absolute top-[-25px] text-lg rotate-180 right-2"
+          />
           <div className="border relative border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
             <div className="flex sm:flex-row p-4  gap-3">
               {item && (

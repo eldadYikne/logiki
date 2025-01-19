@@ -54,6 +54,7 @@ export interface Admin {
   personalNumber: number;
   rank: string;
   isSuperAdmin?: boolean;
+  isNewId?: boolean;
 }
 export interface ItemType {
   name: string;

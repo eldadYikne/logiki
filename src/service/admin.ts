@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   query,
+  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -24,7 +25,6 @@ export const getAdminById = async (boardId: string, adminId: string) => {
     if (adminDoc.exists()) {
       console.log("Soldier found:", {
         ...adminDoc.data(),
-        id: adminDoc.id,
       });
 
       // Return the admin data, including Firestore ID
@@ -32,6 +32,16 @@ export const getAdminById = async (boardId: string, adminId: string) => {
     }
   } catch (error) {
     console.error("Error fetching admin:", error);
+  }
+};
+export const addAdmin = async (boardId: string, admin: Admin) => {
+  try {
+    // Use the admin's UID as the document ID
+    const adminDocRef = doc(db, `boards/${boardId}/admins/${admin.id}`);
+    await setDoc(adminDocRef, admin);
+    console.log("Admin added successfully!");
+  } catch (error) {
+    console.error("Error adding admin:", error);
   }
 };
 export const createAdmin = async (boardId: string, admin: Admin) => {

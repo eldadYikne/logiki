@@ -105,7 +105,7 @@ export const adminTranslate: { [key in keyof Admin]: string } = {
   email: "אימייל",
   name: "שם מלא",
   personalNumber: "מספר אישי",
-  phone: "שם מלא",
+  phone: "פלאפון",
   rank: "דרגה",
   signature: "חתימה",
   id: "",

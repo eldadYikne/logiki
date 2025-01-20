@@ -60,14 +60,22 @@ import {
   getSoldierItemsById,
   updateSoldier,
 } from "../service/soldier";
-import { getItemById } from "../service/item";
+import {
+  getItemById,
+  getItemsByIds,
+  getItemsBySoldierId,
+  updateItemsBatch,
+} from "../service/item";
 import ModalSignaturedSoldiers from "./ModalSignaturedSoldiers";
+import ModalConfirmCredetAll from "./ModalConfirmCredetAll";
 export default function DetailsPreview() {
   const { id, type } = useParams();
   const [data, setData] = useState<TableData>();
   const [item, setItem] = useState<DetailsItem>();
   const [modalOpen, setModalOpen] = useState(false);
   const [editSoldier, setEditSoldier] = useState<boolean>(false);
+  const [isModalConfirmCredetAll, setModalConfirmCredetAll] =
+    useState<boolean>(false);
   const [isSignaturedSoldiersModalOpen, setIsSignaturedSoldiersModalOpen] =
     useState<boolean>(false);
   const [soldierItems, setSoldierItems] = useState<Item[]>();
@@ -340,11 +348,6 @@ export default function DetailsPreview() {
           );
         }
         if (signedSoldier && !itemToUpdate.owner && findItemHisBack) {
-          let notExslusiveItems = signedSoldier?.items;
-          const notExslusiveItemIndex = signedSoldier?.items.findIndex(
-            (itemNoExlusive) => itemNoExlusive.id === itemToUpdate.id
-          );
-          notExslusiveItems.splice(notExslusiveItemIndex, 1);
           const newItemnow: Item = {
             id: itemToUpdate.id,
             history: itemToUpdate.history,
@@ -381,6 +384,11 @@ export default function DetailsPreview() {
           );
 
           if (!itemToUpdate.isExclusiveItem) {
+            let notExslusiveItems = signedSoldier?.items;
+            const notExslusiveItemIndex = signedSoldier?.items.findIndex(
+              (itemNoExlusive) => itemNoExlusive.id === itemToUpdate.id
+            );
+            notExslusiveItems.splice(notExslusiveItemIndex, 1);
             await updateSoldier("hapak162", signedSoldier.id, {
               ...signedSoldier,
               items: notExslusiveItems,
@@ -403,6 +411,133 @@ export default function DetailsPreview() {
 
         console.log(err);
       }
+    }
+  };
+  const onConfirmAllItems = async () => {
+    try {
+      setIsLoading(true);
+      const notExclusiveItems = (item as Soldier).items;
+      const exclusiveItems = await getItemsBySoldierId(
+        "hapak162",
+        (item as Soldier).id
+      );
+      const notExclusiveItemsFromDb = await getItemsByIds(
+        "hapak162",
+        notExclusiveItems.map((it) => it.id)
+      );
+      console.log("notExclusiveItems", notExclusiveItems);
+      console.log("notExclusiveItemsFromDb", notExclusiveItemsFromDb);
+      if (exclusiveItems.length > 0) {
+        const exclusiveItemsToComeback = exclusiveItems.map(
+          (exItem) =>
+            ({
+              ...exItem,
+              soldierId: "",
+              pdfFileSignature: "",
+              soldierPersonalNumber: 0,
+              owner: "",
+              status: "stored",
+              representative: "",
+              signtureDate: "",
+              history: [
+                {
+                  dateTaken: (exItem as Item).signtureDate ?? "",
+                  dateReturn: getCurrentDate(),
+                  ownerName: (exItem as Item).owner,
+                  soldierId: (exItem as Item).soldierId,
+                  representative: user ? user.displayName : "",
+                  pdfFileSignature: (exItem as Item).pdfFileSignature ?? "",
+                },
+                ...(exItem as Item).history.slice(0, 9),
+              ],
+            } as Item)
+        );
+        console.log("exclusiveItemsToComeback", exclusiveItemsToComeback);
+        if (admin) {
+          await updateItemsBatch(
+            "hapak162",
+            exclusiveItemsToComeback,
+            "credit",
+            admin,
+            {
+              name: (item as Soldier)?.name ?? "",
+              soldierId: (item as Soldier)?.id ?? "",
+            }
+          );
+        }
+      }
+      if (notExclusiveItems.length > 0) {
+        const itemsNotExNumbersOfStock = notExclusiveItems.reduce<{
+          [key: string]: { sum: number; item: ItemNotExclusive };
+        }>((acc, itemCart: ItemNotExclusive) => {
+          if (acc[itemCart?.id as string]) {
+            acc[itemCart?.id] = {
+              sum: acc[itemCart.id].sum + 1,
+              item: itemCart,
+            };
+          } else {
+            acc[itemCart.id] = { sum: 1, item: itemCart };
+          }
+          return acc;
+        }, {} as any);
+        // console.log("itemsNotExNumbersOfStock", itemsNotExNumbersOfStock);
+        const notExclusiveItemsToComeback = notExclusiveItems.map(
+          (notExItem) => {
+            const updateItem = notExclusiveItemsFromDb.find(
+              (it) => it.id === notExItem.id
+            );
+            if (!updateItem) return {};
+            return {
+              id: updateItem.id,
+              history: updateItem.history,
+              isExclusiveItem: updateItem.isExclusiveItem,
+              itemType: updateItem.itemType,
+              name: updateItem.name,
+              profileImage: updateItem.profileImage,
+              soldierId: "",
+              owner: "",
+              pdfFileSignature: "",
+              signtureDate: "",
+              soldierPersonalNumber: 0,
+              status: "stored",
+              serialNumber: "",
+              representative: "",
+              numberOfUnExclusiveItems: updateItem.isExclusiveItem
+                ? 0
+                : Number(
+                    itemsNotExNumbersOfStock[updateItem.id].sum +
+                      updateItem.numberOfUnExclusiveItems
+                  ),
+            } as Item;
+          }
+        );
+        if (admin) {
+          await updateItemsBatch(
+            "hapak162",
+            notExclusiveItemsToComeback,
+            "credit",
+            admin,
+            {
+              name: (item as Soldier)?.name ?? "",
+              soldierId: (item as Soldier)?.id ?? "",
+            }
+          );
+          await updateSoldier("hapak162", (item as Soldier).id, {
+            ...(item as Soldier),
+            items: [],
+          });
+        }
+        console.log("notExclusiveItemsToComeback", notExclusiveItemsToComeback);
+      }
+      setIsLoading(false);
+      toaster.push(
+        <Message type="success" showIcon>
+          !הפעולה בוצעה בהצלחה
+        </Message>,
+        { placement: "topCenter" }
+      );
+    } catch (err) {
+      setIsLoading(false);
     }
   };
   const renderIconButton = (props: any, ref: any) => {
@@ -488,6 +623,7 @@ export default function DetailsPreview() {
   };
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
+
   const getSoldiersAreSignaturedItem =
     useMemo<SoldiersAreSignaturedItem>(() => {
       if (!item) return [];
@@ -504,11 +640,6 @@ export default function DetailsPreview() {
         }
         return acc;
       }, {} as any);
-
-      // return data?.soldiers.filter(
-      //   (soldier) =>
-      //     !!soldier.items.find((itemSoldier) => itemSoldier.id === item.id)
-      // );
     }, [data?.soldiers, item]);
   function calculateTotalSum() {
     return Object.values(getSoldiersAreSignaturedItem).reduce(
@@ -680,10 +811,13 @@ export default function DetailsPreview() {
                       </>
                     )}
                   {(item as Soldier).size && (
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 items-center justify-between">
                       {Object.keys((item as Soldier).size).map((size, i) => {
                         return (
-                          <div key={i}>
+                          <div
+                            className="flex gap-1 flex-col sm:flex-row items-center justify-center"
+                            key={i}
+                          >
                             <span>{sizeIcons[size as keyof Size]}</span>
                             <span>
                               {(item as Soldier).size[size as keyof Size]}
@@ -826,7 +960,19 @@ export default function DetailsPreview() {
                   )
                 );
               })}
-
+              <Button onClick={() => setModalConfirmCredetAll(true)}>
+                זכה הכל
+              </Button>
+              {
+                <ModalConfirmCredetAll
+                  onClose={() => setModalConfirmCredetAll(false)}
+                  isOpen={isModalConfirmCredetAll}
+                  onConfirm={onConfirmAllItems}
+                  soldierPersonalNumber={String(
+                    (item as Soldier).personalNumber
+                  )}
+                />
+              }
               {(item as Soldier).personalNumber && (
                 <ImproveSignature
                   onCloseModal={() => setIsModalImprovalOpen(false)}

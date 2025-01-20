@@ -102,7 +102,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
                         className="h-10 w-10 rounded-full"
                         alt=""
                       />
-                      {action.items && action.items?.length! > 2 && (
+                      {action.items && action.items?.length! > 1 && (
                         <div className="bg-blue-300 absolute top-[-6px] flex right-[-6px] justify-center items-center text-white text-md font-medium h-6 w-6 rounded-full">
                           +{action.items.length}
                         </div>

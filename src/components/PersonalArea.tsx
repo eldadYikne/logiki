@@ -60,7 +60,7 @@ export default function PersonalArea() {
       );
     }
   };
-  if (!newAdmin) {
+  if (!admin) {
     <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
       <Loader size="lg" content="" />
       טוען...

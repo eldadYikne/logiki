@@ -1,5 +1,4 @@
 import {
-  addDoc,
   collection,
   doc,
   getDoc,
@@ -64,16 +63,7 @@ export const updateItemsBatch = async (
 ) => {
   try {
     const batch = writeBatch(db);
-    console.log(
-      "items:",
-      items,
-      "admin:",
-      admin,
-      "action:",
-      action,
-      "soldier",
-      soldier
-    );
+
     let historyAction = {
       id: "",
       admin: { id: admin?.id, name: admin?.name, email: admin?.email },
@@ -97,7 +87,6 @@ export const updateItemsBatch = async (
       if (!item.id) {
         throw new Error("Each item must have an 'id' field");
       }
-
       const { id, ...updates } = item; // Extract the id and updates
       const itemRef = doc(db, `boards/${boardId}/items`, id); // Reference the document
       batch.update(itemRef, updates); // Add the update operation to the batch
@@ -114,42 +103,68 @@ export const updateItemsBatch = async (
     throw error; // Re-throw to handle at a higher level if needed
   }
 };
-export const createOrUpdateSubcollectionItems = async (
+
+export const getItemsBySoldierId = async (
   boardId: string,
-  items: any[] // Replace with the appropriate type or interface for your items
-) => {
+  soldierId: string
+): Promise<Item[]> => {
+  console.log("Fetching items for soldierId:", soldierId);
+
   try {
-    // Reference to the "items" subcollection inside the specified board document
     const itemsRef = collection(db, `boards/${boardId}/items`);
 
-    // Process each item
-    const promises = items.map(async (item) => {
-      // Query for an existing document with the same `id` field
-      const q = query(itemsRef, where("profileImage", "==", item.profileImage));
-      const querySnapshot = await getDocs(q);
+    const itemsQuery = query(itemsRef, where("soldierId", "==", soldierId));
 
-      if (!querySnapshot.empty) {
-        // If a document with the same `id` exists, update it
-        const docId = querySnapshot.docs[0].id; // Get the Firebase document ID
-        const docRef = doc(db, `boards/${boardId}/items`, docId);
-        await updateDoc(docRef, item);
-        console.log(`Item updated: ${item.id}`);
-        return docId; // Return the document ID
-      } else {
-        // If no matching document exists, create a new one
-        const docRef = await addDoc(itemsRef, item);
-        console.log(`Item created: ${item.id}`);
-        return docRef.id; // Return the new document ID
-      }
-    });
+    const querySnapshot = await getDocs(itemsQuery);
 
-    // Wait for all operations to complete
-    const results = await Promise.all(promises);
+    const items: Item[] = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    })) as Item[];
 
-    console.log("Operation completed for items:", results);
-    return results; // Return the array of document IDs
+    console.log(`Found ${items.length} items for soldierId: ${soldierId}`);
+    return items;
   } catch (error) {
-    console.error("Error creating or updating items in subcollection:", error);
-    throw error; // Re-throw the error to handle it where the function is called
+    console.error("Error fetching items by soldierId:", error);
+    return [];
+  }
+};
+
+export const getItemsByIds = async (
+  boardId: string,
+  itemIds: string[]
+): Promise<Item[]> => {
+  console.log("Fetching items for itemIds:", itemIds);
+
+  try {
+    // Ensure there are IDs to query
+    if (itemIds.length === 0) {
+      console.warn("No item IDs provided for fetching.");
+      return [];
+    }
+
+    // Reference to the items collection within the board
+    const itemsRef = collection(db, `boards/${boardId}/items`);
+
+    // Firestore query using the `in` operator
+    const itemsQuery = query(itemsRef, where("id", "in", itemIds));
+
+    // Execute the query
+    const querySnapshot = await getDocs(itemsQuery);
+
+    // Map the results to an array of items
+    const items: Item[] = querySnapshot.docs.map(
+      (doc) =>
+        ({
+          ...doc.data(),
+          id: doc.id,
+        } as Item)
+    );
+
+    console.log(`Found ${items.length} items.`);
+    return items;
+  } catch (error) {
+    console.error("Error fetching items by IDs:", error);
+    return [];
   }
 };

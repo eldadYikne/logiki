@@ -184,16 +184,17 @@ function renderCellData(header: string, row: Soldier | Item) {
         return <span>{(row as Soldier).team.name} </span>;
       } else if (header === "profileImage") {
         return (
-          <span className=" sm:flex justify-center profile-image  ">
+          <span className=" sm:flex justify-center profile-image ">
             <img
-              height={80}
-              width={80}
               loading="lazy"
               alt={`${row.name ?? ""}`}
-              className="sm:h-10 sm:w-10 w-20 h-20 max-w-20  bg-white rounded-full"
+              className="  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1
-                  ? (row as Soldier).profileImage
+                  ? getTransformedUrl(
+                      (row as Soldier).profileImage,
+                      "w_80,h_80"
+                    )
                   : "https://eaassets-a.akamaihd.net/battlelog/prod/emblems/320/894/2832655391561586894.jpeg?v=1332981487.09"
               }
             />
@@ -210,7 +211,11 @@ function renderCellData(header: string, row: Soldier | Item) {
   }
   return ""; // Default case if the row isn't a Soldier or Item
 }
-
+const getTransformedUrl = (url: string, transformations: string) => {
+  // Split the URL at `/upload/` to inject the transformations
+  const [base, rest] = url.split("/upload/");
+  return `${base}/upload/f_auto/q_auto/${transformations}/${rest}`;
+};
 interface Props {
   headers: string[];
   data: (Soldier | Item)[];

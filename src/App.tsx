@@ -7,7 +7,7 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import Login from "./components/Login";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import DetailsPreview from "./components/DetailsPreview";
 import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
@@ -27,13 +27,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAdmin } from "./store/adminSlice";
 import HistoryActionsPage from "./pages/HistoryActions";
 import { RootState } from "./store/store";
-
+import SentSignaturesPage from "./pages/SentSignaturesPage";
+import SinatureSoldierPage from "./pages/SinatureSoldierPage";
+import { Message, toaster } from "rsuite";
+import { TypeAttributes } from "rsuite/esm/internals/types";
+export function toasterApp(text: string, type: TypeAttributes.Status) {
+  return toaster.push(
+    <Message type={type} showIcon>
+      {text}
+    </Message>,
+    { placement: "topCenter" }
+  );
+}
 export default function App() {
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const { admin } = useSelector((state: RootState) => state.admin);
   // console.log("VITE_API_URL", import.meta.env.VITE_API_URL);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -43,6 +55,7 @@ export default function App() {
       } else {
         setUser(undefined);
         setLoading(false);
+        navigate("/");
       }
     });
 
@@ -57,6 +70,7 @@ export default function App() {
     console.log("admin upadted from App.tsx");
     setGlobalAdmin();
   }, [user]);
+
   const cld = new Cloudinary({ cloud: { cloudName: "dwdpgwxqv" } });
   const myImage = cld.image("docs/models");
   myImage.resize(fill().width(250).height(250));
@@ -81,6 +95,7 @@ export default function App() {
   //     </div>
   //   );
   // }
+
   return (
     <div className="site-container" dir="rtl">
       {admin && (
@@ -110,6 +125,11 @@ export default function App() {
                 <Login userConnected={""} setConnectedUser={setUser} />
               )
             }
+          />
+          <Route path="/admin-signature" element={<SentSignaturesPage />} />
+          <Route
+            path="/signature/:signatureId"
+            element={<SinatureSoldierPage />}
           />
           <Route path="/soldier-profile" element={<SoldierProfilePage />} />
           <Route path="/actions" element={<HistoryActionsPage />} />

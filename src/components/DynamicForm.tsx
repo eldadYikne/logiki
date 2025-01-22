@@ -292,7 +292,7 @@ const DynamicForm: React.FC<Props> = ({
                 {field === "isExclusiveItem" && (
                   <div>
                     {itemToEdit ? (
-                      <div>
+                      <div className="font-bold text-center text-lg">
                         {(itemToEdit as Item).isExclusiveItem
                           ? "פריט זה ייחודי"
                           : "פריט זה אינו יחודי"}
@@ -318,7 +318,7 @@ const DynamicForm: React.FC<Props> = ({
                 {field === "numberOfUnExclusiveItems" &&
                   !newForm.isExclusiveItem && (
                     <div>
-                      <span>מספר פריטים:</span>
+                      <span>מספר פריטים מאופסנים:</span>
                       <InputNumber
                         value={newForm.numberOfUnExclusiveItems}
                         onChange={(e) => {

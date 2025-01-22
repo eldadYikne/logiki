@@ -8,6 +8,7 @@ import ProjectIcon from "@rsuite/icons/Project";
 import { NavLink, useLocation } from "react-router-dom";
 import PeoplesIcon from "@rsuite/icons/Peoples";
 import PeoplesTargetIcon from "@rsuite/icons/PeoplesTarget";
+import SignatureIcon from "@rsuite/icons/Signature";
 
 export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
   interface MenuLink {
@@ -21,6 +22,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       | "soldier"
       | "item"
       | "actions"
+      | "admin-signature"
       | "personal-area";
     icon: ReactElement<any, any>;
   }
@@ -31,6 +33,8 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
   const getIconComponent = (key: string) => {
     if (key === "item") {
       return <CreditCardPlusIcon />;
+    } else if (key === "admin-signature") {
+      return <SignatureIcon />;
     } else if (key === "soldiers") {
       return <PeoplesIcon />;
     } else if (key === "teams") {
@@ -71,7 +75,6 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
     },
     {
       type: "teams",
-
       link: "/add/teams",
       name: "הוסף צוות",
       icon: getIconComponent("teams"),
@@ -88,6 +91,12 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       link: "/actions",
       name: "פעולות",
       icon: getIconComponent("actions"),
+    },
+    {
+      type: "admin-signature",
+      link: "/admin-signature",
+      name: "החתמות",
+      icon: getIconComponent("admin-signature"),
     },
     {
       type: "personal-area",

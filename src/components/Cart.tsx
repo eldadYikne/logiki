@@ -28,7 +28,9 @@ const CartPage = ({ user }: Props) => {
   const { id } = useParams();
   const toaster = useToaster();
   const { admin } = useSelector((state: RootState) => state.admin);
-
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
       await getBoardByIdWithCallback("hapak162", ["soldiers"], (a) => {
@@ -40,9 +42,6 @@ const CartPage = ({ user }: Props) => {
     fetchData();
   }, [id, admin]);
 
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const navigate = useNavigate();
   // Function tCo handle item removal
   const handleRemoveItem = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -88,11 +87,17 @@ const CartPage = ({ user }: Props) => {
           (soldier) => soldier.id === itemsToSignature[0].soldierId
         );
         if (exclusiveItems.length > 0) {
-          const exclusiveItemsToSignature = exclusiveItems.map((item) => ({
-            ...item,
-            soldierId: item.owner ? "" : item.soldierId,
-            owner: signedSoldier?.name ?? "",
-          }));
+          const exclusiveItemsToSignature = exclusiveItems.map(
+            (item) =>
+              ({
+                ...item,
+                representative: admin?.name ?? "",
+                soldierId: item.owner ? "" : item.soldierId,
+                owner: signedSoldier?.name ?? "",
+                status: "signed",
+                signtureDate: String(new Date()),
+              } as Item)
+          );
           if (admin) {
             await updateItemsBatch(
               "hapak162",
@@ -299,6 +304,7 @@ const CartPage = ({ user }: Props) => {
       </Button>
       {modalOpen && user && (
         <SignatureProcessModal
+          clearCart={removeAllItem}
           dropdownTitle="בחר חייל"
           dropdownOptions={data?.soldiers ?? []}
           items={cartItems}

@@ -236,6 +236,9 @@ export const getBoardByIdWithCallback = async (
             setDataCallback({
               [subcollectionName]: subcollectionData[subcollectionName],
             });
+            if (subcollectionName === "sentSignatures") {
+              // toasterApp("מישהו החתים מרחוק!", "success");
+            }
             // Update state via callback with the combined data
           });
         });

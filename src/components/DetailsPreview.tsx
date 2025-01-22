@@ -47,7 +47,7 @@ import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
 import { User } from "@firebase/auth";
 import ModalConfirm from "./ModalConfirm";
-import { getCurrentDate } from "../utils";
+import { getCurrentDate, getCurrentDateFromDate } from "../utils";
 import ImproveSignature from "./ImproveSignature";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
@@ -527,7 +527,7 @@ export default function DetailsPreview() {
             items: [],
           });
         }
-        console.log("notExclusiveItemsToComeback", notExclusiveItemsToComeback);
+        // console.log("notExclusiveItemsToComeback", notExclusiveItemsToComeback);
       }
       setIsLoading(false);
       toaster.push(
@@ -724,7 +724,7 @@ export default function DetailsPreview() {
         <div className="flex flex-col gap-3 w-full relative">
           <ArowBackIcon
             onClick={() => navigate(-1)}
-            className="absolute top-[-25px] text-lg rotate-180 right-2"
+            className="absolute cursor-pointer top-[-25px] text-lg rotate-180 right-2"
           />
           <div className="border relative border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
             <div className="flex sm:flex-row p-4  gap-3">
@@ -832,10 +832,13 @@ export default function DetailsPreview() {
               <div>
                 <img
                   loading="lazy"
-                  className="w-full sm:h-64 h-44 rounded-md"
+                  className="w-full  rounded-md"
                   src={
                     (item as Soldier)?.profileImage
-                      ? (item as Soldier).profileImage
+                      ? getTransformedUrl(
+                          (item as Soldier).profileImage,
+                          "w_160,h_180"
+                        )
                       : "https://eaassets-a.akamaihd.net/battlelog/prod/emblems/320/894/2832655391561586894.jpeg?v=1332981487.09"
                   }
                 />
@@ -1129,6 +1132,15 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
     (item as Item).soldierPersonalNumber === 0
   ) {
     return;
+  } else if (key === "signtureDate") {
+    return (
+      <span className="">
+        <span>
+          {ItemTranslate[key as CombinedKeys]}:{" "}
+          {getCurrentDateFromDate((item as Item).signtureDate)}
+        </span>
+      </span>
+    );
   } else if (key === "isExclusiveItem") {
     return (item as Item).isExclusiveItem ? "אינ" : "";
   } else if (key === "team") {
@@ -1178,4 +1190,9 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
       item[key as keyof DetailsItem]
     );
   }
+};
+const getTransformedUrl = (url: string, transformations: string) => {
+  // Split the URL at `/upload/` to inject the transformations
+  const [base, rest] = url.split("/upload/");
+  return `${base}/upload/f_auto/q_auto/${transformations}/${rest}`;
 };

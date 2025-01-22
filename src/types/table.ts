@@ -1,4 +1,4 @@
-import { HistoryAction } from "./history";
+import { HistoryAction, HistoryItemAction } from "./history";
 import { NewTeam, Soldier } from "./soldier";
 
 export interface Item {
@@ -43,6 +43,7 @@ export interface TableData {
   teams: NewTeam[];
   itemsTypes: ItemType[];
   actions: HistoryAction[];
+  sentSignatures: SentSinature[];
 }
 export interface Admin {
   id: string;
@@ -60,10 +61,25 @@ export interface ItemType {
   name: string;
   id: string;
 }
+export interface SentSinature {
+  id: string;
+  pdfFileSignature: string;
+  signtureDate: string;
+  soldierId: string;
+  personalNumber: number;
+  items: HistoryItemAction[];
+  phoneNumber: number;
+  soldierName: string;
+  adminName: string;
+  adminEmail: string;
+  createdAt: string;
+  isSignatureDone: boolean;
+}
 export type CombinedKeys = keyof Item | keyof Soldier; // Union of keys from both Item and Soldier
 export type CollectionName =
   | "items"
   | "soldiers"
   | "itemsTypes"
   | "teams"
+  | "sentSignatures"
   | "actions";

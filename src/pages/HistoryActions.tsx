@@ -55,6 +55,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
     itemsTypes: "",
     soldiers: "/soldiers/details/",
     teams: "/add/teams/",
+    sentSignatures: "/soldiers/details/",
   };
   const collectionPreview: { [key in CollectionName]: string } = {
     actions: "פעולה",
@@ -62,6 +63,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
     itemsTypes: "קבוצת פריטים",
     soldiers: "חייל",
     teams: "צוות",
+    sentSignatures: "החתמה מרחוק",
   };
 
   const getPathToItemChanged = (id: string, name: CollectionName) => {
@@ -83,7 +85,9 @@ const HistoryActionsPage: React.FC<Props> = () => {
               <div
                 key={action.id}
                 className="p-4 cursor-pointer  border whitespace-nowrap  items-center relative rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   if (action.items && action.items.length > 1) {
                     setActionSignaturditems(action.items);
                     setIsModalItemsActive(true);
@@ -118,8 +122,14 @@ const HistoryActionsPage: React.FC<Props> = () => {
                   )}
                   {(action.type === "signature" ||
                     action.type === "credit") && <span> את</span>}
+                  {action.type === "create" &&
+                    action.collectionName === "sentSignatures" && (
+                      <span>ל</span>
+                    )}
                   <span
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       if (action.type === "delete") return;
                       navigate(`/soldiers/details/${action.soldier?.id}`);
                     }}
@@ -140,7 +150,9 @@ const HistoryActionsPage: React.FC<Props> = () => {
                           action.type === "credit") && <span>על</span>}
                         {
                           <span
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
                               if (action.type === "delete") return;
                               getPathToItemChanged(
                                 action.items![0].itemId,

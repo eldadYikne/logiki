@@ -1,4 +1,14 @@
-import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import { HistoryAction, HistoryItemAction } from "../types/history";
 import { Admin, SentSinature } from "../types/table";
 import { db } from "../main";
@@ -15,7 +25,7 @@ export const createSentSignature = async (
 
     // Add the item to the collection
     const docRef = await addDoc(itemsRef, signature);
-
+    await enforceMaxSentSignatures(boardId);
     console.log(" successfully created:", signature);
     let historyAction;
     if (admin) {
@@ -116,5 +126,32 @@ export const updateSentSignature = async (
   } catch (error) {
     console.error("Error updating signature:", error);
     throw error; // Re-throw the error to handle it where the function is called
+  }
+};
+const enforceMaxSentSignatures = async (boardId: string) => {
+  try {
+    const itemsRef = collection(db, `boards/${boardId}/sentSignatures`);
+    const querySnapshot = await getDocs(
+      query(itemsRef, orderBy("createdAt", "asc"))
+    );
+    let maxObjectStored = 5;
+    // Check if there are more than 20 items
+    if (querySnapshot.size > maxObjectStored) {
+      const excess = querySnapshot.size - maxObjectStored;
+
+      // Get the oldest documents (to be deleted)
+      const docsToDelete = querySnapshot.docs.slice(0, excess);
+
+      // Delete each of the oldest documents
+      for (const docSnapshot of docsToDelete) {
+        await deleteDoc(
+          doc(db, `boards/${boardId}/sentSignatures/${docSnapshot.id}`)
+        );
+        console.log(`Deleted oldest document with ID: ${docSnapshot.id}`);
+      }
+    }
+  } catch (error) {
+    console.error("Error enforcing max sent signatures:", error);
+    throw error;
   }
 };

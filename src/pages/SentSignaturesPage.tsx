@@ -7,7 +7,7 @@ import { ItemNotExclusive } from "../types/soldier";
 import { updateSoldier } from "../service/soldier";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { Message, useToaster } from "rsuite";
+import { Loader, Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { updateSentSignature } from "../service/sentSignature";
 import MessageAnimation from "../components/Success";
@@ -194,7 +194,7 @@ export default function SentSignaturesPage() {
           )
           .map((signature) => {
             return (
-              <div className="relative">
+              <div key={signature.id} className="relative">
                 {signature.isSignatureDone && (
                   <div className="absolute text-white inset-0 flex-col gap-2  z-10 flex justify-center items-center">
                     <MessageAnimation type="success" title="הוחתם בהצלחה!" />
@@ -209,6 +209,12 @@ export default function SentSignaturesPage() {
               </div>
             );
           })}
+      {!data?.sentSignatures && (
+        <div className=" text-gray-500 w-full flex-col gap-2  z-50 flex justify-center items-center">
+          <Loader size="lg" content="" />
+          טוען...
+        </div>
+      )}
     </div>
   );
 }

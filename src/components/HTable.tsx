@@ -146,6 +146,7 @@ export default function HTable(props: Props) {
 
 function renderCellData(header: string, row: Soldier | Item) {
   if (!row) return;
+
   if ("id" in row) {
     // Check if the row is a Soldier or an Item
     if (header in row) {

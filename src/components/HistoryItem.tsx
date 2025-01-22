@@ -1,6 +1,6 @@
 import { Td, Tr } from "react-super-responsive-table";
 import { Item, ItemHistory } from "../types/table";
-import { getCurrentDate } from "../utils";
+import { getCurrentDateFromDate } from "../utils";
 import ImproveSignature from "./ImproveSignature";
 import { useEffect, useState } from "react";
 import { Button } from "rsuite";
@@ -33,7 +33,7 @@ export default function HistoryItem(props: Props) {
     if (key === "dateReturn" || key === "dateTaken") {
       return (
         <span className="font-semibold">
-          {value ? value : getCurrentDate()}
+          {value.includes("Israel") ? getCurrentDateFromDate(value) : value}
         </span>
       );
     } else if (key === "pdfFileSignature") {

@@ -138,7 +138,9 @@ export default function App() {
               )
             }
           />
-          <Route path="/admin-signature" element={<SentSignaturesPage />} />
+          {user && admin && (
+            <Route path="/admin-signature" element={<SentSignaturesPage />} />
+          )}
           <Route
             path="/signature/:signatureId"
             element={<SinatureSoldierPage />}

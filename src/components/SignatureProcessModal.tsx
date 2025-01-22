@@ -3,7 +3,10 @@ import { DetailsItem, Soldier } from "../types/soldier";
 import { useState } from "react";
 import Signature from "./Signature";
 import { Item, SentSinature } from "../types/table";
-import { getCurrentDate } from "../utils";
+import {
+  formatPhoneNumberToIsraelInternational,
+  getCurrentDate,
+} from "../utils";
 import { User } from "firebase/auth";
 import MessageIcon from "@rsuite/icons/Message";
 import { RootState } from "../store/store";
@@ -95,7 +98,9 @@ export default function SignatureProcessModal({
       }, הזמינו אותך לחתום על על ציוד באופן מקוון, לחץ על הקישור למעבר לחתימה `;
       // const formattedMessage = message.replace(/ /g, "%20");
       const baseURL = "https://wa.me/";
-      const phoneNumber = (selectedOption as Soldier).phoneNumber;
+      const phoneNumber = formatPhoneNumberToIsraelInternational(
+        String((selectedOption as Soldier).phoneNumber)
+      );
       const fullMessage = `${message} ${link}`;
       const url = `${baseURL}${phoneNumber}?text=${encodeURIComponent(
         fullMessage

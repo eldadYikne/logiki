@@ -24,3 +24,14 @@ export function getCurrentDateFromDate(date: string): string {
   //   console.log(new Date(`${day}.${month}.${year}`));
   return `${day}.${month}.${year}`;
 }
+export function formatPhoneNumberToIsraelInternational(
+  phoneNumber: string
+): string {
+  // Check if the phone number starts with "0"
+  if (phoneNumber.startsWith("0")) {
+    // Remove the leading "0" and prepend "+972"
+    return "+972" + phoneNumber.slice(1);
+  }
+  // If it doesn't start with "0", assume it's already in the correct format
+  return phoneNumber;
+}

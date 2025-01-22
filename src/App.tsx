@@ -7,7 +7,13 @@ import { fill } from "@cloudinary/url-gen/actions/resize";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import Login from "./components/Login";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import DetailsPreview from "./components/DetailsPreview";
 import { Cloudinary } from "@cloudinary/url-gen/index";
 import { auth } from "./main";
@@ -44,6 +50,8 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const { admin } = useSelector((state: RootState) => state.admin);
+  const location = useLocation();
+
   // console.log("VITE_API_URL", import.meta.env.VITE_API_URL);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,7 +63,11 @@ export default function App() {
       } else {
         setUser(undefined);
         setLoading(false);
-        navigate("/");
+        console.log("!location.pathname", location.pathname);
+
+        if (!location.pathname.includes("/signature/")) {
+          navigate("/");
+        }
       }
     });
 

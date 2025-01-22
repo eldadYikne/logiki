@@ -95,7 +95,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
     {
       type: "admin-signature",
       link: "/admin-signature",
-      name: "החתמות",
+      name: "החתמות מרחוק",
       icon: getIconComponent("admin-signature"),
     },
     {

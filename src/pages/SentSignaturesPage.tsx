@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBoardByIdWithCallback } from "../service/board";
+import { getBoardByIdWithCallbackWithSort } from "../service/board";
 import { Item, SentSinature, TableData } from "../types/table";
 import SignaturePreview from "../components/SignaturePreview";
 import { getItemsByIds, updateItemsBatch } from "../service/item";
@@ -22,11 +22,13 @@ export default function SentSignaturesPage() {
 
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdWithCallback(
+      await getBoardByIdWithCallbackWithSort(
         "hapak162",
-        ["soldiers", "sentSignatures"],
+        [
+          { boardKey: "soldiers", sortByKey: "name" },
+          { boardKey: "sentSignatures", sortByKey: "createdAt" },
+        ],
         (a) => {
-          console.log("a", a);
           setData((prev) => ({ ...prev, ...a } as TableData));
         }
       );
@@ -187,28 +189,23 @@ export default function SentSignaturesPage() {
   return (
     <div className="sm:p-5 p-4  w-full  signature-page">
       {data?.sentSignatures &&
-        data?.sentSignatures
-          .sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          .map((signature) => {
-            return (
-              <div key={signature.id} className="relative">
-                {signature.isSignatureDone && (
-                  <div className="absolute text-white inset-0 flex-col gap-2  z-10 flex justify-center items-center">
-                    <MessageAnimation type="success" title="הוחתם בהצלחה!" />
-                  </div>
-                )}
-                <SignaturePreview
-                  isLoading={isLoading}
-                  onSignature={onSignature}
-                  key={signature.id}
-                  signature={signature}
-                />
-              </div>
-            );
-          })}
+        data?.sentSignatures.map((signature) => {
+          return (
+            <div key={signature.id} className="relative">
+              {signature.isSignatureDone && (
+                <div className="absolute text-white inset-0 flex-col gap-2  z-10 flex justify-center items-center">
+                  <MessageAnimation type="success" title="הוחתם בהצלחה!" />
+                </div>
+              )}
+              <SignaturePreview
+                isLoading={isLoading}
+                onSignature={onSignature}
+                key={signature.id}
+                signature={signature}
+              />
+            </div>
+          );
+        })}
       {!data?.sentSignatures && (
         <div className=" text-gray-500 w-full flex-col gap-2  z-50 flex justify-center items-center">
           <Loader size="lg" content="" />

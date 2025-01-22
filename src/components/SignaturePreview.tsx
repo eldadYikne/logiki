@@ -1,6 +1,6 @@
 import { Loader } from "rsuite";
 import { SentSinature } from "../types/table";
-import { getCurrentDateFromDate } from "../utils";
+import { formatDateTime } from "../utils";
 import CountdownTimer from "./CountdownTimer ";
 
 export default function SignaturePreview({
@@ -78,9 +78,7 @@ export default function SignaturePreview({
       </p>
       <p className="p-1 px-3">
         <strong> תאריך חתימה :</strong>{" "}
-        {signature.signtureDate
-          ? getCurrentDateFromDate(signature.signtureDate)
-          : "-"}
+        {signature.signtureDate ? formatDateTime(signature.signtureDate) : "-"}
       </p>
 
       {/* <p className="p-1 px-3">
@@ -102,9 +100,7 @@ export default function SignaturePreview({
         ))}
       </ul>
       <p className="p-1 font-bold  absolute top-0 left-0">
-        {signature.createdAt
-          ? getCurrentDateFromDate(signature.createdAt)
-          : "-"}
+        {signature.createdAt ? formatDateTime(signature.createdAt) : "-"}
       </p>
     </div>
   );

@@ -257,3 +257,60 @@ export const getBoardByIdWithCallback = async (
     throw error; // Rethrow the error to handle it where the function is called
   }
 };
+export const getBoardByIdWithCallbackWithSort = async (
+  boardId: string,
+  boardKeysConfig: Array<{
+    boardKey: keyof TableData;
+    sortByKey: "name" | "date" | "createdAt";
+  }>,
+  setDataCallback: (data: any) => void
+) => {
+  try {
+    const boardRef = doc(db, "boards", boardId);
+
+    const unsubscribeBoard = onSnapshot(boardRef, (boardDoc) => {
+      if (boardDoc.exists()) {
+        const subcollectionData: Record<string, any[]> = {};
+
+        const unsubscribes = boardKeysConfig.map(({ boardKey, sortByKey }) => {
+          const subRef = collection(boardRef, boardKey as string);
+
+          return onSnapshot(subRef, (subSnapshot) => {
+            const sortedData = subSnapshot.docs
+              .map((doc) => ({ ...doc.data(), id: doc.id }))
+              .sort((a: any, b: any) => {
+                const aKey = a[sortByKey];
+                const bKey = b[sortByKey];
+
+                // Handle sorting for strings, numeric-like strings, and date strings
+                if (typeof aKey === "string" && typeof bKey === "string") {
+                  if (sortByKey === "date" || sortByKey === "createdAt") {
+                    // Parse strings as dates for sorting
+                    return new Date(bKey).getTime() - new Date(aKey).getTime();
+                  }
+                  return aKey.localeCompare(bKey); // Alphabetical sort for other strings
+                }
+                return 0; // Default no sorting for other cases
+              });
+
+            subcollectionData[boardKey] = sortedData;
+
+            // Trigger callback with updated data
+            setDataCallback({ [boardKey]: sortedData });
+          });
+        });
+
+        // Return cleanup function to unsubscribe from all listeners
+        return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+      } else {
+        console.log("Board not found");
+      }
+    });
+
+    // Return the unsubscribe function for the board document
+    return unsubscribeBoard;
+  } catch (error) {
+    console.error("Error fetching board and subcollections:", error);
+    throw error; // Rethrow the error to handle it where the function is called
+  }
+};

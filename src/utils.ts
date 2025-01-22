@@ -35,3 +35,23 @@ export function formatPhoneNumberToIsraelInternational(
   // If it doesn't start with "0", assume it's already in the correct format
   return phoneNumber;
 }
+export const formatDateTime = (dateString: string): string => {
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${hours}:${minutes}  ${day}.${month}.${year}`;
+};
+export const getTransformedUrl = (url: string, transformations: string) => {
+  // Split the URL at `/upload/` to inject the transformations
+  const [base, rest] = url.split("/upload/");
+  return `${base}/upload/f_auto/q_auto/${transformations}/${rest}`;
+};

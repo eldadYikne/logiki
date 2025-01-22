@@ -37,6 +37,7 @@ import SentSignaturesPage from "./pages/SentSignaturesPage";
 import SinatureSoldierPage from "./pages/SinatureSoldierPage";
 import { Message, toaster } from "rsuite";
 import { TypeAttributes } from "rsuite/esm/internals/types";
+import TeamDetailsPage from "./pages/TeamDetailsPage";
 export function toasterApp(text: string, type: TypeAttributes.Status) {
   return toaster.push(
     <Message type={type} showIcon>
@@ -147,7 +148,8 @@ export default function App() {
           />
           <Route path="/soldier-profile" element={<SoldierProfilePage />} />
           <Route path="/actions" element={<HistoryActionsPage />} />
-          <Route path="/add/:type" element={<Create />} />
+          {admin && <Route path="/team/:id" element={<TeamDetailsPage />} />}
+          {admin && <Route path="/add/:type" element={<Create />} />}
           {user && <Route path="/cart" element={<Cart user={user} />} />}
           {user && <Route path="/personal-area" element={<PersonalArea />} />}
 

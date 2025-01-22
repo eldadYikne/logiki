@@ -29,8 +29,6 @@ export default function AdminPage(props: Props) {
       await getBoardByIdWithCallback("hapak162", ["admins"], (a) => {
         setData((prev) => ({ ...prev, ...a } as TableData));
       });
-      if (data?.admins) {
-      }
     }
     fetchData();
   }, [data?.admins]);

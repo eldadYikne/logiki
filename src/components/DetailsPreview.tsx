@@ -47,7 +47,11 @@ import HistoryItem from "./HistoryItem";
 import { Table, Tbody, Th, Thead, Tr } from "react-super-responsive-table";
 import { User } from "@firebase/auth";
 import ModalConfirm from "./ModalConfirm";
-import { getCurrentDate, getCurrentDateFromDate } from "../utils";
+import {
+  getCurrentDate,
+  getCurrentDateFromDate,
+  getTransformedUrl,
+} from "../utils";
 import ImproveSignature from "./ImproveSignature";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
@@ -1190,9 +1194,4 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
       item[key as keyof DetailsItem]
     );
   }
-};
-const getTransformedUrl = (url: string, transformations: string) => {
-  // Split the URL at `/upload/` to inject the transformations
-  const [base, rest] = url.split("/upload/");
-  return `${base}/upload/f_auto/q_auto/${transformations}/${rest}`;
 };

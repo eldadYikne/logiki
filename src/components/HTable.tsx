@@ -8,6 +8,7 @@ import { ItemTranslate, statusColors, statusTranslate } from "../const";
 import SortDownIcon from "@rsuite/icons/SortDown";
 import SortUpIcon from "@rsuite/icons/SortUp";
 import { useNavigate } from "react-router-dom";
+import { getTransformedUrl } from "../utils";
 export default function HTable(props: Props) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
@@ -212,11 +213,7 @@ function renderCellData(header: string, row: Soldier | Item) {
   }
   return ""; // Default case if the row isn't a Soldier or Item
 }
-const getTransformedUrl = (url: string, transformations: string) => {
-  // Split the URL at `/upload/` to inject the transformations
-  const [base, rest] = url.split("/upload/");
-  return `${base}/upload/f_auto/q_auto/${transformations}/${rest}`;
-};
+
 interface Props {
   headers: string[];
   data: (Soldier | Item)[];

@@ -76,7 +76,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
     {
       type: "teams",
       link: "/add/teams",
-      name: "הוסף צוות",
+      name: "צוותים",
       icon: getIconComponent("teams"),
     },
 

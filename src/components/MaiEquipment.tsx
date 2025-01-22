@@ -16,7 +16,7 @@ import { useParams } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
-import { getBoardByIdWithCallback } from "../service/board";
+import { getBoardByIdWithCallbackWithSort } from "../service/board";
 
 function MaiEquipment() {
   const { type } = useParams();
@@ -30,16 +30,23 @@ function MaiEquipment() {
   }, [type]);
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdWithCallback(
+      await getBoardByIdWithCallbackWithSort(
         "hapak162",
-        ["soldiers", "items", "itemsTypes", "teams", "admins"],
+        [
+          { boardKey: "soldiers", sortByKey: "name" },
+          { boardKey: "items", sortByKey: "name" },
+          { boardKey: "itemsTypes", sortByKey: "name" },
+          { boardKey: "teams", sortByKey: "name" },
+          { boardKey: "admins", sortByKey: "name" },
+        ],
         (a) => {
-          console.log("a", a);
+          // console.log("a", a);
           setData((prev) => ({ ...prev, ...a } as TableData));
           setDataToTable((prev) => ({ ...prev, ...a } as NewTableData));
         }
       );
     }
+
     fetchData();
   }, []);
   useEffect(() => {

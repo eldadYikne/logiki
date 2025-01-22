@@ -148,7 +148,7 @@ export default function Create() {
             {(type === "teams" || type === "itemsTypes") && (
               <div className="flex flex-col w-full gap-4 items-center pt-10">
                 <ItemTypeForm formType={type} />
-                <div className="w-2/3 flex flex-col justify-center items-center">
+                <div className="sm:w-2/3 w-full flex flex-col justify-center items-center">
                   <span className="text-xl text-blue-400">
                     {" "}
                     {type === "itemsTypes"
@@ -161,14 +161,19 @@ export default function Create() {
                       data[type] &&
                       data[type].map((value) => {
                         return (
-                          <div className="flex gap-3 justify-center items-center">
+                          <div
+                            key={value.id}
+                            className="flex gap-3  justify-center items-center"
+                          >
                             <div
                               onClick={() => {
                                 if (type === "itemsTypes") {
                                   navigate(`/${value.id}`);
+                                } else if (type === "teams") {
+                                  navigate(`/team/${value.id}`);
                                 }
                               }}
-                              className="bg-gray-200 rounded-md flex gap-3 justify-center items-center w-full  sm:w-40 p-3"
+                              className="bg-gray-200 hover:bg-gray-300 cursor-pointer  rounded-md flex gap-3 justify-center items-center w-full  sm:w-40 p-3"
                             >
                               {" "}
                               {(value as ItemType).name}

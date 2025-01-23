@@ -73,6 +73,40 @@ export const getSoldierById = async (boardId: string, soldierId: string) => {
   }
 };
 
+export const getSoldiersByTeamId = async (boardId: string, teamId: string) => {
+  console.log("teamId", teamId);
+
+  try {
+    // Reference to the soldiers collection under the specific board
+    const soldiersRef = collection(db, `boards/${boardId}/soldiers`);
+
+    // Query to filter soldiers by teamId
+    const q = query(soldiersRef, where("team.id", "==", teamId));
+
+    // Get the documents matching the query
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const soldiers: Soldier[] = [];
+      querySnapshot.forEach((doc) => {
+        soldiers.push({
+          ...doc.data(),
+          id: doc.id,
+        } as Soldier);
+      });
+
+      console.log("Soldiers found:", soldiers);
+      return soldiers; // Return the array of soldiers
+    } else {
+      console.log("No soldiers found for team:", teamId);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching soldiers by team:", error);
+    return [];
+  }
+};
+
 export const getSoldierByPersonalNumberAndPhone = async (
   boardId: string,
   personalNumber: string,

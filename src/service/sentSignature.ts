@@ -24,8 +24,8 @@ export const createSentSignature = async (
     const itemsRef = collection(db, `boards/${boardId}/sentSignatures`);
 
     // Add the item to the collection
-    const docRef = await addDoc(itemsRef, signature);
     await enforceMaxSentSignatures(boardId);
+    const docRef = await addDoc(itemsRef, signature);
     console.log(" successfully created:", signature);
     let historyAction;
     if (admin) {
@@ -134,7 +134,7 @@ const enforceMaxSentSignatures = async (boardId: string) => {
     const querySnapshot = await getDocs(
       query(itemsRef, orderBy("createdAt", "asc"))
     );
-    let maxObjectStored = 5;
+    let maxObjectStored = 50;
     // Check if there are more than 20 items
     if (querySnapshot.size > maxObjectStored) {
       const excess = querySnapshot.size - maxObjectStored;

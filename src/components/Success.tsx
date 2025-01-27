@@ -17,7 +17,9 @@ export default function MessageAnimation({ title, type }: Props) {
       {showAnimation && type === "error" && (
         <div className="error-icon text-red-600 text-6xl animate-pulse">✗</div>
       )}
-      <span dir="rtl">{title}</span>
+      <span className="text-center" dir="rtl">
+        {title}
+      </span>
     </div>
   );
 }

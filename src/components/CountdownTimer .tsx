@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import TimeIcon from "@rsuite/icons/Time";
 
 interface CountdownTimerProps {
   startTime: string; // Accepts a string in a valid date format
@@ -53,7 +52,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ startTime }) => {
           isTimedOut ? "" : "py-0"
         }text-lg sm:text-sm  font-bold text-gray-800 flex items-center justify-center gap-2`}
       >
-        {isTimedOut ? <TimeIcon /> : ""}
+        {/* {isTimedOut ? <TimeIcon /> : ""} */}
         {isTimedOut ? "עבר זמן החתמה" : ` זמן נותר ${formatTime(timeLeft)}`}
       </div>
       {!isTimedOut && (

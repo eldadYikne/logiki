@@ -5,6 +5,7 @@ import { statusTranslate } from "../const";
 import { getTransformedUrl } from "../utils";
 import { getSoldiersByTeamId } from "../service/soldier";
 import { Accordion } from "rsuite";
+// import TeamItemsTable from "../components/teamItemsTable";
 
 const TeamDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,10 +67,13 @@ const TeamDetailsPage = () => {
           alt={soldier.name}
           className="w-12 h-12 rounded-full "
         />
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">
-            {soldier.name}
-          </h3>
+        <div className=" text-start">
+          <div className="flex w-full justify-between">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {soldier.name}
+            </h3>
+            {/* <div>{soldier.items.length}</div> */}
+          </div>
           <p className="text-gray-600">מספר אישי: {soldier.personalNumber}</p>
         </div>
       </div>
@@ -122,7 +126,7 @@ const TeamDetailsPage = () => {
             </h2>
             {filteredSoldiers.length > 0 ? (
               <div className="space-y-6">
-                <Accordion defaultActiveKey={1} bordered>
+                <Accordion defaultActiveKey="" bordered>
                   {filteredSoldiers.map((soldier, i) => (
                     <Accordion.Panel
                       dir={"rtl"}
@@ -136,9 +140,9 @@ const TeamDetailsPage = () => {
                           navigate(`/soldiers/details/${soldier.id}`)
                         }
                       >
-                        <h4 className="text-gray-700 font-semibold mb-2">
+                        <h5 className="text-gray-700 font-semibold mb-2">
                           פריטים: ({soldier.items.length})
-                        </h4>
+                        </h5>
                         <ul className="space-y-2">
                           {soldier.items.map((item: ItemNotExclusive) => (
                             <li

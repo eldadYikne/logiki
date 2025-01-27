@@ -155,3 +155,49 @@ const enforceMaxSentSignatures = async (boardId: string) => {
     throw error;
   }
 };
+
+export const removeSentSignatureById = async (
+  boardId: string,
+  signatureId: string,
+  admin?: Admin
+): Promise<void> => {
+  try {
+    // Reference to the specific document in the sentSignatures subcollection
+    const signatureRef = doc(
+      db,
+      `boards/${boardId}/sentSignatures/${signatureId}`
+    );
+
+    // Delete the document
+    await deleteDoc(signatureRef);
+    console.log(`Successfully removed signature with ID: ${signatureId}`);
+
+    let historyAction;
+    if (admin) {
+      historyAction = {
+        id: "",
+        admin: { id: admin.id, name: admin.name, email: admin.email },
+        soldier: {
+          id: "",
+          name: "",
+          personalNumber: 0,
+          profileImage: "",
+          soldierId: "",
+        },
+        items: [],
+        date: String(new Date()),
+        type: "delete",
+        collectionName: "sentSignatures",
+      } as HistoryAction;
+      console.log("historyAction", historyAction);
+
+      // Log the deletion to history
+      if (historyAction) {
+        await createHistory(boardId, historyAction);
+      }
+    }
+  } catch (error) {
+    console.error("Error removing signature:", error);
+    throw error; // Re-throw the error to handle it where the function is called
+  }
+};

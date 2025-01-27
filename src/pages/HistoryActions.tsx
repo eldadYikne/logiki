@@ -99,9 +99,9 @@ const HistoryActionsPage: React.FC<Props> = () => {
                 }
               }}
             >
-              <div className="mb-2 flex items-center gap-1">
+              <div className="flex gap-1">
                 {(action.items || action.soldier) && (
-                  <div className="relative">
+                  <div className="relative shrink-0">
                     <img
                       src={
                         action.items?.length! > 0
@@ -118,41 +118,45 @@ const HistoryActionsPage: React.FC<Props> = () => {
                     )}
                   </div>
                 )}
-                <span className="font-bold">{action.admin.name}</span>{" "}
-                <span className="font-bold">
-                  {TranslateHistoryType[action.type]}
-                </span>
-                {action.type !== "signature" && action.type !== "credit" && (
-                  <span> {collectionPreview[action.collectionName]}</span>
-                )}
-                {(action.type === "signature" || action.type === "credit") && (
-                  <span> את</span>
-                )}
-                {action.type === "create" &&
-                  action.collectionName === "sentSignatures" && <span>ל</span>}
-                <span
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (action.type === "delete") return;
-                    navigate(`/soldiers/details/${action.soldier?.id}`);
-                  }}
-                  className={
-                    action.type !== "delete"
-                      ? "font-bold text-blue-600 underline cursor-pointer"
-                      : "font-bold"
-                  }
-                >
-                  {" "}
-                  {action.soldier?.name}
-                </span>
-                {action.items &&
-                  action.items.length > 0 &&
-                  action.items.length < 2 && (
-                    <div className=" flex gap-1">
-                      {(action.type === "signature" ||
-                        action.type === "credit") && <span>על</span>}
-                      {
+                <div className="mb-2 flex flex-wrap items-center gap-1 text-ellipsis">
+                  <span className="font-bold truncate max-w-[80%]">
+                    {action.admin.name}
+                  </span>{" "}
+                  <span className="font-bold truncate max-w-[80%]">
+                    {TranslateHistoryType[action.type]}
+                  </span>
+                  {action.type !== "signature" && action.type !== "credit" && (
+                    <span className="truncate max-w-[80%]">
+                      {collectionPreview[action.collectionName]}
+                    </span>
+                  )}
+                  {(action.type === "signature" ||
+                    action.type === "credit") && <span>את</span>}
+                  {action.type === "create" &&
+                    action.collectionName === "sentSignatures" && (
+                      <span>ל</span>
+                    )}
+                  <span
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (action.type === "delete") return;
+                      navigate(`/soldiers/details/${action.soldier?.id}`);
+                    }}
+                    className={
+                      action.type !== "delete"
+                        ? "font-bold text-blue-600 underline cursor-pointer  max-w-[80%]"
+                        : "font-bold  max-w-[80%]"
+                    }
+                  >
+                    {action.soldier?.name}
+                  </span>
+                  {action.items &&
+                    action.items.length > 0 &&
+                    action.items.length < 2 && (
+                      <div className="flex gap-1 truncate max-w-[80%]">
+                        {(action.type === "signature" ||
+                          action.type === "credit") && <span>על</span>}
                         <span
                           onClick={(e) => {
                             e.preventDefault();
@@ -165,18 +169,15 @@ const HistoryActionsPage: React.FC<Props> = () => {
                           }}
                           className={
                             action.type !== "delete"
-                              ? "font-bold text-blue-600 underline cursor-pointer"
-                              : "font-bold"
+                              ? "font-bold text-blue-600 underline cursor-pointer  max-w-[80%]"
+                              : "font-bold  max-w-[80%]"
                           }
                         >
                           {action.items[0].name}
                         </span>
-                      }
-                    </div>
-                  )}
-                {/* {action.items && action.items.length > 1 && (
-                    <div onClick={() => setIsModalItemsActive(true)}>הצג</div>
-                  )} */}
+                      </div>
+                    )}
+                </div>
               </div>
               {action.date && !isNaN(new Date(action.date).getTime()) && (
                 <div

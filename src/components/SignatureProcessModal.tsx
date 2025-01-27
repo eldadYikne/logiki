@@ -5,6 +5,7 @@ import Signature from "./Signature";
 import { Item, SentSinature } from "../types/table";
 import {
   formatPhoneNumberToIsraelInternational,
+  // formatPhoneNumberToIsraelInternational,
   getCurrentDate,
 } from "../utils";
 import { User } from "firebase/auth";
@@ -13,6 +14,7 @@ import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 import { createSentSignature } from "../service/sentSignature";
 import MessageAnimation from "./Success";
+import { sendMessageToContact } from "../service/messageSender";
 
 export default function SignatureProcessModal({
   isOpen,
@@ -31,9 +33,15 @@ export default function SignatureProcessModal({
   };
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [signatureUrl, setSignatureUrl] = useState<string>();
-  const [isSignatureSent, setIsSignatureSent] = useState<boolean>(false);
+  const [messageSendStatus, setMessageSendStatus] = useState<{
+    status: string;
+    text: string;
+  }>();
+  // const [isSignatureSent, setIsSignatureSent] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<DetailsItem>(); // Stores the selected object
   const [inputValue, setInputValue] = useState(""); // Manages input value for di
+  const [counter, setCounter] = useState<number>(0); // Manages input value for di
+  const [sendViaWhatsapp, setsendViaWhatsapp] = useState<boolean>(true); // Manages input value for di
   const { admin } = useSelector((state: RootState) => state.admin);
 
   inputValue;
@@ -84,32 +92,47 @@ export default function SignatureProcessModal({
         sentSignature,
         admin
       );
-      setIsSignatureSent(true);
+      // setIsSignatureSent(true);
       setTimeout(() => {
         onCloseModal();
         if (clearCart) {
           clearCart();
         }
-      }, 2000);
+      }, 3000);
       // const link = `http://localhost:5173/signature/${signatureId}`;
       const link = `https://hapak162.onrender.com/signature/${signatureId}`;
       const message = `שלום ${
         (selectedOption as Soldier).name
       }, הזמינו אותך לחתום על על ציוד באופן מקוון, לחץ על הקישור למעבר לחתימה `;
-      // const formattedMessage = message.replace(/ /g, "%20");
-      const baseURL = "https://wa.me/";
-      const phoneNumber = formatPhoneNumberToIsraelInternational(
-        String((selectedOption as Soldier).phoneNumber)
-      );
-      const fullMessage = `${message} ${link}`;
-      const url = `${baseURL}${phoneNumber}?text=${encodeURIComponent(
-        fullMessage
-      )}`;
-      navigator.clipboard.writeText(message + " " + link);
+      let phoneNumber = String((selectedOption as Soldier).phoneNumber);
 
-      setTimeout(() => {
-        window.open(url);
-      }, 2000);
+      const fullMessage = `${message} ${link}`;
+
+      console.log("fullMessage", fullMessage);
+      console.log("phoneNumber", phoneNumber);
+
+      if (sendViaWhatsapp) {
+        const baseURL = "https://wa.me/";
+
+        let phoneNum = formatPhoneNumberToIsraelInternational(
+          String(phoneNumber)
+        );
+        const url = `${baseURL}${phoneNum}?text=${encodeURIComponent(
+          fullMessage
+        )}`;
+        navigator.clipboard.writeText(message + " " + link);
+        setTimeout(() => {
+          window.open(url);
+        }, 5000);
+      } else {
+        const res = await sendMessageToContact(phoneNumber, fullMessage);
+        if (res) {
+          setMessageSendStatus({
+            text: getMessageByCode(res),
+            status: String(res),
+          });
+        }
+      }
     } catch (err) {}
   };
   return (
@@ -121,13 +144,29 @@ export default function SignatureProcessModal({
       dir="rtl"
       overflow={false}
     >
-      {isSignatureSent && (
-        <MessageAnimation type="success" title="נשלח בהצלחה!" />
+      {messageSendStatus?.status && (
+        <MessageAnimation
+          type={Number(messageSendStatus?.status) > 0 ? "success" : "error"}
+          title={messageSendStatus.text}
+        />
       )}
-      {!isSignatureSent && (
+      {!messageSendStatus?.status && (
         <>
           <Modal.Header>
-            <Modal.Title>{modalOptions[mode].title}</Modal.Title>
+            <Modal.Title
+              onClick={() => {
+                setCounter((prev) => prev + 1);
+                console.log(counter);
+                if (counter > 7) {
+                  setsendViaWhatsapp(false);
+                }
+              }}
+            >
+              {modalOptions[mode].title}
+            </Modal.Title>
+            {!sendViaWhatsapp && (
+              <span className="text-green-500">message-active</span>
+            )}
           </Modal.Header>
           <Modal.Body>
             {/* <CustomDropdown placeholder={dropdownTitle} options={dropdownOptions} /> */}
@@ -215,4 +254,26 @@ interface Props {
   onConfirm: Function;
   user: User;
   clearCart?: Function;
+}
+function getMessageByCode(code: number): string {
+  switch (true) {
+    case code > 0:
+      return "ההודעה נשלחה בהצלחה !";
+    case code === 0:
+      return "שגיאה כללית";
+    case code === -1:
+      return "שגיאה כללית";
+    case code === -2:
+      return "שם או מספר שולח ההודעה שגוי";
+    case code === -3:
+      return "לא נמצאו נמענים";
+    case code === -4:
+      return "לא ניתן לשלוח הודעה, יתרת הודעות פנויות נמוכה";
+    case code === -5:
+      return "הודעה לא מתאימה";
+    case code === -6:
+      return "צריך לאמת מספר שולח";
+    default:
+      return "חלה שגיאה עמכם הסליחה";
+  }
 }

@@ -301,7 +301,7 @@ const DynamicForm: React.FC<Props> = ({
                       <Checkbox
                         disabled={!!itemToEdit}
                         onChange={(e, value) => {
-                          console.log("e", e);
+                          e;
                           setNewForm((prev) => ({
                             ...prev,
                             isExclusiveItem: value,

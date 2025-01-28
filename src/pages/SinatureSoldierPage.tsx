@@ -54,7 +54,11 @@ export default function SinatureSoldierPage() {
   if (isLoading || (signature && signature.pdfFileSignature)) {
     return (
       <div className="w-full  justify-center flex items-center flex-col">
-        <MessageAnimation type="success" title=" בוצע בהצלחה!" />
+        <MessageAnimation
+          textColor="black"
+          type="success"
+          title=" בוצע בהצלחה!"
+        />
       </div>
     );
   }
@@ -68,7 +72,7 @@ export default function SinatureSoldierPage() {
   if (signature && !calculateTimeLeft()) {
     return (
       <div className="w-full  justify-center flex items-center flex-col">
-        <MessageAnimation type="error" title="תוקף פג !" />
+        <MessageAnimation textColor="black" type="error" title="תוקף פג !" />
       </div>
     );
   }

@@ -15,6 +15,7 @@ import {
 } from "../service/sentSignature";
 import TimeIcon from "@rsuite/icons/Time";
 import CopyIcon from "@rsuite/icons/Copy";
+import MessageAnimation from "./Success";
 
 export default function SignaturePreview({
   signature,
@@ -85,7 +86,7 @@ export default function SignaturePreview({
   return (
     <div
       className={`relative pb-12 overflow-x-hidden  shadow-md rounded-lg  overflow-y-auto
-        ${signature.isSignatureDone ? "opacity-20" : ""}
+        ${signature.isSignatureDone ? "" : ""}
     ${
       signature.pdfFileSignature
         ? "bg-green-300"
@@ -94,13 +95,22 @@ export default function SignaturePreview({
         : "bg-gray-300 shadow-2xl"
     }`}
     >
+      {signature.isSignatureDone && (
+        <div className="absolute bg-white opacity-70 text-white inset-0 flex-col gap-2  z-10 flex justify-center items-center">
+          <MessageAnimation
+            textColor="black"
+            type="success"
+            title="הוחתם בהצלחה!"
+          />
+        </div>
+      )}
       {isLoading && (
         <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
           <Loader size="lg" content="" />
           טוען...
         </div>
       )}
-      <div className="absolute left-0 top-0 h-full z-20 flex">
+      <div className="absolute opacity-100 left-0 top-0 h-full z-10 flex">
         <div className="cursor-pointer flex h-full justify-center items-center ">
           <span
             onClick={() => setIsNavActionsOpen((prev) => !prev)}
@@ -119,23 +129,27 @@ export default function SignaturePreview({
           >
             {isNavActionsOpen && (
               <div className="flex flex-col  text-xl gap-2">
-                <div className="hover:bg-slate-300 p-1 rounded-md">
-                  <ReloadIcon onClick={onUpdateSignature} color="#1675e0" />
-                </div>
-                <div className="hover:bg-slate-300 p-1 rounded-md">
-                  <CopyIcon onClick={onCopyUrl} color="#1675e0" />
-                </div>
+                {!signature.isSignatureDone && (
+                  <>
+                    <div className="hover:bg-slate-300 p-1 rounded-md">
+                      <ReloadIcon onClick={onUpdateSignature} color="#1675e0" />
+                    </div>
+                    <div className="hover:bg-slate-300 p-1 rounded-md">
+                      <CopyIcon onClick={onCopyUrl} color="#1675e0" />
+                    </div>
+                    <div className=" flex justify-center hover:bg-slate-300 p-1 rounded-md">
+                      <a target="_blank" href={url}>
+                        <img
+                          className="h-5 w-5 fill-green-600"
+                          src="https://github.com/eldadYikne/hapak162/blob/main/src/assets/whatsapp.png?raw=true"
+                          alt=""
+                        />
+                      </a>
+                    </div>
+                  </>
+                )}
                 <div className="hover:bg-slate-300 p-1 rounded-md">
                   <TrashIcon onClick={onDeleteSignature} color="#f87171" />
-                </div>
-                <div className=" flex justify-center hover:bg-slate-300 p-1 rounded-md">
-                  <a target="_blank" href={url}>
-                    <img
-                      className="h-5 w-5 fill-green-600"
-                      src="https://github.com/eldadYikne/hapak162/blob/main/src/assets/whatsapp.png?raw=true"
-                      alt=""
-                    />
-                  </a>
                 </div>
               </div>
             )}

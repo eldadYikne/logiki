@@ -10,7 +10,6 @@ import { RootState } from "../store/store";
 import { Loader, Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { updateSentSignature } from "../service/sentSignature";
-import MessageAnimation from "../components/Success";
 import { getCurrentDate } from "../utils";
 
 export default function SentSignaturesPage() {
@@ -192,11 +191,6 @@ export default function SentSignaturesPage() {
         data?.sentSignatures.map((signature) => {
           return (
             <div key={signature.id} className="relative">
-              {signature.isSignatureDone && (
-                <div className="absolute text-white inset-0 flex-col gap-2  z-10 flex justify-center items-center">
-                  <MessageAnimation type="success" title="הוחתם בהצלחה!" />
-                </div>
-              )}
               <SignaturePreview
                 isLoading={isLoading}
                 onSignature={onSignature}

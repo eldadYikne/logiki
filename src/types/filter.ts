@@ -7,7 +7,7 @@ export interface FilterOptions {
 
 export interface FilterOption {
   key: CombinedKeys; // Key must match one of the CombinedKeys values
-  type: "string" | "dropdown" | "options";
+  type: "string" | "dropdown" | "options" | "boolean";
   options?: DropdownFilterOption[];
 }
 export interface DropdownFilterOption {
@@ -25,5 +25,5 @@ export interface FilterObject {
   items?: Item[];
   notes?: string;
   phoneNumber?: number;
-  team?: NewTeam;
+  team?: NewTeam | string;
 }

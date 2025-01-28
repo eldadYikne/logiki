@@ -134,7 +134,7 @@ const enforceMaxSentSignatures = async (boardId: string) => {
     const querySnapshot = await getDocs(
       query(itemsRef, orderBy("createdAt", "asc"))
     );
-    let maxObjectStored = 50;
+    let maxObjectStored = 100;
     // Check if there are more than 20 items
     if (querySnapshot.size > maxObjectStored) {
       const excess = querySnapshot.size - maxObjectStored;

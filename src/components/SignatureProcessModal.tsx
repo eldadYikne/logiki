@@ -146,6 +146,7 @@ export default function SignatureProcessModal({
     >
       {messageSendStatus?.status && (
         <MessageAnimation
+          textColor="black"
           type={Number(messageSendStatus?.status) > 0 ? "success" : "error"}
           title={messageSendStatus.text}
         />

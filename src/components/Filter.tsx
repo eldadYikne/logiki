@@ -1,4 +1,4 @@
-import { Button, Input } from "rsuite";
+import { Button, Input, SelectPicker } from "rsuite";
 import { FilterObject, FilterOption, FilterOptions } from "../types/filter";
 import { ItemTranslate } from "../const";
 import { CombinedKeys } from "../types/table";
@@ -25,7 +25,7 @@ export default function Filter({
     } else {
     }
   }, [filters]);
-  const [FilterOptionsOpen, setFilterOptionsOpen] = useState<boolean>();
+  const [filterOptionsOpen, setFilterOptionsOpen] = useState<boolean>();
   const filtersToShow: FilterOption[] =
     filterType === "soldiers"
       ? [
@@ -44,12 +44,18 @@ export default function Filter({
           { key: "serialNumber", type: "string" },
           { key: "name", type: "string" },
           { key: "owner", type: "string" },
+          { key: "status", type: "boolean" },
         ];
-
+  const statusOptions = [
+    { label: "הכל", value: "" },
+    { label: "מאופסן", value: "stored" },
+    { label: "חתום", value: "signed" },
+    { label: "שבור", value: "broken" },
+  ];
   return (
     <div>
-      <div className="w-full flex  items-center justify-between">
-        <div className="bg-white  flex sm:gap-8  gap-2">
+      <div className="w-full flex gap-1  items-center justify-between">
+        <div className="bg-white  flex  sm:gap-2  gap-1">
           {filtersToShow.map((filter, i) => {
             return (
               <div key={i}>
@@ -86,7 +92,7 @@ export default function Filter({
                             className="mx-1"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setFilterOptionsOpen((prev) => !prev);
+                              setFilterOptionsOpen(false);
                               onFilter({
                                 ...filters,
                                 team: "",
@@ -100,8 +106,29 @@ export default function Filter({
                         )
                       }
                     >
-                      {filters?.team ? filters?.team.name : "בחר צוות"}
+                      {filters?.team
+                        ? teams.find(
+                            (team) => team.id === (filters?.team as string)
+                          )?.name ?? ""
+                        : "בחר צוות"}
                     </Button>
+                  </div>
+                )}
+                {filter.type === "boolean" && (
+                  <div>
+                    <SelectPicker
+                      data={statusOptions}
+                      placeholder="Filter by Status"
+                      // value={filters[filter.key] ? ''}
+                      cleanable={false}
+                      searchable={false}
+                      onChange={(value) => {
+                        onFilter({
+                          ...filters,
+                          [filter.key]: value || "",
+                        });
+                      }}
+                    />
                   </div>
                 )}
               </div>
@@ -117,7 +144,7 @@ export default function Filter({
           </span>
         </div>
       </div>
-      {FilterOptionsOpen && (
+      {filterOptionsOpen && (
         <div className="flex relative  z-10 h-11 items-center w-full max-w-full overflow-x-auto  gap-4 ">
           {teams.map((team) => {
             return (
@@ -131,6 +158,7 @@ export default function Filter({
                     ...filters,
                     team: team.id,
                   });
+                  setFilterOptionsOpen(false);
                 }}
               >
                 {team.name}

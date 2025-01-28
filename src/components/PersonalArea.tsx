@@ -46,7 +46,7 @@ export default function PersonalArea() {
         );
         toaster.push(
           <Message type="success" showIcon>
-            הפעולה בוצעה בהצלחה!
+            !הפעולה בוצעה בהצלחה
           </Message>,
           { placement: "topCenter" }
         );
@@ -89,18 +89,21 @@ export default function PersonalArea() {
           {newAdmin &&
             userKeyToPreview.map((key) => {
               return (
-                <Input
-                  disabled={isEditMode}
-                  onChange={(e) => {
-                    setNewAdmin({
-                      ...newAdmin,
-                      [key]: e,
-                    });
-                  }}
-                  value={newAdmin[key] as string}
-                  placeholder={adminTranslate[key]}
-                  key={key}
-                />
+                <div className="flex flex-col gap-1">
+                  <span className="">{adminTranslate[key]}:</span>
+                  <Input
+                    disabled={isEditMode}
+                    onChange={(e) => {
+                      setNewAdmin({
+                        ...newAdmin,
+                        [key]: e,
+                      });
+                    }}
+                    value={newAdmin[key] as string}
+                    placeholder={adminTranslate[key]}
+                    key={key}
+                  />
+                </div>
               );
             })}
         </div>

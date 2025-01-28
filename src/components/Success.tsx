@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function MessageAnimation({ title, type }: Props) {
+export default function MessageAnimation({ title, type, textColor }: Props) {
   const [showAnimation, setShowAnimation] = useState(false);
   useEffect(() => {
     setShowAnimation(true);
@@ -17,7 +17,7 @@ export default function MessageAnimation({ title, type }: Props) {
       {showAnimation && type === "error" && (
         <div className="error-icon text-red-600 text-6xl animate-pulse">✗</div>
       )}
-      <span className="text-center" dir="rtl">
+      <span className={`text-${textColor} text-center`} dir="rtl">
         {title}
       </span>
     </div>
@@ -26,4 +26,5 @@ export default function MessageAnimation({ title, type }: Props) {
 interface Props {
   title: string;
   type: "error" | "success";
+  textColor: "black" | "white";
 }

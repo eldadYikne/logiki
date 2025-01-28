@@ -118,7 +118,7 @@ export default function Filter({
                   <div>
                     <SelectPicker
                       data={statusOptions}
-                      placeholder="Filter by Status"
+                      placeholder="סטטוס"
                       // value={filters[filter.key] ? ''}
                       cleanable={false}
                       searchable={false}

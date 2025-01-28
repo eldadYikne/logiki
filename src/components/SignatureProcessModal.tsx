@@ -76,7 +76,7 @@ export default function SignatureProcessModal({
           profileImage: item.profileImage,
         })),
         personalNumber: (selectedOption as Soldier).personalNumber,
-        phoneNumber: (selectedOption as Soldier).personalNumber,
+        phoneNumber: (selectedOption as Soldier).phoneNumber,
         soldierId: (selectedOption as Soldier).id,
         soldierName: (selectedOption as Soldier).name,
         signtureDate: "",

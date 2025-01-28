@@ -171,17 +171,25 @@ function renderCellData(header: string, row: Soldier | Item) {
             <button
               className={`bg-${
                 statusColors[(row as Item).status]
-              }-300 p-1 rounded`}
-              style={{ background: statusColors[(row as Item).status] }}
+              }-300 p-1 rounded-3xl min-w-20 font-medium`}
+              style={{
+                background: (row as Item).isExclusiveItem
+                  ? statusColors[(row as Item).status]
+                  : Number((row as Item).numberOfUnExclusiveItems) <= 0
+                  ? "#f87171"
+                  : statusColors[(row as Item).status],
+              }}
             >
-              {statusTranslate[(row as Item).status]}
+              {(row as Item).isExclusiveItem
+                ? statusTranslate[(row as Item).status]
+                : Number((row as Item).numberOfUnExclusiveItems) <= 0
+                ? "אזל"
+                : statusTranslate[(row as Item).status]}
             </button>
           </span>
         );
       } else if (header === "owner") {
-        return (
-          <span>{(row as Item).isExclusiveItem ? value ?? "-" : "-"}</span>
-        );
+        return <span>{(row as Item).isExclusiveItem ? value ?? "" : ""}</span>;
       } else if (header === "team") {
         return <span>{(row as Soldier).team.name} </span>;
       } else if (header === "profileImage") {

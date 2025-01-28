@@ -30,7 +30,6 @@ export default function SignaturePreview({
   let phoneNum = formatPhoneNumberToIsraelInternational(
     String(signature.phoneNumber)
   );
-  console.log("signature", signature);
   const fullMessage = `${message} ${link}`;
   const url = `${baseURL}${phoneNum}?text=${encodeURIComponent(fullMessage)}`;
   const calculateTimeLeft = (startTime: string): boolean => {
@@ -133,7 +132,7 @@ export default function SignaturePreview({
                   <a target="_blank" href={url}>
                     <img
                       className="h-5 w-5 fill-green-600"
-                      src="/src/assets/whatsapp.png"
+                      src="https://github.com/eldadYikne/hapak162/blob/main/src/assets/whatsapp.png?raw=true"
                       alt=""
                     />
                   </a>

@@ -115,13 +115,13 @@ export default function HTable(props: Props) {
       </Thead>
       <Tbody>
         {sortedData.map((row, rowIndex) => (
-          <Tr key={rowIndex}>
+          <Tr className="hover:bg-gray-100 hover:shadow-lg" key={rowIndex}>
             {props.headers.map((header, colIndex) => {
               return (
                 !notRenderKeys.includes(header as keyof Item) && (
                   <Td
                     id="td-card"
-                    className={`select-none cursor-pointer  ${
+                    className={`select-none  cursor-pointer  ${
                       header === "profileImage" ? "profile-image" : ""
                     } ${header} `}
                     onClick={() => {
@@ -198,7 +198,7 @@ function renderCellData(header: string, row: Soldier | Item) {
             <img
               loading="lazy"
               alt={`${row.name ?? ""}`}
-              className="  bg-white rounded-full"
+              className="sm:h-12  bg-white rounded-full"
               src={
                 (row as Soldier).profileImage.length > 1
                   ? getTransformedUrl(

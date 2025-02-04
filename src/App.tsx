@@ -38,6 +38,7 @@ import SinatureSoldierPage from "./pages/SinatureSoldierPage";
 import { Message, toaster } from "rsuite";
 import { TypeAttributes } from "rsuite/esm/internals/types";
 import TeamDetailsPage from "./pages/TeamDetailsPage";
+import HomePage from "./pages/Home";
 export function toasterApp(text: string, type: TypeAttributes.Status) {
   return toaster.push(
     <Message type={type} showIcon>
@@ -82,7 +83,7 @@ export default function App() {
     }
     console.log("admin upadted from App.tsx");
     setGlobalAdmin();
-  }, [user]);
+  }, [user?.email]);
 
   const cld = new Cloudinary({ cloud: { cloudName: "dwdpgwxqv" } });
   const myImage = cld.image("docs/models");
@@ -146,6 +147,7 @@ export default function App() {
             path="/signature/:signatureId"
             element={<SinatureSoldierPage />}
           />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/soldier-profile" element={<SoldierProfilePage />} />
           <Route path="/actions" element={<HistoryActionsPage />} />
           {admin && <Route path="/team/:id" element={<TeamDetailsPage />} />}

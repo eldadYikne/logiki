@@ -31,6 +31,7 @@ export default function Filter({
       ? [
           { key: "personalNumber", type: "string" },
           { key: "name", type: "string" },
+          { key: "phoneNumber", type: "string" },
           {
             key: "team",
             type: "options",

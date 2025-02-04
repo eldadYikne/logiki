@@ -4,6 +4,7 @@ import {
   getDoc,
   onSnapshot,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../main";
 import { Item } from "../types/table";
@@ -181,6 +182,31 @@ export const updateSoldier = async (
     console.log("Soldier successfully updated");
   } catch (error) {
     console.error("Error updating soldier:", error);
+    throw error;
+  }
+};
+export const updateSoldiers = async (
+  boardId: string,
+  soldierUpdates: Partial<Soldier>[]
+) => {
+  const batch = writeBatch(db); // Create a batch
+  try {
+    // Loop through soldier updates and add each update to the batch
+    soldierUpdates.forEach((soldier) => {
+      const soldierRef = doc(
+        db,
+        `boards/${boardId}/soldiers`,
+        soldier.id as string
+      );
+      batch.update(soldierRef, soldier); // Add the update operation to the batch
+    });
+
+    // Commit the batch
+    await batch.commit();
+
+    console.log("Soldiers successfully updated");
+  } catch (error) {
+    console.error("Error updating soldiers:", error);
     throw error;
   }
 };

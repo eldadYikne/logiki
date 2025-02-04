@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   CombinedKeys,
   Item,
   ItemHistory,
   ItemType,
   TableData,
-  TableHeaders,
 } from "../types/table";
 import {
   DetailsItem,
@@ -21,7 +20,6 @@ import ArowBackIcon from "@rsuite/icons/ArowBack";
 
 import {
   ItemTranslate,
-  headerTranslate,
   historyTranslate,
   sizeIcons,
   statusColors,
@@ -63,6 +61,7 @@ import {
   getSoldierById,
   getSoldierItemsById,
   updateSoldier,
+  updateSoldiers,
 } from "../service/soldier";
 import {
   getItemById,
@@ -559,12 +558,63 @@ export default function DetailsPreview() {
       />
     );
   };
-  const onEdit = async (item: Soldier | Item) => {
-    console.log("item", item);
-    const key: keyof TableData = (item as Item).itemType ? "items" : "soldiers";
-    console.log("admin", admin);
+  const onEdit = async (editedItem: Soldier | Item) => {
+    console.log("item", editedItem);
+    console.log(
+      "(editedItem as Item).itemType ",
+      (editedItem as Item).itemType
+    );
+    const key: keyof TableData = (editedItem as Item).itemType
+      ? "items"
+      : "soldiers";
+    const itemTypeIdOfItem = (item as Item)?.itemType?.id ?? "";
+    console.log("itemTypeIdOfItem", itemTypeIdOfItem);
 
-    await updateDynamic("hapak162", item?.id, key, item, admin, "edit");
+    if (itemTypeIdOfItem) {
+      if (itemTypeIdOfItem !== (editedItem as Item).itemType.id) {
+        const newSoldiers: Soldier[] = await Promise.all(
+          (data?.soldiers ?? [])
+            .filter((soldier) => {
+              // Check if the soldier has the item with the same ID
+              return soldier.items.some((soldItem) => soldItem.id === item?.id);
+            })
+            .map(async (soldier) => {
+              // For soldiers that need updating, create a new soldier object with updated items
+              const updatedSoldier = {
+                ...soldier,
+                items: soldier.items.map((solItem) => {
+                  if (solItem.id === item?.id) {
+                    // If the item matches, update the itemType
+                    return {
+                      ...solItem,
+                      itemType: (editedItem as Item).itemType,
+                    };
+                  }
+                  return solItem; // Otherwise, return the item unchanged
+                }),
+              } as Soldier;
+
+              return updatedSoldier; // Return the updated soldier
+            })
+        );
+        setIsLoading(true);
+        await updateSoldiers("hapak162", newSoldiers);
+        setIsLoading(false);
+      }
+    }
+
+    // console.log("admin", admin);
+    setIsLoading(true);
+
+    await updateDynamic(
+      "hapak162",
+      editedItem?.id,
+      key,
+      editedItem,
+      admin,
+      "edit"
+    );
+    setIsLoading(false);
     toaster.push(
       <Message type="success" showIcon>
         !הפעולה בוצעה בהצלחה
@@ -1123,11 +1173,13 @@ export default function DetailsPreview() {
 }
 const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
   if (key === "itemType") {
-    return "סוג פריט" + ": " + (item as Item).itemType.name;
     return (
-      ItemTranslate[key as CombinedKeys] +
-      " : " +
-      headerTranslate[item[key as keyof DetailsItem] as keyof TableHeaders]
+      <span>
+        סוג פריט:
+        <Link to={`/${(item as Item).itemType.id}`}>
+          {(item as Item).itemType.name}
+        </Link>
+      </span>
     );
   } else if (
     (key === "signtureDate" ||
@@ -1141,7 +1193,10 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
       <span className="">
         <span>
           {ItemTranslate[key as CombinedKeys]}:{" "}
-          {getCurrentDateFromDate((item as Item).signtureDate)}
+          {/* {getCurrentDateFromDate((item as Item).signtureDate) */}
+          {(item as Item).signtureDate.includes("Israel")
+            ? getCurrentDateFromDate((item as Item).signtureDate)
+            : (item as Item).signtureDate}
         </span>
       </span>
     );

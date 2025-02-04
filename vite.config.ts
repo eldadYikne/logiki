@@ -54,9 +54,15 @@ export default defineConfig({
             handler: "NetworkFirst",
             options: {
               cacheName: "v0.00.1",
+              expiration: {
+                maxAgeSeconds: 24 * 60 * 60, // 1 day cache expiry
+              },
             },
           },
         ],
+      },
+      devOptions: {
+        enabled: true,
       },
     }),
   ],

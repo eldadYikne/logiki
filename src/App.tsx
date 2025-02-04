@@ -72,6 +72,25 @@ export default function App() {
         }
       }
     });
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+
+          if (newWorker) {
+            newWorker.addEventListener("statechange", () => {
+              if (
+                newWorker.state === "installed" &&
+                navigator.serviceWorker.controller
+              ) {
+                // alert("A new version is available. Please refresh the page.");
+                window.location.reload();
+              }
+            });
+          }
+        });
+      });
+    }
 
     async function setGlobalAdmin() {
       if (!user) return;
@@ -112,7 +131,7 @@ export default function App() {
 
   return (
     <div className="site-container" dir="rtl">
-      {admin && (
+      {!location.pathname.includes("home") && admin && (
         <Navbar
           setIsMenuOpen={setIsMenuOpen}
           isMenuOpen={isMenuOpen}

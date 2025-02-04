@@ -12,7 +12,7 @@ import Filter from "./Filter";
 import { Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
 
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
@@ -87,7 +87,7 @@ function MaiEquipment() {
       // console.log("reducedItems", reducedItems);
     }
   }, [data]);
-
+  const navigate = useNavigate();
   const [dataToTable, setDataToTable] = useState<NewTableData>();
   const [dataToTableFilter, setDataToTableFilter] = useState<NewTableData>();
   const [itemToEdit, setItemToEdit] = useState<Item | Soldier>();
@@ -98,19 +98,45 @@ function MaiEquipment() {
     [key: string]: Item[] | Soldier[] | Admin[];
     admins: Admin[];
   }
+  const location = useLocation();
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const filters: { [key in keyof SoldierItem]?: string } = {};
+
+    // Parse search params into filter object
+    searchParams.forEach((value, key) => {
+      console.log("value, key", value, key);
+      if (value.trim()) {
+        filters[key as keyof SoldierItem] = value;
+      }
+    });
+
+    // Trigger filtering only if params are valid
+    if (Object.keys(filters).length > 0) {
+      onFilter(filters);
+    }
+  }, [location.search, dataToTableFilter]);
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
-    console.log(filters);
+    console.log("Filters:", filters);
 
     setFilters(filters as FilterObject);
+    const searchParams = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        searchParams.set(key, value);
+      }
+    });
+
+    navigate(`?${searchParams.toString()}`); // Update the URL with query params
+
     if (dataToTable && selecteTable && dataToTableFilter) {
       setDataToTable((prevData: any) => {
         if (prevData && prevData[selecteTable]) {
           const filteredData = dataToTableFilter[selecteTable].filter(
             (item: AdminItemSoldier) => {
-              // Check if all filters match for the current item
               return Object.entries(filters).every(([key, value]) => {
-                if (!value) return true; // Skip empty filters
-                // Safely access the property using key
+                if (!value) return true;
                 const itemObject =
                   typeof item[key as keyof AdminItemSoldier] === "object"
                     ? (
@@ -120,8 +146,7 @@ function MaiEquipment() {
                       ).id
                     : item[key as keyof AdminItemSoldier];
                 const itemValue = String(itemObject);
-                console.log("itemValue", itemValue);
-                return itemValue.includes(value); // Filter based on the value
+                return itemValue.includes(value);
               });
             }
           );
@@ -134,7 +159,6 @@ function MaiEquipment() {
       });
     }
   };
-
   const onActionClickInTable = (item: Item | Soldier) => {
     setItemToEdit(item);
   };

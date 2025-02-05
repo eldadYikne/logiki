@@ -142,7 +142,10 @@ body {
     padding: 5px;
     padding-top: 15px;
     border-radius: 15px 15px 0px 0px;
-    background: linear-gradient(180deg, #b9b4b5 55%, #fcf9f9 45%);
+    background-image: url("./assets/bg-card.svg");
+    background-size: 100% 60%;
+    background-position: top;
+    background-repeat: no-repeat;
   }
   x .pivoted.profile-image .tdBefore {
     display: none;
@@ -176,7 +179,7 @@ body {
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 10px;
       tr {
-        height: 200px;
+        height: 240px;
         border-radius: 15px;
         background-color: #fcf9f9;
         border: none;

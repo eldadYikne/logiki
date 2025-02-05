@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 552 138" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+  <g display="var(--svgDisplayLight)">
+    <path fill="none" d="M0 0h552v138H0z"></path>
+    <path fill="#f0f5f5" d="M0 0h552v138H0z"></path>
+    <path fill="#dbe8e9" d="M380 0h172v138H380z"></path>
+    <path fill="#c4d6d8" d="M333.22 0H0v138h333.22a207.93 207.93 0 0 0 0-138"></path>
+  </g>
+  <g display="var(--svgDisplayDark)">
+    <path fill="none" d="M0 0h552v138H0z"></path>
+    <path fill="#5d6567" d="M0 0h552v138H0z"></path>
+    <path fill="#788889" d="M380 0h172v138H380z" opacity="0.5"></path>
+    <path fill="#788889" d="M333.22 0H0v138h333.22a207.93 207.93 0 0 0 0-138"></path>
+  </g>
+</svg>

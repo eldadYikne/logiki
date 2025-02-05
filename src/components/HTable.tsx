@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { Soldier } from "../types/soldier";
@@ -19,7 +19,7 @@ export default function HTable(props: Props) {
     "id",
     "soldierId",
     "notes",
-    "items",
+    // "items",
     "phoneNumber",
     "pdfFileSignature",
     "size",
@@ -29,10 +29,7 @@ export default function HTable(props: Props) {
     "itemType",
     "soldierPersonalNumber",
   ];
-  useEffect(() => {
-    // setSortColumn("name");
-    // setSortOrder("asc");
-  }, []);
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       // Toggle sort order
@@ -115,7 +112,10 @@ export default function HTable(props: Props) {
       </Thead>
       <Tbody>
         {sortedData.map((row, rowIndex) => (
-          <Tr className="hover:bg-gray-100 hover:shadow-lg" key={rowIndex}>
+          <Tr
+            className="hover:bg-gray-100 hover:shadow-lg mobile-card"
+            key={rowIndex}
+          >
             {props.headers.map((header, colIndex) => {
               return (
                 !notRenderKeys.includes(header as keyof Item) && (
@@ -153,7 +153,7 @@ function renderCellData(header: string, row: Soldier | Item) {
     if (header in row) {
       const value = row[header as keyof typeof row];
 
-      if (Array.isArray(value)) {
+      if (Array.isArray(value) && header !== "items") {
         return value.map((item, index) => (
           <span key={index}>
             {typeof item === "object" ? JSON.stringify(item) : item}
@@ -188,22 +188,44 @@ function renderCellData(header: string, row: Soldier | Item) {
             </button>
           </span>
         );
+      } else if (header === "items") {
+        return (
+          <span className="flex justify-start items-center relative">
+            {(row as Soldier).items.slice(0, 3).map((item, i) => (
+              <img
+                key={i}
+                className={`h-8 w-8 rounded-full relative -ml-3 border-2 border-white `}
+                src={item.profileImage}
+                alt=""
+              />
+            ))}
+            {(row as Soldier).items.length > 3 && (
+              <div className="h-8 w-8 rounded-full bg-gray-600 text-white text-xs font-semibold flex justify-center z-40 items-center -ml-3 border-2 border-white">
+                +{(row as Soldier).items.length - 3}
+              </div>
+            )}
+          </span>
+        );
       } else if (header === "owner") {
         return <span>{(row as Item).isExclusiveItem ? value ?? "" : ""}</span>;
       } else if (header === "team") {
-        return <span>{(row as Soldier).team.name} </span>;
+        return (
+          <span className="sm:border-0 border border-gray-300 rounded-2xl min-w-2/3 p-2">
+            {(row as Soldier).team.name}{" "}
+          </span>
+        );
       } else if (header === "profileImage") {
         return (
           <span className=" sm:flex justify-center profile-image ">
             <img
               loading="lazy"
               alt={`${row.name ?? ""}`}
-              className="sm:h-12  bg-white rounded-full"
+              className="sm:h-12   m-0 p-0 rounded-full shadow-xl profile"
               src={
                 (row as Soldier).profileImage.length > 1
                   ? getTransformedUrl(
                       (row as Soldier).profileImage,
-                      "w_80,h_80"
+                      "w_90,h_90"
                     )
                   : "https://eaassets-a.akamaihd.net/battlelog/prod/emblems/320/894/2832655391561586894.jpeg?v=1332981487.09"
               }

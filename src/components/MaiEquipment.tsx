@@ -26,7 +26,10 @@ function MaiEquipment() {
   const [data, setData] = useState<TableData>();
 
   useEffect(() => {
-    if (type) setSelectedTable(type);
+    if (type) {
+      setSelectedTable(type);
+      setFilters({});
+    }
   }, [type]);
   useEffect(() => {
     async function fetchData() {

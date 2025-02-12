@@ -765,6 +765,9 @@ export default function DetailsPreview() {
       const newSoldierItems = (item as Soldier).items.filter(
         (it) => it.id !== soldierItem.id
       );
+      if (soldierItem.isExclusiveItem) return;
+      console.log("soldierItem", soldierItem);
+
       setIsLoading(true);
       await updateDynamic(
         "hapak162",
@@ -1021,31 +1024,33 @@ export default function DetailsPreview() {
                                   </span>
                                 )}
 
-                                <Button
-                                  size="xs"
-                                  appearance={
-                                    soldierItem.status === "stored"
-                                      ? "primary"
-                                      : "default"
-                                  }
-                                  color={
-                                    soldierItem.status === "stored"
-                                      ? "yellow"
-                                      : "cyan"
-                                  }
-                                  onClick={() =>
-                                    changeItemStatus(
-                                      soldierItem,
+                                {!soldierItem.isExclusiveItem && (
+                                  <Button
+                                    size="xs"
+                                    appearance={
                                       soldierItem.status === "stored"
-                                        ? "signed"
-                                        : "stored"
-                                    )
-                                  }
-                                >
-                                  {soldierItem.status === "stored"
-                                    ? "שחרר"
-                                    : "אפסן"}
-                                </Button>
+                                        ? "primary"
+                                        : "default"
+                                    }
+                                    color={
+                                      soldierItem.status === "stored"
+                                        ? "yellow"
+                                        : "cyan"
+                                    }
+                                    onClick={() =>
+                                      changeItemStatus(
+                                        soldierItem,
+                                        soldierItem.status === "stored"
+                                          ? "signed"
+                                          : "stored"
+                                      )
+                                    }
+                                  >
+                                    {soldierItem.status === "stored"
+                                      ? "שחרר"
+                                      : "אפסן"}
+                                  </Button>
+                                )}
                                 <Button
                                   size="xs"
                                   onClick={() => {

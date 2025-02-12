@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { Drawer } from "rsuite";
 import {
-  FacebookShareButton,
-  TwitterShareButton,
   WhatsappShareButton,
   TelegramShareButton,
-  FacebookIcon,
-  TwitterIcon,
   WhatsappIcon,
   TelegramIcon,
 } from "react-share";
@@ -36,12 +32,12 @@ const ShareModal = ({ open, onClose, shareUrl, title }: Props) => {
 
         {/* Social Share Buttons */}
         <div className="flex gap-4 items-center justify-center mb-4">
-          <FacebookShareButton url={shareUrl}>
+          {/* <FacebookShareButton url={shareUrl}>
             <FacebookIcon size={40} round />
-          </FacebookShareButton>
-          <TwitterShareButton url={shareUrl}>
+          </FacebookShareButton> */}
+          {/* <TwitterShareButton url={shareUrl}>
             <TwitterIcon size={40} round />
-          </TwitterShareButton>
+          </TwitterShareButton> */}
           <WhatsappShareButton url={shareUrl}>
             <WhatsappIcon size={40} round />
           </WhatsappShareButton>

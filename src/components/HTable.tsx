@@ -189,6 +189,9 @@ function renderCellData(header: string, row: Soldier | Item) {
           </span>
         );
       } else if (header === "items") {
+        const isStoredItems = !!(row as Soldier).items.find(
+          (it) => it.status === "stored"
+        );
         return (
           <span className="flex justify-start items-center relative">
             {(row as Soldier).items.slice(0, 3).map((item, i) => (
@@ -200,7 +203,13 @@ function renderCellData(header: string, row: Soldier | Item) {
               />
             ))}
             {(row as Soldier).items.length > 3 && (
-              <div className="h-8 w-8 rounded-full bg-gray-600 text-white text-xs font-semibold flex justify-center z-40 items-center -ml-3 border-2 border-white">
+              <div
+                className={`h-8 w-8 rounded-full ${
+                  isStoredItems ? "bg-[#ffb300]" : "bg-gray-600"
+                } text-${
+                  isStoredItems ? "black" : "white"
+                } text-xs font-semibold flex justify-center z-40 items-center -ml-3 border-2 border-white`}
+              >
                 +{(row as Soldier).items.length}
               </div>
             )}

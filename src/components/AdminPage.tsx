@@ -163,16 +163,22 @@ export default function AdminPage(props: Props) {
                 return (
                   <div
                     key={admin.id + i}
-                    className="flex items-center justify-between gap-2"
+                    className="flex items-center justify-between border-1 shadow-md p-1 gap-2"
                   >
-                    <StarIcon
-                      onClick={() => onClickStarToSuper(admin)}
-                      style={{
-                        fontSize: "30px",
-                        color: admin.isSuperAdmin ? "#FFD700" : "",
-                      }}
-                    />
-                    <span>{admin.email}</span>
+                    <div className="flex gap-2 justify-center items-center">
+                      <StarIcon
+                        onClick={() => onClickStarToSuper(admin)}
+                        style={{
+                          fontSize: "30px",
+                          color: admin.isSuperAdmin ? "#FFD700" : "",
+                        }}
+                        className="cursor-pointer"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <span>{admin.name}</span>
+                        <span>{admin.email}</span>
+                      </div>
+                    </div>
                     <Button onClick={() => onRemoveAdmin(admin)} color="red">
                       מחק
                     </Button>
@@ -184,7 +190,10 @@ export default function AdminPage(props: Props) {
           <div className="flex flex-col gap-3 p-3">
             <div className="flex justify-between items-center">
               <span className="text-xl">בקשות משתמשים להיות מנהלים</span>
-              <ShareOutlineIcon onClick={() => setIsShareModalOpen(true)} />
+              <ShareOutlineIcon
+                style={{ fontSize: "25px" }}
+                onClick={() => setIsShareModalOpen(true)}
+              />
               <ShareModal
                 open={isShareModalOpen}
                 onClose={() => setIsShareModalOpen(false)}
@@ -196,27 +205,29 @@ export default function AdminPage(props: Props) {
               data.optionalAdmins &&
               data.optionalAdmins.map((admin) => {
                 return (
-                  <div
-                    key={admin.id}
-                    className="flex gap-1 justify-between items-center"
-                  >
-                    <div className="flex gap-2">
-                      <span>{admin.email}</span>
-                      <span>{admin.name}</span>
-                      <span className="sm:block hidden">
-                        {admin.personalNumber}
-                      </span>
-                      <span className="sm:block hidden">{admin.rank}</span>
-                    </div>
-                    <Button
-                      color="blue"
-                      size="sm"
-                      appearance="primary"
-                      onClick={() => AddNewAdmin(admin)}
+                  !data.admins.find((ad) => ad.email === admin.email) && (
+                    <div
+                      key={admin.id}
+                      className="flex gap-1 justify-between items-center"
                     >
-                      אשר מנהל
-                    </Button>
-                  </div>
+                      <div className="flex gap-2">
+                        <span>{admin.email}</span>
+                        <span>{admin.name}</span>
+                        <span className="sm:block hidden">
+                          {admin.personalNumber}
+                        </span>
+                        <span className="sm:block hidden">{admin.rank}</span>
+                      </div>
+                      <Button
+                        color="blue"
+                        size="sm"
+                        appearance="primary"
+                        onClick={() => AddNewAdmin(admin)}
+                      >
+                        אשר מנהל
+                      </Button>
+                    </div>
+                  )
                 );
               })}
           </div>

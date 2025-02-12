@@ -99,10 +99,16 @@ export default function App() {
   useEffect(() => {
     async function setGlobalAdmin() {
       if (!user) return;
-      let adminConnect = await getAdminByEmail("hapak162", user?.email ?? "");
-      if (adminConnect && admin?.email !== adminConnect.email) {
-        // console.log("adminConnect", adminConnect);
-        dispatch(setAdmin(adminConnect));
+      const adminValue = localStorage.getItem("logikey-admin");
+      if (adminValue) {
+        dispatch(setAdmin(JSON.parse(adminValue)));
+      } else {
+        let adminConnect = await getAdminByEmail("hapak162", user?.email ?? "");
+        if (adminConnect && admin?.email !== adminConnect.email) {
+          localStorage.setItem("logikey-admin", JSON.stringify(adminConnect));
+          // console.log("adminConnect", adminConnect);
+          dispatch(setAdmin(adminConnect));
+        }
       }
     }
     console.log("admin upadted from App.tsx");

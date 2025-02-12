@@ -44,6 +44,7 @@ function GoogleAuth(props: Props) {
       await signOut(auth);
       setConnectedUser(undefined);
       props.setUser(undefined);
+      localStorage.removeItem("logikey-admin");
     } catch (err) {
       console.error(err);
     }

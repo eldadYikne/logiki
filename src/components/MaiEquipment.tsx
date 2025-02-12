@@ -18,6 +18,7 @@ import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
 import { getBoardByIdWithCallbackWithSort } from "../service/board";
 import ExportToExcel from "./ExportToExcel";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 function MaiEquipment() {
   const { type } = useParams();
@@ -188,6 +189,8 @@ function MaiEquipment() {
   return (
     <div dir="rtl" className="flex flex-col w-full">
       <div className="">
+        <ScrollToTopButton />
+
         {/* <div className="absolute left-2"></div> */}
         {data && data.itemsTypes && (
           <SlideItemTypes

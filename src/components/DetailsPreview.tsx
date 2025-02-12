@@ -785,9 +785,48 @@ export default function DetailsPreview() {
         "edit"
       );
       setIsLoading(false);
+      toaster.push(
+        <Message type="success" showIcon>
+          !הפעולה בוצעה בהצלחה
+        </Message>,
+        { placement: "topCenter" }
+      );
     }
   };
-  if (!item && id) {
+  const changeItemsStatus = async (status: Status) => {
+    let textAction = status === "stored" ? "לאפסן" : "לשחרר";
+    if (
+      !confirm(
+        `${admin?.name} אתה בטוח שאתה רוצה ${textAction} את כל הציוד של ${
+          (item as Soldier).name
+        } ?`
+      )
+    )
+      return;
+    if (item?.id && admin) {
+      const newSoldierItems = (item as Soldier).items.map((it) => {
+        return it.isExclusiveItem === false ? { ...it, status } : it;
+      });
+
+      setIsLoading(true);
+      await updateDynamic(
+        "hapak162",
+        item?.id,
+        "soldiers",
+        { ...item, items: [...newSoldierItems] },
+        admin,
+        "edit"
+      );
+      setIsLoading(false);
+      toaster.push(
+        <Message type="success" showIcon>
+          !הפעולה בוצעה בהצלחה
+        </Message>,
+        { placement: "topCenter" }
+      );
+    }
+  };
+  if (!item && id && !admin) {
     return (
       <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex  ">
         <div className="border text-2xl border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
@@ -1079,9 +1118,27 @@ export default function DetailsPreview() {
                   )
                 );
               })}
-              <Button onClick={() => setModalConfirmCredetAll(true)}>
-                זכה הכל
-              </Button>
+              <div className="flex w-full flex-col gap-3 justify-between">
+                <span className="w-full  border-b-2 text-xl">פעולות</span>
+                <Button
+                  appearance="primary"
+                  color="yellow"
+                  onClick={() =>
+                    changeItemsStatus(
+                      (item as Soldier).items[0].status === "stored"
+                        ? "signed"
+                        : "stored"
+                    )
+                  }
+                >
+                  {(item as Soldier).items[0].status === "stored"
+                    ? "שחרר הכל"
+                    : "אפסן הכל"}
+                </Button>
+                <Button onClick={() => setModalConfirmCredetAll(true)}>
+                  זכה הכל
+                </Button>
+              </div>
               {
                 <ModalConfirmCredetAll
                   onClose={() => setModalConfirmCredetAll(false)}

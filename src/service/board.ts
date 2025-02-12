@@ -4,7 +4,12 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  limit,
   onSnapshot,
+  orderBy,
+  query,
+  startAfter,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../main";
@@ -312,5 +317,49 @@ export const getBoardByIdWithCallbackWithSort = async (
   } catch (error) {
     console.error("Error fetching board and subcollections:", error);
     throw error; // Rethrow the error to handle it where the function is called
+  }
+};
+
+export const getBoardByIdWithPagination = async (
+  boardId: string,
+  boardKeysConfig: Array<{
+    boardKey: keyof TableData;
+    sortByKey: "name" | "date" | "createdAt";
+  }>,
+  lastDocs: Record<string, any>, // Keep track of last document per boardKey
+  setDataCallback: (data: any, lastVisibleDocs: Record<string, any>) => void
+) => {
+  try {
+    const boardRef = doc(db, "boards", boardId);
+    const subcollectionData: Record<string, any[]> = {};
+    const lastVisibleDocs: Record<string, any> = {}; // Store last docs for next pagination
+
+    for (const { boardKey, sortByKey } of boardKeysConfig) {
+      const subRef = collection(boardRef, boardKey as string);
+
+      let q = query(subRef, orderBy(sortByKey), limit(25)); // Default limit = 25
+
+      if (lastDocs[boardKey]) {
+        q = query(
+          subRef,
+          orderBy(sortByKey),
+          startAfter(lastDocs[boardKey]),
+          limit(25)
+        );
+      }
+
+      const snapshot = await getDocs(q);
+      subcollectionData[boardKey] = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+
+      lastVisibleDocs[boardKey] =
+        snapshot.docs[snapshot.docs.length - 1] || null;
+    }
+
+    setDataCallback(subcollectionData, lastVisibleDocs);
+  } catch (error) {
+    console.error("Error fetching paginated data:", error);
   }
 };

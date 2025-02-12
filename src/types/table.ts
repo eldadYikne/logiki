@@ -66,7 +66,6 @@ export interface Admin {
   personalNumber: number;
   rank: string;
   isSuperAdmin?: boolean;
-  isNewId?: boolean;
 }
 export interface ItemType {
   name: string;
@@ -85,6 +84,11 @@ export interface SentSinature {
   adminEmail: string;
   createdAt: string;
   isSignatureDone: boolean;
+}
+export interface NewTableData {
+  soldiers: Soldier[];
+  [key: string]: Item[] | Soldier[] | Admin[];
+  admins: Admin[];
 }
 export type CombinedKeys = keyof Item | keyof Soldier; // Union of keys from both Item and Soldier
 export type CollectionName =

@@ -559,6 +559,13 @@ export default function DetailsPreview() {
       />
     );
   };
+  useEffect(() => {
+    if (isLoading) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  }, [isLoading]);
   const onEdit = async (editedItem: Soldier | Item) => {
     console.log("item", editedItem);
     console.log(
@@ -793,11 +800,12 @@ export default function DetailsPreview() {
   return (
     <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex details-preview ">
       {isLoading && (
-        <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
+        <div className="fixed top-0 left-0 w-full h-full  flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
           <Loader size="lg" content="" />
-          טוען...
+          <span className="text-white text-lg">טוען...</span>
         </div>
       )}
+
       {item && !editSoldier && (
         <div className="flex flex-col gap-3 w-full relative">
           <ArowBackIcon
@@ -1030,12 +1038,12 @@ export default function DetailsPreview() {
                                     appearance={
                                       soldierItem.status === "stored"
                                         ? "primary"
-                                        : "default"
+                                        : "ghost"
                                     }
                                     color={
                                       soldierItem.status === "stored"
                                         ? "yellow"
-                                        : "cyan"
+                                        : "yellow"
                                     }
                                     onClick={() =>
                                       changeItemStatus(

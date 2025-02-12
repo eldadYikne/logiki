@@ -82,7 +82,13 @@ export default function SignaturePreview({
       { placement: "topCenter" }
     );
   };
-
+  useEffect(() => {
+    if (isLoading) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  }, [isLoading]);
   return (
     <div
       className={`relative pb-12 overflow-x-hidden  shadow-md rounded-lg  overflow-y-auto
@@ -105,9 +111,9 @@ export default function SignaturePreview({
         </div>
       )}
       {isLoading && (
-        <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
+        <div className="fixed top-0 left-0 w-full h-full  flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
           <Loader size="lg" content="" />
-          טוען...
+          <span className="text-white text-lg">טוען...</span>
         </div>
       )}
       <div className="absolute opacity-100 left-0 top-0 h-full z-10 flex">

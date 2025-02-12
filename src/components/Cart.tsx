@@ -203,16 +203,24 @@ const CartPage = ({ user }: Props) => {
 
     dispatch(addOnMoreItemToCart(item));
   };
+  useEffect(() => {
+    if (isLoading) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  }, [isLoading]);
   return (
     <div className="container flex flex-col items-center justify-around mx-auto p-4">
       <div className="max-w-5xl mx-auto w-full">
         <h2 className="text-2xl font-semibold mb-4">עגלת ההחתמות</h2>
         {isLoading && (
-          <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
+          <div className="fixed top-0 left-0 w-full h-full  flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
             <Loader size="lg" content="" />
-            טוען...
+            <span className="text-white text-lg">טוען...</span>
           </div>
         )}
+
         {/* Display Cart Items */}
         {cartItems.length === 0 ? (
           <p className="text-center text-lg">עגלת ההחתמות ריקה</p>

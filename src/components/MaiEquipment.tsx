@@ -1,4 +1,4 @@
-import { Item, TableData, TableHeaders, Admin } from "../types/table";
+import { Item, TableData, TableHeaders, NewTableData } from "../types/table";
 import {
   AdminItemSoldier,
   NewTeam,
@@ -17,6 +17,7 @@ import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
 import { getBoardByIdWithCallbackWithSort } from "../service/board";
+import ExportToExcel from "./ExportToExcel";
 
 function MaiEquipment() {
   const { type } = useParams();
@@ -100,11 +101,7 @@ function MaiEquipment() {
   const [itemToEdit, setItemToEdit] = useState<Item | Soldier>();
   const [filters, setFilters] = useState<FilterObject>({});
   itemToEdit;
-  interface NewTableData {
-    soldiers: Soldier[];
-    [key: string]: Item[] | Soldier[] | Admin[];
-    admins: Admin[];
-  }
+
   const location = useLocation();
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -245,7 +242,7 @@ function MaiEquipment() {
               onClick={() => setIsFilterOpen((prev) => !prev)}
             />
           </div>
-          <div className="sm:p-12 py-5 ">
+          <div className="sm:p-12 ">
             {!dataToTable ||
               (dataToTable && !dataToTable[selecteTable] && (
                 <div className="table soldier-table responsiveTable">
@@ -270,14 +267,24 @@ function MaiEquipment() {
               headers &&
               headers[selecteTable] &&
               dataToTable[selecteTable].length > 0 && (
-                <HTable
-                  data={
-                    dataToTable ? (dataToTable[selecteTable] as Item[]) : []
-                  }
-                  headers={headers[selecteTable]}
-                  onAction={onActionClickInTable}
-                  dataType={selecteTable === "soldiers" ? "soldier" : "item"}
-                />
+                <div>
+                  <span className="flex justify-end sm:pb-5 pb-2 px-4 sm:px-0">
+                    <ExportToExcel
+                      dataToTable={dataToTable}
+                      selecteTable={selecteTable}
+                      itemsTypes={data?.itemsTypes}
+                    />
+                  </span>
+
+                  <HTable
+                    data={
+                      dataToTable ? (dataToTable[selecteTable] as Item[]) : []
+                    }
+                    headers={headers[selecteTable]}
+                    onAction={onActionClickInTable}
+                    dataType={selecteTable === "soldiers" ? "soldier" : "item"}
+                  />
+                </div>
               )}
             {/* {dataToTable &&
               (!dataToTable[selecteTable] ||

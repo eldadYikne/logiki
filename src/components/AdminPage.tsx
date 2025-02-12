@@ -70,7 +70,6 @@ export default function AdminPage(props: Props) {
             phone: optionalAdmin.phone,
             rank: optionalAdmin.rank,
             signature: "",
-            isNewId: true,
             isSuperAdmin: false,
           };
           await createAdmin("hapak162", admin1);

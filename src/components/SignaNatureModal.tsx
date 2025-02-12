@@ -1,13 +1,8 @@
 import { Button, Message, Modal, useToaster } from "rsuite";
 import Signature from "./Signature";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { User } from "firebase/auth";
-import {
-  addAdmin,
-  getAdminByEmail,
-  removeAdmin,
-  updateAdmin,
-} from "../service/admin";
+import { updateAdmin } from "../service/admin";
 import { RootState } from "../store/store";
 import { useSelector } from "react-redux";
 
@@ -17,21 +12,6 @@ export default function SignaNatureModal({ user }: Props) {
   const [isSignatured, setIsSignatured] = useState<boolean>(false);
   const toaster = useToaster();
   const { admin } = useSelector((state: RootState) => state.admin);
-
-  useEffect(() => {
-    async function fetchData() {
-      let adminConnected = await getAdminByEmail("hapak162", user?.email ?? "");
-      if (adminConnected && !adminConnected?.isNewId) {
-        addAdmin("hapak162", {
-          ...adminConnected,
-          id: user.uid,
-          isNewId: true,
-        });
-        removeAdmin("hapak162", adminConnected.id);
-      }
-    }
-    fetchData();
-  }, [user]);
 
   const handleSignature = async () => {
     try {
@@ -55,7 +35,7 @@ export default function SignaNatureModal({ user }: Props) {
   }
   return (
     <div>
-      {!admin.signature && !isSignatured && (
+      {!isSignatured && (
         <Modal
           size={"xs"}
           open={!admin.signature}

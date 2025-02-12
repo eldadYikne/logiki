@@ -29,7 +29,7 @@ export const ItemTranslate: { [key in CombinedKeys]: string } = {
   representative: "רס״פ מחתים",
   size: "מידות",
   team: "צוות",
-  isExclusiveItem: "פריט בודד",
+  isExclusiveItem: "פריט יחודי",
   numberOfUnExclusiveItems: "מאופסנים",
 };
 export const TranslateHistoryType: { [key in HistoryType]: string } = {
@@ -130,17 +130,3 @@ export const statusColors: Record<Status, string> = {
   signed: "#a1a5ac",
   stored: "#269d26",
 };
-export const teamOptions: any = [
-  "contact",
-  "logistics",
-  "agam",
-  "medical",
-  "yoni",
-  "adiel",
-  "ben-shooshan",
-  "eden",
-  "command",
-  "asaf",
-  "mobility",
-  "nemerim",
-];

@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
-import { Admin, TableData } from "../types/table";
-import { Button, Input, Message, useToaster } from "rsuite";
-import { getBoardByIdWithCallback, updateDynamic } from "../service/board";
+import { Admin, OptionalAdmin, TableData } from "../types/table";
+import { Button, Loader, Message, useToaster } from "rsuite";
+import {
+  getBoardByIdWithCallbackWithSort,
+  updateDynamic,
+} from "../service/board";
 import { User } from "@firebase/auth";
 import { createAdmin, removeAdmin } from "../service/admin";
 import StarIcon from "@rsuite/icons/Star";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import ShareModal from "./ShareModal";
+import ShareOutlineIcon from "@rsuite/icons/ShareOutline";
 
 export default function AdminPage(props: Props) {
   const [data, setData] = useState<TableData>();
-  const [newAdmin, setNewAdmin] = useState<Admin>();
   const toaster = useToaster();
   const { admin } = useSelector((state: RootState) => state.admin);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 
   const startAdmin: Admin = {
     id: "",
@@ -24,19 +30,28 @@ export default function AdminPage(props: Props) {
     signature: "",
     rank: "",
   };
+
   useEffect(() => {
     async function fetchData() {
-      await getBoardByIdWithCallback("hapak162", ["admins"], (a) => {
-        setData((prev) => ({ ...prev, ...a } as TableData));
-      });
+      await getBoardByIdWithCallbackWithSort(
+        "hapak162",
+        [
+          { boardKey: "optionalAdmins", sortByKey: "createdAt" },
+          { boardKey: "admins", sortByKey: "name" },
+        ],
+        (a) => {
+          setData((prev) => ({ ...prev, ...a } as TableData));
+        }
+      );
+      setLoading(false);
     }
     fetchData();
-  }, [data?.admins]);
+  }, []);
 
-  const AddNewAdmin = async () => {
+  const AddNewAdmin = async (optionalAdmin: OptionalAdmin) => {
     if (data) {
       try {
-        if (data.admins.find((ad) => newAdmin?.email === ad.email)) {
+        if (data.admins.find((ad) => optionalAdmin?.email === ad.email)) {
           toaster.push(
             <Message type="error" showIcon>
               מנהל קיים במערכת
@@ -45,11 +60,20 @@ export default function AdminPage(props: Props) {
           );
           return;
         }
-        if (newAdmin) {
-          await createAdmin("hapak162", {
-            ...newAdmin,
-            email: newAdmin.email.toLowerCase(),
-          });
+        if (optionalAdmin.id && optionalAdmin.email) {
+          const admin1: Admin = {
+            email: optionalAdmin.email.toLowerCase(),
+            dateFirstSignIn: optionalAdmin.createdAt,
+            id: optionalAdmin.id,
+            name: optionalAdmin.name,
+            personalNumber: optionalAdmin.personalNumber,
+            phone: optionalAdmin.phone,
+            rank: optionalAdmin.rank,
+            signature: "",
+            isNewId: true,
+            isSuperAdmin: false,
+          };
+          await createAdmin("hapak162", admin1);
         }
 
         toaster.push(
@@ -65,6 +89,12 @@ export default function AdminPage(props: Props) {
   };
   const onRemoveAdmin = async (adminToRemove: Admin) => {
     if (data) {
+      if (
+        !confirm(
+          `אתה בטוח שאתה רוצה למחוק את ${adminToRemove.email} מרשימת המנהלים?`
+        )
+      )
+        return;
       try {
         if (startAdmin.email === adminToRemove.email) return;
         await removeAdmin("hapak162", adminToRemove.id);
@@ -82,11 +112,13 @@ export default function AdminPage(props: Props) {
   const onClickStarToSuper = async (adminToSuper: Admin) => {
     console.log("admin", admin);
     if (admin?.email === adminToSuper.email) return;
-
+    setLoading(true);
     await updateDynamic("hapak162", adminToSuper.id, "admins", {
       ...adminToSuper,
       isSuperAdmin: !adminToSuper.isSuperAdmin,
     });
+    setLoading(false);
+
     toaster.push(
       <Message type="success" showIcon>
         {adminToSuper.isSuperAdmin
@@ -116,12 +148,18 @@ export default function AdminPage(props: Props) {
   }
 
   return (
-    <div className="flex flex-col w-full h-screen items-center pt-10">
-      {data && (
-        <div className="flex flex-col gap-8">
+    <div className="flex  flex-col w-full sm:px-20 px-5 pt-10">
+      {loading && (
+        <div className="absolute text-white inset-0 flex-col gap-2 bg-gray-800 opacity-50 z-50 flex justify-center items-center">
+          <Loader size="lg" content="" />
+          טוען...
+        </div>
+      )}
+      {data && data.admins && (
+        <div className="flex flex-col gap-8 ">
           <span className="text-xl">מנהלים מורשים</span>
           {data.admins && (
-            <div className="flex flex-col gap-2 ">
+            <div className="flex flex-col gap-2 px-3 ">
               {data.admins.map((admin, i) => {
                 return (
                   <div
@@ -144,18 +182,44 @@ export default function AdminPage(props: Props) {
               })}
             </div>
           )}
-          <div className="flex flex-col gap-3">
-            <Input
-              onChange={(e) => {
-                setNewAdmin({
-                  ...startAdmin,
-                  email: e,
-                });
-              }}
-              value={newAdmin?.email}
-              placeholder="הכנס אימייל חדש להרשאה"
-            />
-            <Button onClick={AddNewAdmin}>אשר מנהל</Button>
+          <div className="flex flex-col gap-3 p-3">
+            <div className="flex justify-between items-center">
+              <span className="text-xl">בקשות משתמשים להיות מנהלים</span>
+              <ShareOutlineIcon onClick={() => setIsShareModalOpen(true)} />
+              <ShareModal
+                open={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                shareUrl={`https://hapak162.onrender.com/optinal-admin/hapak162`}
+                title="שתף את הקישור והזמן אנשים להיות מנהלים"
+              />
+            </div>
+            {data &&
+              data.optionalAdmins &&
+              data.optionalAdmins.map((admin) => {
+                return (
+                  <div
+                    key={admin.id}
+                    className="flex gap-1 justify-between items-center"
+                  >
+                    <div className="flex gap-2">
+                      <span>{admin.email}</span>
+                      <span>{admin.name}</span>
+                      <span className="sm:block hidden">
+                        {admin.personalNumber}
+                      </span>
+                      <span className="sm:block hidden">{admin.rank}</span>
+                    </div>
+                    <Button
+                      color="blue"
+                      size="sm"
+                      appearance="primary"
+                      onClick={() => AddNewAdmin(admin)}
+                    >
+                      אשר מנהל
+                    </Button>
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}

@@ -7,7 +7,7 @@ import { ItemTranslate, statusColors, statusTranslate } from "../const";
 
 import SortDownIcon from "@rsuite/icons/SortDown";
 import SortUpIcon from "@rsuite/icons/SortUp";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getTransformedUrl } from "../utils";
 export default function HTable(props: Props) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -171,7 +171,7 @@ function renderCellData(header: string, row: Soldier | Item) {
             <button
               className={`bg-${
                 statusColors[(row as Item).status]
-              }-300 p-1 rounded-3xl min-w-20 font-medium`}
+              }-300 p-2 rounded-3xl min-w-20 font-medium`}
               style={{
                 background: (row as Item).isExclusiveItem
                   ? statusColors[(row as Item).status]
@@ -201,7 +201,7 @@ function renderCellData(header: string, row: Soldier | Item) {
             ))}
             {(row as Soldier).items.length > 3 && (
               <div className="h-8 w-8 rounded-full bg-gray-600 text-white text-xs font-semibold flex justify-center z-40 items-center -ml-3 border-2 border-white">
-                +{(row as Soldier).items.length - 3}
+                +{(row as Soldier).items.length}
               </div>
             )}
           </span>
@@ -210,9 +210,13 @@ function renderCellData(header: string, row: Soldier | Item) {
         return <span>{(row as Item).isExclusiveItem ? value ?? "" : ""}</span>;
       } else if (header === "team") {
         return (
-          <span className="sm:border-0 border border-gray-300 rounded-2xl min-w-2/3 p-2">
+          <Link
+            onClick={(e) => e.stopPropagation()}
+            to={`/team/${(row as Soldier).team.id}`}
+            className="sm:border-0 border border-gray-300 rounded-2xl min-w-2/3 p-2"
+          >
             {(row as Soldier).team.name}{" "}
-          </span>
+          </Link>
         );
       } else if (header === "profileImage") {
         return (

@@ -12,7 +12,7 @@ export default function Navbar({ setIsMenuOpen, user, isMenuOpen }: Props) {
   const cartItemCount = cartItems.length;
 
   return (
-    <div className="h-16 sticky  z-30 overflow-x-hidden cursor-pointer shadow-md shadow-blue-50 justify-between items-center flex sm:p-4 px-4 sm:px-6">
+    <div className="h-16 sticky  z-30 overflow-hidden cursor-pointer shadow-md shadow-blue-50 justify-between items-center flex sm:p-4 px-4 sm:px-6">
       {user && (
         <MenuIcon
           className="sm:hidden"

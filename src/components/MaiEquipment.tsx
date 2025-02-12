@@ -29,6 +29,10 @@ function MaiEquipment() {
     if (type) {
       setSelectedTable(type);
       setFilters({});
+      // if (data && data[type as keyof TableData]) {
+      console.log("type", type);
+      // onFilter({});
+      // }
     }
   }, [type]);
   useEffect(() => {
@@ -241,7 +245,7 @@ function MaiEquipment() {
               onClick={() => setIsFilterOpen((prev) => !prev)}
             />
           </div>
-          <div className="sm:p-12 py-5">
+          <div className="sm:p-12 py-5 ">
             {!dataToTable ||
               (dataToTable && !dataToTable[selecteTable] && (
                 <div className="table soldier-table responsiveTable">

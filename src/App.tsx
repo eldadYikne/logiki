@@ -39,6 +39,7 @@ import { Message, toaster } from "rsuite";
 import { TypeAttributes } from "rsuite/esm/internals/types";
 import TeamDetailsPage from "./pages/TeamDetailsPage";
 import HomePage from "./pages/Home";
+import OptinalAdminPage from "./pages/OptinalAdminPage";
 export function toasterApp(text: string, type: TypeAttributes.Status) {
   return toaster.push(
     <Message type={type} showIcon>
@@ -65,9 +66,12 @@ export default function App() {
       } else {
         setUser(undefined);
         setLoading(false);
-        console.log("!location.pathname", location.pathname);
+        // console.log("!location.pathname", location.pathname);
 
-        if (!location.pathname.includes("/signature/")) {
+        if (
+          !location.pathname.includes("/signature/") &&
+          !location.pathname.includes("/optinal-admin")
+        ) {
           navigate("/");
         }
       }
@@ -91,11 +95,12 @@ export default function App() {
         });
       });
     }
-
+  }, [user?.email]);
+  useEffect(() => {
     async function setGlobalAdmin() {
       if (!user) return;
       let adminConnect = await getAdminByEmail("hapak162", user?.email ?? "");
-      if (adminConnect) {
+      if (adminConnect && admin?.email !== adminConnect.email) {
         // console.log("adminConnect", adminConnect);
         dispatch(setAdmin(adminConnect));
       }
@@ -103,7 +108,6 @@ export default function App() {
     console.log("admin upadted from App.tsx");
     setGlobalAdmin();
   }, [user?.email]);
-
   const cld = new Cloudinary({ cloud: { cloudName: "dwdpgwxqv" } });
   const myImage = cld.image("docs/models");
   myImage.resize(fill().width(250).height(250));
@@ -128,7 +132,6 @@ export default function App() {
   //     </div>
   //   );
   // }
-
   return (
     <div className="site-container" dir="rtl">
       {!location.pathname.includes("home") && admin && (
@@ -149,6 +152,10 @@ export default function App() {
       <div className="content-wrap">
         <Routes>
           <Route path="/" element={<Navigate to={`/soldiers`} replace />} />
+          <Route
+            path="/optinal-admin/:boardId"
+            element={<OptinalAdminPage user={user} />}
+          />
           <Route
             path="/:type"
             element={

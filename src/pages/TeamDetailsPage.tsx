@@ -6,6 +6,7 @@ import { getTransformedUrl } from "../utils";
 import { getSoldiersByTeamId } from "../service/soldier";
 import { Accordion } from "rsuite";
 // import TeamItemsTable from "../components/teamItemsTable";
+import ArowBackIcon from "@rsuite/icons/ArowBack";
 
 const TeamDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +26,7 @@ const TeamDetailsPage = () => {
         setTeamSoldiers(filteredSoldiers);
       }
     }
+
     fecth();
   }, []);
 
@@ -81,8 +83,14 @@ const TeamDetailsPage = () => {
   };
   return (
     <div className="sm:p-6 p-2 bg-gray-100 min-h-screen w-full">
+      <div className="w-full flex justify-start px-4">
+        <ArowBackIcon
+          onClick={() => navigate(-1)}
+          className="cursor-pointer top-[-25px] text-lg rotate-180 right-2"
+        />
+      </div>
       {teamSoldiers && teamSoldiers.length > 0 && (
-        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
+        <div className="py-4 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
           <header className="bg-blue-500 text-white text-center p-4 rounded-t-lg">
             <h1 className="text-2xl font-bold flex gap-2 justify-center items-center">
               <span>{teamSoldiers[0].team.name && "צוות"}</span>

@@ -5,6 +5,7 @@ import {
   Item,
   ItemHistory,
   ItemType,
+  Status,
   TableData,
 } from "../types/table";
 import {
@@ -756,6 +757,26 @@ export default function DetailsPreview() {
       );
     }
   };
+  const changeItemStatus = async (
+    soldierItem: ItemNotExclusive,
+    status: Status
+  ) => {
+    if (item?.id && admin) {
+      const newSoldierItems = (item as Soldier).items.filter(
+        (it) => it.id !== soldierItem.id
+      );
+      setIsLoading(true);
+      await updateDynamic(
+        "hapak162",
+        item?.id,
+        "soldiers",
+        { ...item, items: [...newSoldierItems, { ...soldierItem, status }] },
+        admin,
+        "edit"
+      );
+      setIsLoading(false);
+    }
+  };
   if (!item && id) {
     return (
       <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex  ">
@@ -975,7 +996,12 @@ export default function DetailsPreview() {
                               key={soldierItem.id + idx}
                               className="flex justify-between items-center gap-5 w-full"
                             >
-                              <span className="flex gap-5 items-center">
+                              <span
+                                onClick={() =>
+                                  navigate(`/items/details/${soldierItem.id}`)
+                                }
+                                className="flex gap-5 items-center cursor-pointer"
+                              >
                                 {" "}
                                 <img
                                   loading="lazy"
@@ -989,13 +1015,36 @@ export default function DetailsPreview() {
                               </span>
                               <span>{soldierItem.serialNumber}</span>
                               <div className="flex gap-2 items-center">
+                                {soldierItem.status === "stored" && (
+                                  <span className="ml-10">
+                                    {statusTranslate[soldierItem.status]}
+                                  </span>
+                                )}
+
                                 <Button
                                   size="xs"
+                                  appearance={
+                                    soldierItem.status === "stored"
+                                      ? "primary"
+                                      : "default"
+                                  }
+                                  color={
+                                    soldierItem.status === "stored"
+                                      ? "yellow"
+                                      : "cyan"
+                                  }
                                   onClick={() =>
-                                    navigate(`/items/details/${soldierItem.id}`)
+                                    changeItemStatus(
+                                      soldierItem,
+                                      soldierItem.status === "stored"
+                                        ? "signed"
+                                        : "stored"
+                                    )
                                   }
                                 >
-                                  הצג
+                                  {soldierItem.status === "stored"
+                                    ? "שחרר"
+                                    : "אפסן"}
                                 </Button>
                                 <Button
                                   size="xs"

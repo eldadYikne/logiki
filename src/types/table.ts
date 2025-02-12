@@ -44,6 +44,17 @@ export interface TableData {
   itemsTypes: ItemType[];
   actions: HistoryAction[];
   sentSignatures: SentSinature[];
+  optionalAdmins: OptionalAdmin[];
+}
+
+export interface OptionalAdmin {
+  id: string;
+  email: string;
+  createdAt: string;
+  name: string;
+  phone: string;
+  personalNumber: number;
+  rank: string;
 }
 export interface Admin {
   id: string;

@@ -12,6 +12,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import ShareModal from "./ShareModal";
 import ShareOutlineIcon from "@rsuite/icons/ShareOutline";
+import TrashIcon from "@rsuite/icons/Trash";
+import EditAdminModal from "./EditAdminModal";
 
 export default function AdminPage(props: Props) {
   const [data, setData] = useState<TableData>();
@@ -19,6 +21,7 @@ export default function AdminPage(props: Props) {
   const { admin } = useSelector((state: RootState) => state.admin);
   const [loading, setLoading] = useState<boolean>(true);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [adminToEdit, setAdminToEdit] = useState<Admin>();
 
   const startAdmin: Admin = {
     id: "",
@@ -162,10 +165,13 @@ export default function AdminPage(props: Props) {
               {data.admins.map((admin, i) => {
                 return (
                   <div
+                    onClick={() => {
+                      setAdminToEdit(admin);
+                    }}
                     key={admin.id + i}
-                    className="flex items-center justify-between border-1 shadow-md p-1 gap-2"
+                    className="flex items-center cursor-pointer hover:shadow-lg hover:bg-slate-50 justify-between border-1 shadow-md p-1 gap-2"
                   >
-                    <div className="flex gap-2 justify-center items-center">
+                    <div className="flex gap-2 p-2 justify-center items-center">
                       <StarIcon
                         onClick={() => onClickStarToSuper(admin)}
                         style={{
@@ -179,9 +185,14 @@ export default function AdminPage(props: Props) {
                         <span>{admin.email}</span>
                       </div>
                     </div>
-                    <Button onClick={() => onRemoveAdmin(admin)} color="red">
-                      מחק
-                    </Button>
+                    <TrashIcon
+                      style={{ fontSize: "20px" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        onRemoveAdmin(admin);
+                      }}
+                    />
                   </div>
                 );
               })}
@@ -236,6 +247,14 @@ export default function AdminPage(props: Props) {
                 );
               })}
           </div>
+          {adminToEdit && (
+            <EditAdminModal
+              onClose={() => {
+                setAdminToEdit(undefined);
+              }}
+              admin={adminToEdit}
+            />
+          )}
         </div>
       )}
     </div>

@@ -6,8 +6,10 @@ import GoogleAuth from "./GoogleAuth";
 import { updateDynamic } from "../service/board";
 import { adminTranslate } from "../const";
 import EditIcon from "@rsuite/icons/Edit";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import EditAdmin from "./EditAdimn";
+import { setAdmin } from "../store/adminSlice";
 
 export default function PersonalArea() {
   const [newAdmin, setNewAdmin] = useState<Admin>();
@@ -15,6 +17,7 @@ export default function PersonalArea() {
   const navigat = useNavigate();
   const toaster = useToaster();
   const { admin } = useSelector((state: RootState) => state.admin);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchData() {
@@ -43,6 +46,9 @@ export default function PersonalArea() {
           { ...newAdmin, email: admin.email.toLowerCase() },
           admin,
           "edit"
+        );
+        dispatch(
+          setAdmin({ ...newAdmin, email: admin.email.toLowerCase() } as Admin)
         );
         toaster.push(
           <Message type="success" showIcon>
@@ -85,7 +91,7 @@ export default function PersonalArea() {
             <img className="rounded-full" src={user?.photoURL ?? ""} alt="" />
           </div>
         )} */}
-        <div className="flex flex-col justify-center items-center gap-4 ">
+        {/* <div className="flex flex-col justify-center items-center gap-4 ">
           {newAdmin &&
             userKeyToPreview.map((key) => {
               return (
@@ -106,7 +112,15 @@ export default function PersonalArea() {
                 </div>
               );
             })}
-        </div>
+        </div> */}
+        {newAdmin && (
+          <EditAdmin
+            admin={newAdmin}
+            userKeyToPreview={userKeyToPreview}
+            isEditMode={!isEditMode}
+            onChangeInput={setNewAdmin}
+          />
+        )}
         <div
           onClick={() => {
             toaster.push(

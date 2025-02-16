@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Button, Input, Loader, Message, useToaster } from "rsuite";
+import { Button, Loader, Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { Admin } from "../types/table";
 import GoogleAuth from "./GoogleAuth";
 import { updateDynamic } from "../service/board";
-import { adminTranslate } from "../const";
 import EditIcon from "@rsuite/icons/Edit";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";

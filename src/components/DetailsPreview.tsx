@@ -241,7 +241,7 @@ export default function DetailsPreview() {
               soldierId: itemToSignature.soldierId,
               history: itemToSignature.history,
               pdfFileSignature: itemToSignature.pdfFileSignature,
-              status: itemToSignature.status,
+              status: itemToSignature?.status,
               soldierPersonalNumber: itemToSignature.soldierPersonalNumber,
               signtureDate: itemToSignature.signtureDate,
               representative: itemToSignature.representative,
@@ -897,7 +897,7 @@ export default function DetailsPreview() {
                     <span className="text-3xl select-none">
                       {(item as Item).name}
                     </span>
-                    {(item as Item).status && (
+                    {(item as Item)?.status && (
                       <div
                         style={{
                           background: statusColors[(item as Item).status],
@@ -1119,27 +1119,30 @@ export default function DetailsPreview() {
                   )
                 );
               })}
-              <div className="flex w-full flex-col gap-3 justify-between">
-                <span className="w-full  border-b-2 text-xl">פעולות</span>
-                <Button
-                  appearance="primary"
-                  color="yellow"
-                  onClick={() =>
-                    changeItemsStatus(
-                      (item as Soldier).items[0].status === "stored"
-                        ? "signed"
-                        : "stored"
-                    )
-                  }
-                >
-                  {(item as Soldier).items[0].status === "stored"
-                    ? "שחרר הכל"
-                    : "אפסן הכל"}
-                </Button>
-                <Button onClick={() => setModalConfirmCredetAll(true)}>
-                  זכה הכל
-                </Button>
-              </div>
+              {(item as Soldier).items &&
+                (item as Soldier).items.length > 0 && (
+                  <div className="flex w-full flex-col gap-3 justify-between">
+                    <span className="w-full  border-b-2 text-xl">פעולות</span>
+                    <Button
+                      appearance="primary"
+                      color="yellow"
+                      onClick={() =>
+                        changeItemsStatus(
+                          (item as Soldier).items[0].status === "stored"
+                            ? "signed"
+                            : "stored"
+                        )
+                      }
+                    >
+                      {(item as Soldier).items[0]?.status === "stored"
+                        ? "שחרר הכל"
+                        : "אפסן הכל"}
+                    </Button>
+                    <Button onClick={() => setModalConfirmCredetAll(true)}>
+                      זכה הכל
+                    </Button>
+                  </div>
+                )}
               {
                 <ModalConfirmCredetAll
                   onClose={() => setModalConfirmCredetAll(false)}
@@ -1360,7 +1363,7 @@ const renderFileds = (key: CombinedKeys, item: Item | Soldier) => {
     return (
       ItemTranslate[key as CombinedKeys] +
       " : " +
-      statusTranslate[(item as Item).status]
+      statusTranslate[(item as Item)?.status]
     );
   } else {
     return (

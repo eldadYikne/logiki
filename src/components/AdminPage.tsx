@@ -189,11 +189,16 @@ export default function AdminPage(props: Props) {
           )}
           <div className="flex flex-col gap-3 p-3">
             <div className="flex justify-between items-center">
-              <span className="text-xl">בקשות משתמשים להיות מנהלים</span>
-              <ShareOutlineIcon
-                style={{ fontSize: "25px" }}
+              <span className="text-base sm:text-xl">
+                בקשות משתמשים להיות מנהלים
+              </span>
+              <span
                 onClick={() => setIsShareModalOpen(true)}
-              />
+                className="flex gap-1"
+              >
+                <span> הזמן</span>
+                <ShareOutlineIcon style={{ fontSize: "25px" }} />
+              </span>
               <ShareModal
                 open={isShareModalOpen}
                 onClose={() => setIsShareModalOpen(false)}

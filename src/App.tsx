@@ -40,6 +40,7 @@ import { TypeAttributes } from "rsuite/esm/internals/types";
 import TeamDetailsPage from "./pages/TeamDetailsPage";
 import HomePage from "./pages/Home";
 import OptinalAdminPage from "./pages/OptinalAdminPage";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 export function toasterApp(text: string, type: TypeAttributes.Status) {
   return toaster.push(
     <Message type={type} showIcon>
@@ -140,6 +141,8 @@ export default function App() {
   // }
   return (
     <div className="site-container" dir="rtl">
+      <ScrollToTopButton />
+
       {!location.pathname.includes("home") && admin && (
         <Navbar
           setIsMenuOpen={setIsMenuOpen}

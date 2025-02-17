@@ -88,6 +88,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
     <div className="container mx-auto p-4 flex flex-col justify-center items-center">
       <h1 className="text-2xl font-bold mb-4">היסטוריית פעולות</h1>
       {!data?.actions && <Loader />}
+      {/* <ScrollToTopButton /> */}
 
       <div className="grid gap-4">
         {data &&

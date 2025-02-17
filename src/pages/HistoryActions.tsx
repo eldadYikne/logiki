@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
+  deletePartOfCollection,
   getBoardByIdWithCallbackWithSort,
   removeDynamicById,
 } from "../service/board";
 import { CollectionName, TableData } from "../types/table";
-import { TranslateHistoryType } from "../const";
+import { colorsHistoryType, TranslateHistoryType } from "../const";
 import { Loader, Message, useToaster } from "rsuite";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
@@ -14,6 +15,7 @@ import ModalSignaturedItems from "../components/ModalSignaturedItems";
 import { HistoryItemAction } from "../types/history";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { getTransformedUrl } from "../utils";
 
 const HistoryActionsPage: React.FC<Props> = () => {
   const [data, setData] = useState<TableData>();
@@ -32,9 +34,13 @@ const HistoryActionsPage: React.FC<Props> = () => {
           setData((prev) => ({ ...prev, ...a } as TableData));
         }
       );
+      console.log("actions length", data?.actions.length);
+
+      await deletePartOfCollection("hapak162", "actions", 150);
     }
     fetchData();
   }, []);
+
   const [actionSignaturditems, setActionSignaturditems] =
     useState<HistoryItemAction[]>();
   const removeAction = async (actionId: string) => {
@@ -103,12 +109,14 @@ const HistoryActionsPage: React.FC<Props> = () => {
                 {(action.items || action.soldier) && (
                   <div className="relative shrink-0">
                     <img
-                      src={
+                      src={getTransformedUrl(
                         action.items?.length! > 0
                           ? action.items![0].profileImage
-                          : action.soldier?.profileImage
-                      }
-                      className="h-10 w-10 rounded-full"
+                          : action.soldier?.profileImage ?? "",
+                        "w_50,h_50"
+                      )}
+                      loading="lazy"
+                      className=" rounded-full"
                       alt=""
                     />
                     {action.items && action.items?.length! > 1 && (
@@ -122,7 +130,10 @@ const HistoryActionsPage: React.FC<Props> = () => {
                   <span className="font-bold truncate max-w-[80%]">
                     {action.admin.name}
                   </span>{" "}
-                  <span className="font-bold truncate max-w-[80%]">
+                  <span
+                    className={` font-bold truncate max-w-[80%] `}
+                    style={{ color: colorsHistoryType[action.type] }}
+                  >
                     {TranslateHistoryType[action.type]}
                   </span>
                   {action.type !== "signature" && action.type !== "credit" && (

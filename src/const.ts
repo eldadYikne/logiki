@@ -38,6 +38,17 @@ export const TranslateHistoryType: { [key in HistoryType]: string } = {
   delete: "מחק",
   edit: "ערך",
   signature: "החתים",
+  restored: "שחרר",
+  stored: "אפסן",
+};
+export const colorsHistoryType: { [key in HistoryType]: string } = {
+  create: "#3b82f6",
+  credit: "#2196f3",
+  delete: "#ee2a2a",
+  edit: "#2196f3",
+  signature: "#37ab3c",
+  restored: "#ffb300",
+  stored: "#ffb300",
 };
 export const itemsKeys = Object.keys({
   profileImage: "",

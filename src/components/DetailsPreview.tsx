@@ -123,6 +123,8 @@ export default function DetailsPreview() {
   ];
   useEffect(() => {
     async function fetchData() {
+      setIsLoading(true);
+
       await getBoardByIdWithCallback(
         "hapak162",
         ["soldiers", "items", "itemsTypes"],
@@ -131,6 +133,7 @@ export default function DetailsPreview() {
           setData((prev) => ({ ...prev, ...a } as TableData));
         }
       );
+      setIsLoading(false);
     }
 
     fetchData();
@@ -138,6 +141,7 @@ export default function DetailsPreview() {
   useEffect(() => {
     async function fetchItem() {
       if (data && id) {
+        setIsLoading(true);
         const newItem: Item | Soldier | undefined = await findObjectById(id);
         console.log("newItem", newItem);
         if (newItem) {
@@ -146,6 +150,7 @@ export default function DetailsPreview() {
             notRenderKeys.push("numberOfUnExclusiveItems");
           }
         }
+        setIsLoading(false);
       }
     }
     fetchItem();
@@ -782,7 +787,7 @@ export default function DetailsPreview() {
         "soldiers",
         { ...item, items: [...newSoldierItems, { ...soldierItem, status }] },
         admin,
-        "edit"
+        status === "stored" ? "stored" : "restored"
       );
       setIsLoading(false);
       toaster.push(
@@ -1051,7 +1056,7 @@ export default function DetailsPreview() {
                                 onClick={() =>
                                   navigate(`/items/details/${soldierItem.id}`)
                                 }
-                                className="flex gap-5 items-center cursor-pointer"
+                                className="flex gap-2 sm:gap-5 items-center cursor-pointer"
                               >
                                 {" "}
                                 <img

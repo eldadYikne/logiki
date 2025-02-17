@@ -28,4 +28,11 @@ interface HistorySoldierAction {
   profileImage: string;
   personalNumber: number;
 }
-export type HistoryType = "signature" | "credit" | "create" | "delete" | "edit";
+export type HistoryType =
+  | "signature"
+  | "credit"
+  | "create"
+  | "delete"
+  | "edit"
+  | "stored"
+  | "restored";

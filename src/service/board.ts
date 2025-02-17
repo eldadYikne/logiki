@@ -11,6 +11,7 @@ import {
   query,
   startAfter,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../main";
 import {
@@ -96,20 +97,20 @@ export const updateDynamic = async (
   try {
     const itemRef = doc(db, `boards/${boardId}/${collectionName}`, itemId);
     await updateDoc(itemRef, updates);
-    console.log(
-      "itemId:",
-      itemId,
-      "collectionName:",
-      collectionName,
-      "updates:",
-      updates,
-      "admin:",
-      admin,
-      "action:",
-      action,
-      "soldier",
-      soldier
-    );
+    // console.log(
+    //   "itemId:",
+    //   itemId,
+    //   "collectionName:",
+    //   collectionName,
+    //   "updates:",
+    //   updates,
+    //   "admin:",
+    //   admin,
+    //   "action:",
+    //   action,
+    //   "soldier",
+    //   soldier
+    // );
     if (updates && admin) {
       let historyAction;
       if (collectionName === "items" || collectionName === "itemsTypes") {
@@ -361,5 +362,34 @@ export const getBoardByIdWithPagination = async (
     setDataCallback(subcollectionData, lastVisibleDocs);
   } catch (error) {
     console.error("Error fetching paginated data:", error);
+  }
+};
+
+export const deletePartOfCollection = async (
+  boardId: string,
+  collectionName: string,
+  maxLength: number
+) => {
+  try {
+    const colRef = collection(db, "boards", boardId, collectionName);
+    const snapshot = await getDocs(colRef);
+
+    if (snapshot.size > maxLength) {
+      // Sort documents by timestamp (oldest first) and get the excess ones
+      const docsToDelete = snapshot.docs
+        .sort((a, b) => a.data().timestamp - b.data().timestamp)
+        .slice(0, snapshot.size - maxLength);
+
+      // Create a batch to delete multiple documents in one request
+      const batch = writeBatch(db);
+      docsToDelete.forEach((docSnap) => {
+        batch.delete(doc(db, "boards", boardId, collectionName, docSnap.id));
+      });
+
+      // Commit the batch operation (single API request)
+      await batch.commit();
+    }
+  } catch (error) {
+    console.error("Error deleting excess documents:", error);
   }
 };

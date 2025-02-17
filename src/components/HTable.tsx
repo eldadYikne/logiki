@@ -222,7 +222,7 @@ function renderCellData(header: string, row: Soldier | Item) {
           <Link
             onClick={(e) => e.stopPropagation()}
             to={`/team/${(row as Soldier).team.id}`}
-            className="sm:border-0 border border-gray-300 rounded-2xl min-w-2/3 p-2"
+            className="sm:border-0 border border-gray-300 hover:no-underline decoration-transparent rounded-2xl min-w-2/3 p-2"
           >
             {(row as Soldier).team.name}{" "}
           </Link>

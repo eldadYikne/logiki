@@ -137,7 +137,7 @@ const DynamicForm: React.FC<Props> = ({
           isExclusiveItem: newForm.isExclusiveItem ?? false,
           numberOfUnExclusiveItems: newForm.isExclusiveItem
             ? 0
-            : newForm.numberOfUnExclusiveItems,
+            : Number(newForm.numberOfUnExclusiveItems),
         } as Item)
       : ({
           id: uuidv4(),
@@ -324,7 +324,7 @@ const DynamicForm: React.FC<Props> = ({
                         onChange={(e) => {
                           setNewForm((value) => ({
                             ...value,
-                            numberOfUnExclusiveItems: e,
+                            numberOfUnExclusiveItems: Number(e),
                           }));
                         }}
                       />

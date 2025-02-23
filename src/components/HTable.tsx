@@ -202,7 +202,7 @@ function renderCellData(header: string, row: Soldier | Item) {
                 alt=""
               />
             ))}
-            {(row as Soldier).items.length > 3 && (
+            {(row as Soldier).items.length > 0 && (
               <div
                 className={`h-8 w-8 rounded-full ${
                   isStoredItems ? "bg-[#ffb300]" : "bg-gray-600"

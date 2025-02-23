@@ -30,13 +30,14 @@ const HistoryActionsPage: React.FC<Props> = () => {
         "hapak162",
         [{ boardKey: "actions", sortByKey: "date" }],
         (a) => {
-          console.log("a", a);
+          // console.log("a", a);
           setData((prev) => ({ ...prev, ...a } as TableData));
         }
       );
+
       console.log("actions length", data?.actions.length);
 
-      await deletePartOfCollection("hapak162", "actions", 150);
+      await deletePartOfCollection("hapak162", "actions", 300);
     }
     fetchData();
   }, []);

@@ -123,6 +123,7 @@ function MaiEquipment() {
       onFilter(filters);
     }
   }, [location.search, dataToTableFilter]);
+
   const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
     console.log("Filters:", filters);
 
@@ -135,7 +136,7 @@ function MaiEquipment() {
       }
     });
 
-    navigate(`${searchParams.toString()}`); // Update the URL with query params
+    navigate(`?${searchParams.toString()}`); // Update the URL with query params
 
     if (dataToTable && selecteTable && dataToTableFilter) {
       setDataToTable((prevData: any) => {

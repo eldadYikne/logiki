@@ -162,7 +162,7 @@ export default function SentSignaturesPage() {
 
             toaster.push(
               <Message type="success" showIcon>
-                הפעולה בוצעה בהצלחה!
+                !הפעולה בוצעה בהצלחה
               </Message>,
               { placement: "topCenter" }
             );

@@ -57,7 +57,7 @@ export default function Create() {
 
       toaster.push(
         <Message type="success" showIcon>
-          הפעולה בוצעה בהצלחה!
+          !הפעולה בוצעה בהצלחה
         </Message>,
         { placement: "topCenter" }
       );
@@ -202,7 +202,7 @@ export default function Create() {
         {!isFormOpen && (
           <div className="flex flex-col justify-center items-center">
             <CheckRoundIcon color="green" />
-            <span>הפעולה בוצעה בהצלחה!</span>
+            <span>!הפעולה בוצעה בהצלחה</span>
           </div>
         )}
       </div>

@@ -57,7 +57,7 @@ const HistoryActionsPage: React.FC<Props> = () => {
       await removeDynamicById("hapak162", "actions", actionId);
       toaster.push(
         <Message type="success" showIcon>
-          הפעולה בוצעה בהצלחה!
+          !הפעולה בוצעה בהצלחה
         </Message>,
         { placement: "topCenter" }
       );

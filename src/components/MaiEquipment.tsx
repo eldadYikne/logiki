@@ -1,10 +1,5 @@
 import { Item, TableData, TableHeaders, NewTableData } from "../types/table";
-import {
-  AdminItemSoldier,
-  NewTeam,
-  Soldier,
-  SoldierItem,
-} from "../types/soldier";
+import { Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
 import { useEffect, useState } from "react";
 import { itemsKeys, soldierKeys } from "../const";
@@ -16,16 +11,21 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
-import { getBoardByIdWithCallbackWithSort } from "../service/board";
+import {
+  fetchFilteredData,
+  getBoardByIdWithCallbackWithSort,
+} from "../service/board";
 import ExportToExcel from "./ExportToExcel";
 
 function MaiEquipment() {
   const { type } = useParams();
+  // console.log("boardId", boardId);
+
   const [selecteTable, setSelectedTable] = useState<string>(type ?? "");
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(true);
   const [headers, setHeaders] = useState<TableHeaders>();
   const [data, setData] = useState<TableData>();
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
     if (type) {
       setSelectedTable(type);
@@ -38,6 +38,7 @@ function MaiEquipment() {
   }, [type]);
   useEffect(() => {
     async function fetchData() {
+      setIsLoading(true);
       await getBoardByIdWithCallbackWithSort(
         "hapak162",
         [
@@ -53,13 +54,12 @@ function MaiEquipment() {
           setDataToTable((prev) => ({ ...prev, ...a } as NewTableData));
         }
       );
+      setIsLoading(false);
     }
-
     fetchData();
   }, []);
   useEffect(() => {
     if (data?.itemsTypes && data?.items) {
-      console.log("data", data);
       let newHeaders = {
         soldiers: soldierKeys,
       };
@@ -92,6 +92,7 @@ function MaiEquipment() {
         ...reducedItems,
         soldiers: data.soldiers ?? [],
       } as NewTableData);
+
       // console.log("reducedItems", reducedItems);
     }
   }, [data]);
@@ -120,47 +121,33 @@ function MaiEquipment() {
       onFilter(filters);
     }
   }, [location.search, dataToTableFilter]);
-  const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
-    console.log("Filters:", filters);
+  const onFilter = async (filters: { [key: string]: string }) => {
+    console.log("Applying Filters:", filters);
 
-    setFilters(filters as FilterObject);
+    setFilters(filters);
     const searchParams = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        searchParams.set(key, value);
-      }
+      if (value) searchParams.set(key, value);
     });
 
     navigate(`?${searchParams.toString()}`); // Update the URL with query params
 
-    if (dataToTable && selecteTable && dataToTableFilter) {
-      setDataToTable((prevData: any) => {
-        if (prevData && prevData[selecteTable]) {
-          const filteredData = dataToTableFilter[selecteTable].filter(
-            (item: AdminItemSoldier) => {
-              return Object.entries(filters).every(([key, value]) => {
-                if (!value) return true;
-                const itemObject =
-                  typeof item[key as keyof AdminItemSoldier] === "object"
-                    ? (
-                        item[
-                          key as keyof AdminItemSoldier
-                        ] as unknown as NewTeam
-                      ).id
-                    : item[key as keyof AdminItemSoldier];
-                const itemValue = String(itemObject);
-                return itemValue.includes(value);
-              });
-            }
-          );
-          return {
-            ...prevData,
-            [selecteTable]: filteredData,
-          };
-        }
-        return prevData;
-      });
+    if (!selecteTable) return;
+
+    try {
+      const filteredData = await fetchFilteredData(
+        "hapak162",
+        selecteTable,
+        filters
+      );
+
+      setDataToTable((prevData: any) => ({
+        ...prevData,
+        [selecteTable]: filteredData,
+      }));
+    } catch (error) {
+      console.error("Error filtering data:", error);
     }
   };
   const onActionClickInTable = (item: Item | Soldier) => {
@@ -245,25 +232,28 @@ function MaiEquipment() {
             />
           </div>
           <div className="sm:p-12 ">
-            {!dataToTable ||
-              (dataToTable && !dataToTable[selecteTable] && (
-                <div className="table soldier-table responsiveTable">
-                  <table>
-                    <tbody>
-                      {Array.from({ length: 6 }).map((a, i) => {
-                        a;
-                        return (
-                          <tr key={i}>
-                            <td>
-                              <Placeholder.Paragraph graph="circle" active />
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              ))}
+            {isLoading && (
+              <div className="table soldier-table responsiveTable">
+                <table>
+                  <tbody>
+                    {Array.from({ length: 6 }).map((a, i) => {
+                      a;
+                      return (
+                        <tr key={i}>
+                          <td>
+                            <Placeholder.Paragraph
+                              className="mt-3"
+                              graph="circle"
+                              active
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
             {dataToTable &&
               dataToTable[selecteTable] &&
               headers &&

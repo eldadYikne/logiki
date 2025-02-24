@@ -232,7 +232,7 @@ export default function DetailsPreview() {
           );
           toaster.push(
             <Message type="success" showIcon>
-              הפעולה בוצעה בהצלחה!
+              !הפעולה בוצעה בהצלחה
             </Message>,
             { placement: "topCenter" }
           );
@@ -281,7 +281,7 @@ export default function DetailsPreview() {
             await updateSoldier("hapak162", signedSoldier.id, signedSoldier);
             toaster.push(
               <Message type="success" showIcon>
-                הפעולה בוצעה בהצלחה!
+                !הפעולה בוצעה בהצלחה
               </Message>,
               { placement: "topCenter" }
             );
@@ -514,8 +514,8 @@ export default function DetailsPreview() {
               numberOfUnExclusiveItems: updateItem.isExclusiveItem
                 ? 0
                 : Number(
-                    itemsNotExNumbersOfStock[updateItem.id].sum +
-                      updateItem.numberOfUnExclusiveItems
+                    Number(itemsNotExNumbersOfStock[updateItem.id].sum) +
+                      Number(updateItem.numberOfUnExclusiveItems)
                   ),
             } as Item;
           }
@@ -668,7 +668,7 @@ export default function DetailsPreview() {
           if (confirm(`אתה בטוח רוצה למחוק את ${item?.name}`)) {
             toaster.push(
               <Message type="success" showIcon>
-                הפעולה בוצעה בהצלחה!
+                !הפעולה בוצעה בהצלחה
               </Message>,
               { placement: "topCenter" }
             );
@@ -820,7 +820,7 @@ export default function DetailsPreview() {
         "soldiers",
         { ...item, items: [...newSoldierItems] },
         admin,
-        "edit"
+        "stored"
       );
       setIsLoading(false);
       toaster.push(

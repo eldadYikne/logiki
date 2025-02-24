@@ -170,7 +170,7 @@ const CartPage = ({ user }: Props) => {
 
             toaster.push(
               <Message type="success" showIcon>
-                הפעולה בוצעה בהצלחה!
+                !הפעולה בוצעה בהצלחה
               </Message>,
               { placement: "topCenter" }
             );

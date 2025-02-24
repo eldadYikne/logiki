@@ -80,7 +80,7 @@ export default function AdminPage(props: Props) {
 
         toaster.push(
           <Message type="success" showIcon>
-            הפעולה בוצעה בהצלחה!
+            !הפעולה בוצעה בהצלחה
           </Message>,
           { placement: "topCenter" }
         );
@@ -102,7 +102,7 @@ export default function AdminPage(props: Props) {
         await removeAdmin("hapak162", adminToRemove.id);
         toaster.push(
           <Message type="success" showIcon>
-            הפעולה בוצעה בהצלחה!
+            !הפעולה בוצעה בהצלחה
           </Message>,
           { placement: "topCenter" }
         );

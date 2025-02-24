@@ -9,6 +9,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import PeoplesIcon from "@rsuite/icons/Peoples";
 import PeoplesTargetIcon from "@rsuite/icons/PeoplesTarget";
 import SignatureIcon from "@rsuite/icons/Signature";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
   interface MenuLink {
@@ -25,10 +27,12 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       | "admin-signature"
       | "personal-area";
     icon: ReactElement<any, any>;
+    isSuperAdminRequired: boolean;
   }
   const location = useLocation();
   useEffect(() => {}, [location.pathname]);
   // console.log('location.pathname.split("/")', location.pathname.split("/"));
+  const { admin } = useSelector((state: RootState) => state.admin);
 
   const getIconComponent = (key: string) => {
     if (key === "item") {
@@ -58,6 +62,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       link: "/soldiers",
       name: "רשימות",
       icon: getIconComponent("soldiers"),
+      isSuperAdminRequired: false,
     },
     // { link: "/", name: "פריטים", icon: getIconComponent("homepage") ,type:''},,
     {
@@ -65,6 +70,7 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       link: "/add/soldier",
       name: "הוסף חייל",
       icon: getIconComponent("soldier"),
+      isSuperAdminRequired: true,
     },
     {
       type: "item",
@@ -72,12 +78,14 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       link: "/add/item",
       name: "הוסף פריט",
       icon: getIconComponent("item"),
+      isSuperAdminRequired: true,
     },
     {
       type: "teams",
       link: "/add/teams",
       name: "צוותים",
       icon: getIconComponent("teams"),
+      isSuperAdminRequired: true,
     },
 
     {
@@ -85,24 +93,28 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       link: "/add/itemsTypes",
       name: "קבוצות פריטים",
       icon: getIconComponent("items"),
+      isSuperAdminRequired: true,
     },
     {
       type: "actions",
       link: "/actions",
       name: "פעולות",
       icon: getIconComponent("actions"),
+      isSuperAdminRequired: true,
     },
     {
       type: "admin-signature",
       link: "/admin-signature",
       name: "החתמות מרחוק",
       icon: getIconComponent("admin-signature"),
+      isSuperAdminRequired: false,
     },
     {
       type: "personal-area",
       link: "/personal-area",
       name: "איזור אישי",
       icon: getIconComponent("personal"),
+      isSuperAdminRequired: false,
     },
   ];
 
@@ -118,25 +130,27 @@ export default function Menu({ onCloseMenu, isMenuOpen }: Props) {
       <div className="flex w-full sm:w-2/3 flex-col gap-4 sm:gap-2 sm:flex-row items-start">
         {links.map((link) => {
           return (
-            <NavLink
-              key={link.link}
-              className={"w-full"}
-              onClick={() => onCloseMenu()}
-              to={`${link.link}`}
-            >
-              <div className="flex gap-2 text-xl sm:text-sm w-full justify-between sm:justify-center hover:bg-slate-100 sm:hover:bg-transparent p-1 rounded-lg ">
-                <span
-                  className={
-                    location.pathname.split("/").includes(link.type)
-                      ? "font-bold underline"
-                      : ""
-                  }
-                >
-                  {link.name}
-                </span>
-                <span className="sm:hidden">{link.icon}</span>
-              </div>
-            </NavLink>
+            (link.isSuperAdminRequired ? admin?.isSuperAdmin : true) && (
+              <NavLink
+                key={link.link}
+                className={"w-full"}
+                onClick={() => onCloseMenu()}
+                to={`${link.link}`}
+              >
+                <div className="flex gap-2 text-xl sm:text-sm w-full justify-between sm:justify-center hover:bg-slate-100 sm:hover:bg-transparent p-1 rounded-lg ">
+                  <span
+                    className={
+                      location.pathname.split("/").includes(link.type)
+                        ? "font-bold underline"
+                        : ""
+                    }
+                  >
+                    {link.name}
+                  </span>
+                  <span className="sm:hidden">{link.icon}</span>
+                </div>
+              </NavLink>
+            )
           );
         })}
       </div>

@@ -87,6 +87,7 @@ export default function EditAdminModal({ admin, onClose }: Props) {
               <Button
                 onClick={() => {
                   updateNewAdmin();
+                  onClose();
                 }}
                 color="green"
                 appearance="primary"

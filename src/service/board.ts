@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getCountFromServer,
   getDoc,
   getDocs,
   limit,
@@ -11,7 +12,11 @@ import {
   query,
   startAfter,
   updateDoc,
+  Query,
   writeBatch,
+  DocumentData,
+  startAt,
+  endAt,
 } from "firebase/firestore";
 import { db } from "../main";
 import {
@@ -327,41 +332,69 @@ export const getBoardByIdWithPagination = async (
     boardKey: keyof TableData;
     sortByKey: "name" | "date" | "createdAt";
   }>,
-  lastDocs: Record<string, any>, // Keep track of last document per boardKey
-  setDataCallback: (data: any, lastVisibleDocs: Record<string, any>) => void
+  setDataCallback: (data: any, lastDocs: Record<string, any>) => void,
+  pageSize = 10, // Number of items per page
+  lastDocs: Record<string, any> = {} // Keep track of last document for each boardKey
 ) => {
   try {
     const boardRef = doc(db, "boards", boardId);
-    const subcollectionData: Record<string, any[]> = {};
-    const lastVisibleDocs: Record<string, any> = {}; // Store last docs for next pagination
+    const newLastDocs: Record<string, any> = {}; // Store new last document for each boardKey
+    const allData: Record<string, any[]> = {}; // Store fetched data for each boardKey
 
-    for (const { boardKey, sortByKey } of boardKeysConfig) {
-      const subRef = collection(boardRef, boardKey as string);
+    // Fetch data for each boardKey
+    await Promise.all(
+      boardKeysConfig.map(async ({ boardKey, sortByKey }) => {
+        const subRef = collection(boardRef, boardKey as string);
 
-      let q = query(subRef, orderBy(sortByKey), limit(25)); // Default limit = 25
-
-      if (lastDocs[boardKey]) {
-        q = query(
+        // Create Firestore query with sorting, limiting, and pagination
+        let boardQuery = query(
           subRef,
-          orderBy(sortByKey),
-          startAfter(lastDocs[boardKey]),
-          limit(25)
+          orderBy(sortByKey, "asc"),
+          limit(pageSize)
         );
-      }
 
-      const snapshot = await getDocs(q);
-      subcollectionData[boardKey] = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+        if (lastDocs[boardKey]) {
+          boardQuery = query(
+            subRef,
+            orderBy(sortByKey, "asc"),
+            startAfter(lastDocs[boardKey]),
+            limit(pageSize)
+          );
+        }
 
-      lastVisibleDocs[boardKey] =
-        snapshot.docs[snapshot.docs.length - 1] || null;
-    }
+        const snapshot = await getDocs(boardQuery);
+        const sortedData = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        // .sort((a: any, b: any) => {
+        //   const aKey = a[sortByKey];
+        //   const bKey = b[sortByKey];
 
-    setDataCallback(subcollectionData, lastVisibleDocs);
+        //   // Handle sorting for strings, numeric-like strings, and date strings
+        //   if (typeof aKey === "string" && typeof bKey === "string") {
+        //     if (sortByKey === "date" || sortByKey === "createdAt") {
+        //       // Parse strings as dates for sorting
+        //       return new Date(bKey).getTime() - new Date(aKey).getTime();
+        //     }
+        //     return aKey.localeCompare(bKey); // Alphabetical sort for other strings
+        //   }
+        //   return 0; // Default no sorting for other cases
+        // });
+
+        // Store new last document to use as a cursor for the next batch
+        newLastDocs[boardKey] = snapshot.docs[snapshot.docs.length - 1] || null;
+
+        // Store fetched data
+        allData[boardKey] = sortedData;
+      })
+    );
+
+    // Trigger callback with updated data and new cursors
+    setDataCallback(allData, newLastDocs);
   } catch (error) {
     console.error("Error fetching paginated data:", error);
+    throw error;
   }
 };
 
@@ -390,5 +423,53 @@ export const deletePartOfCollection = async (
     }
   } catch (error) {
     console.error("Error deleting excess documents:", error);
+  }
+};
+
+export const getTotalDocsCount = async (
+  boardId: string,
+  boardKey: keyof TableData
+) => {
+  const boardRef = doc(db, "boards", boardId);
+  const subRef = collection(boardRef, boardKey as string);
+  const snapshot = await getCountFromServer(subRef);
+  return snapshot.data().count; // Total document count
+};
+export const fetchFilteredData = async (
+  boardId: string,
+  boardKey: string,
+  filters: Record<string, string>
+): Promise<any[]> => {
+  try {
+    // Reference the board and sub-collection
+    const boardRef = doc(db, "boards", boardId);
+    const subRef = collection(boardRef, boardKey);
+
+    let queryRef: Query<DocumentData> = subRef;
+
+    // Apply filters dynamically
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        const searchValue = value.toLowerCase();
+
+        // Ensure "name" field is indexed for queries
+        queryRef = query(
+          queryRef,
+          orderBy(key),
+          startAt(searchValue),
+          endAt(searchValue + "\uf8ff") // Firestore trick for range queries
+        );
+      }
+    });
+
+    // Fetch data from Firestore
+    const snapshot = await getDocs(queryRef);
+    return snapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+  } catch (error) {
+    console.error("Error fetching filtered data:", error);
+    throw error;
   }
 };

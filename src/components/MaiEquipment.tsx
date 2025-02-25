@@ -1,10 +1,5 @@
 import { Item, TableData, TableHeaders, NewTableData } from "../types/table";
-import {
-  AdminItemSoldier,
-  NewTeam,
-  Soldier,
-  SoldierItem,
-} from "../types/soldier";
+import { Soldier, SoldierItem } from "../types/soldier";
 import HTable from "./HTable";
 import { useEffect, useState } from "react";
 import { itemsKeys, soldierKeys } from "../const";
@@ -16,7 +11,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 import { Animation } from "rsuite";
 import SlideItemTypes from "./SlideItemTypes";
-import { getBoardByIdWithCallbackWithSort } from "../service/board";
+import {
+  fetchFilteredData,
+  getBoardByIdWithCallbackWithSort,
+} from "../service/board";
 import ExportToExcel from "./ExportToExcel";
 
 function MaiEquipment() {
@@ -28,6 +26,7 @@ function MaiEquipment() {
   const [headers, setHeaders] = useState<TableHeaders>();
   const [data, setData] = useState<TableData>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   useEffect(() => {
     if (type) {
       setSelectedTable(type);
@@ -124,70 +123,89 @@ function MaiEquipment() {
     }
   }, [location.search, dataToTableFilter]);
 
-  const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
-    console.log("Filters:", filters);
+  // const onFilter = (filters: { [key in keyof SoldierItem]?: string }) => {
+  //   console.log("Filters:", filters);
 
-    setFilters(filters as FilterObject);
+  //   setFilters(filters as FilterObject);
+  //   const searchParams = new URLSearchParams();
+
+  //   Object.entries(filters).forEach(([key, value]) => {
+  //     if (value) {
+  //       searchParams.set(key, value);
+  //     }
+  //   });
+
+  //   navigate(`?${searchParams.toString()}`); // Update the URL with query params
+
+  //   if (dataToTable && selecteTable && dataToTableFilter) {
+  //     setDataToTable((prevData: any) => {
+  //       if (prevData && prevData[selecteTable]) {
+  //         const filteredData = dataToTableFilter[selecteTable].filter(
+  //           (item: AdminItemSoldier) => {
+  //             return Object.entries(filters).every(([key, value]) => {
+  //               if (!value) return true;
+  //               const itemObject =
+  //                 typeof item[key as keyof AdminItemSoldier] === "object"
+  //                   ? (
+  //                       item[
+  //                         key as keyof AdminItemSoldier
+  //                       ] as unknown as NewTeam
+  //                     ).id
+  //                   : item[key as keyof AdminItemSoldier];
+  //               const itemValue = String(itemObject);
+  //               return itemValue.includes(value);
+  //             });
+  //           }
+  //         );
+  //         return {
+  //           ...prevData,
+  //           [selecteTable]: filteredData,
+  //         };
+  //       }
+  //       return prevData;
+  //     });
+  //   }
+  // };
+
+  const onFilter = async (filters: { [key: string]: string }) => {
+    console.log("Applying Filters:", filters);
+    console.log("selecteTable:", selecteTable);
+
+    setFilters(filters);
     const searchParams = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        searchParams.set(key, value);
-      }
+      if (value) searchParams.set(key, value);
     });
 
     navigate(`?${searchParams.toString()}`); // Update the URL with query params
 
-    if (dataToTable && selecteTable && dataToTableFilter) {
-      setDataToTable((prevData: any) => {
-        if (prevData && prevData[selecteTable]) {
-          const filteredData = dataToTableFilter[selecteTable].filter(
-            (item: AdminItemSoldier) => {
-              return Object.entries(filters).every(([key, value]) => {
-                if (!value) return true;
-                const itemObject =
-                  typeof item[key as keyof AdminItemSoldier] === "object"
-                    ? (
-                        item[
-                          key as keyof AdminItemSoldier
-                        ] as unknown as NewTeam
-                      ).id
-                    : item[key as keyof AdminItemSoldier];
-                const itemValue = String(itemObject);
-                return itemValue.includes(value);
-              });
-            }
-          );
-          return {
-            ...prevData,
-            [selecteTable]: filteredData,
-          };
-        }
-        return prevData;
-      });
+    if (!selecteTable) return;
+
+    try {
+      const filteredData = await fetchFilteredData(
+        "hapak162",
+        selecteTable === "soldiers" ? "soldiers" : "items",
+        filters
+      );
+
+      setDataToTable((prevData: any) => ({
+        ...prevData,
+        [selecteTable]:
+          selecteTable === "soldiers"
+            ? filteredData
+            : filteredData.filter(
+                (item) => (item as Item).itemType.id === selecteTable
+              ),
+      }));
+    } catch (error) {
+      console.error("Error filtering data:", error);
     }
   };
+
   const onActionClickInTable = (item: Item | Soldier) => {
     setItemToEdit(item);
   };
-
-  // if (
-  //   props.user.email &&
-  //   !data?.admins
-  //     .map((admin) => (admin as Admin).email.toLowerCase())
-  //     .includes(props.user.email.toLowerCase())
-  // ) {
-  //   return (
-  //     <div
-  //       dir="rtl"
-  //       className="flex flex-col h-screen justify-center items-center   w-full"
-  //     >
-  //       <span className="flex p-10 text-2xl bg-white justify-center items-center rounded-lg text-center">
-  //         {`למשתמש ${props.user.email} אין הרשאה לגשת לאתר זה בפקודה!`}
-  //       </span>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div dir="rtl" className="flex flex-col w-full">

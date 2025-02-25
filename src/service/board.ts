@@ -6,17 +6,16 @@ import {
   getCountFromServer,
   getDoc,
   getDocs,
-  limit,
   onSnapshot,
   orderBy,
   query,
-  startAfter,
   updateDoc,
   Query,
   writeBatch,
   DocumentData,
   startAt,
   endAt,
+  where,
 } from "firebase/firestore";
 import { db } from "../main";
 import {
@@ -326,78 +325,6 @@ export const getBoardByIdWithCallbackWithSort = async (
   }
 };
 
-export const getBoardByIdWithPagination = async (
-  boardId: string,
-  boardKeysConfig: Array<{
-    boardKey: keyof TableData;
-    sortByKey: "name" | "date" | "createdAt";
-  }>,
-  setDataCallback: (data: any, lastDocs: Record<string, any>) => void,
-  pageSize = 10, // Number of items per page
-  lastDocs: Record<string, any> = {} // Keep track of last document for each boardKey
-) => {
-  try {
-    const boardRef = doc(db, "boards", boardId);
-    const newLastDocs: Record<string, any> = {}; // Store new last document for each boardKey
-    const allData: Record<string, any[]> = {}; // Store fetched data for each boardKey
-
-    // Fetch data for each boardKey
-    await Promise.all(
-      boardKeysConfig.map(async ({ boardKey, sortByKey }) => {
-        const subRef = collection(boardRef, boardKey as string);
-
-        // Create Firestore query with sorting, limiting, and pagination
-        let boardQuery = query(
-          subRef,
-          orderBy(sortByKey, "asc"),
-          limit(pageSize)
-        );
-
-        if (lastDocs[boardKey]) {
-          boardQuery = query(
-            subRef,
-            orderBy(sortByKey, "asc"),
-            startAfter(lastDocs[boardKey]),
-            limit(pageSize)
-          );
-        }
-
-        const snapshot = await getDocs(boardQuery);
-        const sortedData = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        // .sort((a: any, b: any) => {
-        //   const aKey = a[sortByKey];
-        //   const bKey = b[sortByKey];
-
-        //   // Handle sorting for strings, numeric-like strings, and date strings
-        //   if (typeof aKey === "string" && typeof bKey === "string") {
-        //     if (sortByKey === "date" || sortByKey === "createdAt") {
-        //       // Parse strings as dates for sorting
-        //       return new Date(bKey).getTime() - new Date(aKey).getTime();
-        //     }
-        //     return aKey.localeCompare(bKey); // Alphabetical sort for other strings
-        //   }
-        //   return 0; // Default no sorting for other cases
-        // });
-
-        // Store new last document to use as a cursor for the next batch
-        newLastDocs[boardKey] = snapshot.docs[snapshot.docs.length - 1] || null;
-
-        // Store fetched data
-        allData[boardKey] = sortedData;
-      })
-    );
-
-    // Trigger callback with updated data and new cursors
-    setDataCallback(allData, newLastDocs);
-  } catch (error) {
-    console.error("Error fetching paginated data:", error);
-    throw error;
-  }
-};
-
 export const deletePartOfCollection = async (
   boardId: string,
   collectionName: string,
@@ -451,14 +378,18 @@ export const fetchFilteredData = async (
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         const searchValue = value.toLowerCase();
-
-        // Ensure "name" field is indexed for queries
-        queryRef = query(
-          queryRef,
-          orderBy(key),
-          startAt(searchValue),
-          endAt(searchValue + "\uf8ff") // Firestore trick for range queries
-        );
+        if (key === "team") {
+          // Query based on the nested field "team.id"
+          queryRef = query(queryRef, where("team.id", "==", value));
+        } else {
+          // Ensure "name" field is indexed for queries
+          queryRef = query(
+            queryRef,
+            orderBy("name", "asc"),
+            startAt(searchValue),
+            endAt(searchValue + "\uf8ff") // Firestore trick for range queries
+          );
+        }
       }
     });
 

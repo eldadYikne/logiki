@@ -362,39 +362,55 @@ export const getTotalDocsCount = async (
   const snapshot = await getCountFromServer(subRef);
   return snapshot.data().count; // Total document count
 };
+
 export const fetchFilteredData = async (
   boardId: string,
   boardKey: string,
-  filters: Record<string, string>
+  filters: Record<string, string | number>
 ): Promise<any[]> => {
   try {
-    // Reference the board and sub-collection
     const boardRef = doc(db, "boards", boardId);
     const subRef = collection(boardRef, boardKey);
+    console.log("boardKey", boardKey);
 
-    let queryRef: Query<DocumentData> = subRef;
+    let queryRef: Query<DocumentData> = query(subRef);
+    const conditions: any[] = [];
 
-    // Apply filters dynamically
     Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        const searchValue = value.toLowerCase();
+      if (value !== undefined && value !== null) {
         if (key === "team") {
-          // Query based on the nested field "team.id"
-          queryRef = query(queryRef, where("team.id", "==", value));
-        } else {
-          // Ensure "name" field is indexed for queries
-          queryRef = query(
-            queryRef,
-            orderBy("name", "asc"),
+          conditions.push(where("team.id", "==", value));
+        } else if (key === "personalNumber") {
+          // Convert number to string for partial matching
+          const searchValue = value.toString();
+          conditions.push(
+            orderBy("personalNumber"),
             startAt(searchValue),
-            endAt(searchValue + "\uf8ff") // Firestore trick for range queries
+            endAt(searchValue + "\uf8ff")
+          );
+        } else {
+          conditions.push(
+            orderBy(key),
+            startAt(String(value)),
+            endAt(String(value) + "\uf8ff")
           );
         }
       }
     });
 
-    // Fetch data from Firestore
+    if (conditions.length) {
+      queryRef = query(subRef, ...conditions);
+    }
+
     const snapshot = await getDocs(queryRef);
+    console.log(
+      "snapshot",
+      snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+    );
+
     return snapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
@@ -404,6 +420,7 @@ export const fetchFilteredData = async (
     throw error;
   }
 };
+
 // const onFilter = async (filters: { [key: string]: string }) => {
 //   console.log("Applying Filters:", filters);
 

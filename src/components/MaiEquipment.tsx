@@ -4,7 +4,7 @@ import HTable from "./HTable";
 import { useEffect, useState } from "react";
 import { itemsKeys, soldierKeys } from "../const";
 import Filter from "./Filter";
-import { Placeholder } from "rsuite";
+import { Loader, Placeholder } from "rsuite";
 import { FilterObject } from "../types/filter";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -55,9 +55,9 @@ function MaiEquipment() {
           setDataToTable((prev) => ({ ...prev, ...a } as NewTableData));
         }
       );
-      setIsLoading(false);
     }
     fetchData();
+    setIsLoading(false);
   }, []);
   useEffect(() => {
     if (data?.itemsTypes && data?.items) {
@@ -183,6 +183,7 @@ function MaiEquipment() {
     if (!selecteTable) return;
 
     try {
+      setIsLoading(true);
       const filteredData = await fetchFilteredData(
         "hapak162",
         selecteTable === "soldiers" ? "soldiers" : "items",
@@ -198,6 +199,7 @@ function MaiEquipment() {
                 (item) => (item as Item).itemType.id === selecteTable
               ),
       }));
+      setIsLoading(false);
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -267,7 +269,7 @@ function MaiEquipment() {
             />
           </div>
           <div className="sm:p-12 ">
-            {isLoading && (
+            {(isLoading || !data) && (
               <div className="table soldier-table responsiveTable">
                 <table>
                   <tbody>
@@ -311,6 +313,14 @@ function MaiEquipment() {
                     onAction={onActionClickInTable}
                     dataType={selecteTable === "soldiers" ? "soldier" : "item"}
                   />
+                  {isLoading && (
+                    <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex  ">
+                      <div className="border text-2xl border-white shadow-xl flex flex-col justify-center items-center sm:p-8 p-3 w-full rounded-xl ">
+                        {/* <h1>פריט לא נמצא </h1> */}
+                        <Loader />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             {/* {dataToTable &&

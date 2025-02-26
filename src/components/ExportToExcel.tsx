@@ -68,7 +68,7 @@ const ExportToExcel: React.FC<ExportButtonProps> = ({
         } else {
           acc[ItemTranslate[typedKey as CombinedKeys] || key] = (item as Item)[
             typedKey as keyof Item
-          ]; // Use translation if exists, else keep original key
+          ];
         }
         return acc;
       }, {})

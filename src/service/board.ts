@@ -16,6 +16,8 @@ import {
   startAt,
   endAt,
   where,
+  startAfter,
+  limit,
 } from "firebase/firestore";
 import { db } from "../main";
 import {
@@ -27,6 +29,7 @@ import {
 } from "../types/table";
 import { Soldier } from "../types/soldier";
 import { createHistory } from "./history";
+
 import { HistoryAction, HistoryType } from "../types/history";
 
 export const createDynamic = async (
@@ -355,12 +358,21 @@ export const deletePartOfCollection = async (
 
 export const getTotalDocsCount = async (
   boardId: string,
-  boardKey: keyof TableData
+  boardKey: keyof TableData,
+  itemTypeId?: string // Optional itemTypeId filter
 ) => {
   const boardRef = doc(db, "boards", boardId);
   const subRef = collection(boardRef, boardKey as string);
-  const snapshot = await getCountFromServer(subRef);
-  return snapshot.data().count; // Total document count
+
+  let countQuery: any = subRef;
+
+  // If itemTypeId is provided and boardKey is "items", filter by itemType.id
+  if (boardKey === "items" && itemTypeId) {
+    countQuery = query(subRef, where("itemType.id", "==", itemTypeId));
+  }
+
+  const snapshot = await getCountFromServer(countQuery);
+  return snapshot.data().count; // Returns filtered document count
 };
 
 export const fetchFilteredData = async (
@@ -420,3 +432,170 @@ export const fetchFilteredData = async (
     throw error;
   }
 };
+export const getBoardByIdWithPagination = async (
+  boardId: string,
+  boardKeysConfig: Array<{
+    boardKey: keyof TableData;
+    sortByKey: "name" | "date" | "createdAt";
+  }>,
+  setDataCallback: (data: any) => void,
+  lastVisibleDocs: Record<string, any> = {}, // Stores last document for pagination
+  pageSize: number = 10 // Number of documents per page
+) => {
+  try {
+    const boardRef = doc(db, "boards", boardId);
+    const subcollectionData: Record<string, any[]> = {};
+    const newLastVisibleDocs: Record<string, any> = {};
+
+    await Promise.all(
+      boardKeysConfig.map(async ({ boardKey, sortByKey }) => {
+        const subRef = collection(boardRef, boardKey as string);
+
+        if (boardKey === "items") {
+          // Fetch distinct itemType.id values
+          const typeQuery = query(subRef, orderBy("itemType.id"));
+          const typeSnapshot = await getDocs(typeQuery);
+
+          // Group items by itemType.id
+          const groupedItems: Record<string, any[]> = {};
+          await Promise.all(
+            Array.from(
+              new Set(typeSnapshot.docs.map((doc) => doc.data().itemType?.id))
+            ).map(async (itemTypeId) => {
+              if (!itemTypeId) return;
+
+              let itemQuery = query(
+                subRef,
+                where("itemType.id", "==", itemTypeId),
+                // orderBy(sortByKey as string),
+                limit(pageSize)
+              );
+
+              // Apply pagination if last document exists
+              if (lastVisibleDocs?.items?.[itemTypeId]) {
+                itemQuery = query(
+                  subRef,
+                  where("itemType.id", "==", itemTypeId),
+                  // orderBy(sortByKey),
+                  startAfter(lastVisibleDocs.items[itemTypeId]),
+                  limit(pageSize)
+                );
+              }
+
+              const itemSnapshot = await getDocs(itemQuery);
+              groupedItems[itemTypeId] = itemSnapshot.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+              }));
+
+              // Track last visible document for each itemType.id
+              if (itemSnapshot.docs.length > 0) {
+                if (!newLastVisibleDocs.items) newLastVisibleDocs.items = {};
+                newLastVisibleDocs.items[itemTypeId] =
+                  itemSnapshot.docs[itemSnapshot.docs.length - 1];
+              }
+            })
+          );
+
+          // Flatten grouped items into a single array
+          subcollectionData[boardKey] = Object.values(groupedItems).flat();
+        } else {
+          // Normal pagination for other board keys
+          let subQuery = query(subRef, orderBy(sortByKey), limit(pageSize));
+
+          if (lastVisibleDocs?.[boardKey]) {
+            subQuery = query(
+              subRef,
+              orderBy(sortByKey),
+              startAfter(lastVisibleDocs[boardKey]),
+              limit(pageSize)
+            );
+          }
+
+          const subSnapshot = await getDocs(subQuery);
+          subcollectionData[boardKey] = subSnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }));
+
+          // Save last document for pagination
+          newLastVisibleDocs[boardKey] =
+            subSnapshot.docs[subSnapshot.docs.length - 1];
+        }
+      })
+    );
+
+    // Trigger callback with new data
+    setDataCallback((prev: any) => ({
+      ...prev,
+      ...subcollectionData,
+    }));
+
+    return newLastVisibleDocs;
+  } catch (error) {
+    console.error("Error fetching board data with pagination:", error);
+    throw error;
+  }
+};
+
+// export const getBoardByIdWithPagination = async (
+//   boardId: string,
+//   boardKeysConfig: Array<{
+//     boardKey: keyof TableData;
+//     sortByKey: "name" | "date" | "createdAt";
+//   }>,
+//   setDataCallback: (data: any) => void,
+//   lastVisibleDocs: Record<string, any> = {}, // Stores last document for pagination
+//   pageSize: number = 10 // Number of documents per page
+// ) => {
+//   try {
+//     const boardRef = doc(db, "boards", boardId);
+//     const subcollectionData: Record<string, any[]> = {};
+//     const newLastVisibleDocs: Record<string, any> = {};
+
+//     await Promise.all(
+//       boardKeysConfig.map(async ({ boardKey, sortByKey }) => {
+//         const subRef = collection(boardRef, boardKey as string);
+
+//         // Create query with sorting and pagination
+//         let subQuery = query(subRef, orderBy(sortByKey), limit(pageSize));
+
+//         // Apply pagination if last document exists
+//         if (lastVisibleDocs && boardKey && lastVisibleDocs[boardKey]) {
+//           subQuery = query(
+//             subRef,
+//             orderBy(sortByKey),
+//             startAfter(lastVisibleDocs[boardKey]),
+//             limit(pageSize)
+//           );
+//         }
+
+//         // Fetch the data
+//         const subSnapshot = await getDocs(subQuery);
+//         const data = subSnapshot.docs.map((doc) => ({
+//           ...doc.data(),
+//           id: doc.id,
+//         }));
+
+//         // Save the last document for pagination
+//         newLastVisibleDocs[boardKey] =
+//           subSnapshot.docs[subSnapshot.docs.length - 1];
+
+//         // Append new data (pagination)
+//         subcollectionData[boardKey] = data;
+//       })
+//     );
+
+//     // Trigger callback with updated data
+//     setDataCallback((prev: any) => ({
+//       ...prev,
+//       ...subcollectionData,
+//     }));
+
+//     // Return updated lastVisibleDocs for pagination tracking
+//     return newLastVisibleDocs;
+//   } catch (error) {
+//     console.error("Error fetching board data with pagination:", error);
+//     throw error;
+//   }
+// };

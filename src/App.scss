@@ -99,8 +99,19 @@ body {
     text-align: center;
   }
 }
+@media screen and (min-width: 640px) {
+  .rs-placeholder-paragraph-graph.rs-placeholder-paragraph-graph-circle {
+    height: 45px !important;
+  }
+}
 
 @media screen and (max-width: 640px) {
+  .rs-placeholder-paragraph-graph.rs-placeholder-paragraph-graph-circle {
+    height: 70px;
+    width: 70px;
+    margin: 0;
+    margin-top: 5px;
+  }
   .responsiveTable td .tdBefore {
     // left: 3rem;
     // text-align: right !important ;

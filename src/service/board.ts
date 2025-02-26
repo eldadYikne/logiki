@@ -420,33 +420,3 @@ export const fetchFilteredData = async (
     throw error;
   }
 };
-
-// const onFilter = async (filters: { [key: string]: string }) => {
-//   console.log("Applying Filters:", filters);
-
-//   setFilters(filters);
-//   const searchParams = new URLSearchParams();
-
-//   Object.entries(filters).forEach(([key, value]) => {
-//     if (value) searchParams.set(key, value);
-//   });
-
-//   navigate(`?${searchParams.toString()}`); // Update the URL with query params
-
-//   if (!selecteTable) return;
-
-//   try {
-//     const filteredData = await fetchFilteredData(
-//       "hapak162",
-//       selecteTable,
-//       filters
-//     );
-
-//     setDataToTable((prevData: any) => ({
-//       ...prevData,
-//       [selecteTable]: filteredData,
-//     }));
-//   } catch (error) {
-//     console.error("Error filtering data:", error);
-//   }
-// };

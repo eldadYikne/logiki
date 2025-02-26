@@ -12,7 +12,7 @@ const ScrollToTopButton = () => {
         setIsVisible(false);
       }
     };
-    console.log("window.scrollY", window.scrollY);
+    // console.log("window.scrollY", window.scrollY);
 
     window.addEventListener("scroll", toggleVisibility);
     return () => window.removeEventListener("scroll", toggleVisibility);

@@ -55,7 +55,9 @@ const ExportToExcel: React.FC<ExportButtonProps> = ({
         if (key === "items") {
           acc[ItemTranslate[typedKey as CombinedKeys] || key] = (
             item as Soldier
-          )["items"].length;
+          )["items"]
+            .map((item) => item.name)
+            .join(", "); // Convert array to a comma-separated string
         } else if (key === "numberOfUnExclusiveItems") {
           acc[ItemTranslate[typedKey as CombinedKeys] || key] =
             (item as Item)["status"] === "signed" ? "לא" : "כן";

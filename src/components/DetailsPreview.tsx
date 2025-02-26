@@ -902,16 +902,17 @@ export default function DetailsPreview() {
                     <span className="text-3xl select-none">
                       {(item as Item).name}
                     </span>
-                    {(item as Item)?.status && (
-                      <div
-                        style={{
-                          background: statusColors[(item as Item).status],
-                        }}
-                        className=" sm:p-2 p-1 sm:w-1/2 text-white flex justify-center text-sm font-thin rounded-md shadow-sm max-h-7 sm:max-h-12"
-                      >
-                        {statusTranslate[(item as Item).status]}
-                      </div>
-                    )}
+                    {(item as Item)?.status &&
+                      (item as Item).isExclusiveItem && (
+                        <div
+                          style={{
+                            background: statusColors[(item as Item).status],
+                          }}
+                          className=" sm:p-2 p-1 sm:w-1/2 text-white flex justify-center text-sm font-thin rounded-md shadow-sm max-h-7 sm:max-h-12"
+                        >
+                          {statusTranslate[(item as Item).status]}
+                        </div>
+                      )}
                   </div>
                   {Object.keys(item).map((key) => {
                     return (

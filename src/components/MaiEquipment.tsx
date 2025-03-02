@@ -418,7 +418,7 @@ function MaiEquipment() {
                   }
                 </div>
               )}
-            {dataToTable && !dataToTable[selecteTable] && <div>לא מצא</div>}
+            {/* {dataToTable && !dataToTable[selecteTable] && <div>לא מצא</div>} */}
           </div>
         </div>
       </div>

@@ -147,7 +147,7 @@ export default function SignaturePreview({
                       <a target="_blank" href={url}>
                         <img
                           className="h-5 w-5 fill-green-600"
-                          src="https://github.com/eldadYikne/hapak162/blob/main/src/assets/whatsapp.png?raw=true"
+                          src="https://github.com/eldadYikne/logiki/blob/main/src/assets/whatsapp.png?raw=true"
                           alt=""
                         />
                       </a>

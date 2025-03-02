@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["logo.png", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        name: "חפ״ק 162",
-        short_name: "חפ״ק 162",
+        name: "Logiki-ניהול חכם ",
+        short_name: "Logiki",
         description: "ניהול לוגיסטי",
         display: "standalone",
         background_color: "transparent",

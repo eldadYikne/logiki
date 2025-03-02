@@ -53,7 +53,6 @@ export default function Navbar({ setIsMenuOpen, user, isMenuOpen }: Props) {
             <span>
               <img className="h-8" src={Logo} />
             </span>
-            {/* <span className="sm:text-2xl text-md">יחידת חפ״ק מאו״ג 162</span> */}
           </span>
         )}
       </div>

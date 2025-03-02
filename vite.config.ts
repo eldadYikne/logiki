@@ -50,7 +50,7 @@ export default defineConfig({
         skipWaiting: true,
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/hapak162.onrender\.com\/.*$/,
+            urlPattern: /^https:\/\/logiki-smart.onrender\.com\/.*$/,
             handler: "NetworkFirst",
             options: {
               cacheName: "v0.00.1",

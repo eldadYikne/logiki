@@ -100,7 +100,7 @@ export default function SignatureProcessModal({
         }
       }, 3000);
       // const link = `http://localhost:5173/signature/${signatureId}`;
-      const link = `https://hapak162.onrender.com/signature/${signatureId}`;
+      const link = `https://logiki-smart.onrender.com/signature/${signatureId}`;
       const message = `שלום ${
         (selectedOption as Soldier).name
       }, הזמינו אותך לחתום על על ציוד באופן מקוון, לחץ על הקישור למעבר לחתימה `;

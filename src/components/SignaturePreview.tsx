@@ -26,7 +26,7 @@ export default function SignaturePreview({
   const [isNavActionsOpen, setIsNavActionsOpen] = useState<boolean>(false);
   const toaster = useToaster();
   const baseURL = "https://wa.me/";
-  const link = `https://hapak162.onrender.com/signature/${signature.id}`;
+  const link = `https://logiki-smart.onrender.com/signature/${signature.id}`;
   const message = `שלום ${signature.soldierName}, הזמינו אותך לחתום על על ציוד באופן מקוון, לחץ על הקישור למעבר לחתימה `;
   let phoneNum = formatPhoneNumberToIsraelInternational(
     String(signature.phoneNumber)

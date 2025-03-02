@@ -213,7 +213,7 @@ export default function AdminPage(props: Props) {
               <ShareModal
                 open={isShareModalOpen}
                 onClose={() => setIsShareModalOpen(false)}
-                shareUrl={`https://hapak162.onrender.com/optinal-admin/hapak162`}
+                shareUrl={`https://logiki-smart.onrender.com/optinal-admin/hapak162`}
                 title="שתף את הקישור והזמן אנשים להיות מנהלים"
               />
             </div>

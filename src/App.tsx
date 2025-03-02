@@ -156,7 +156,7 @@ export default function App() {
       {isMenuOpen && user && admin && (
         <div
           onClick={() => setIsMenuOpen(false)}
-          className="fixed sm:hidden text-white h-svh w-full gap-2 bg-gray-800 opacity-50 z-20 "
+          className="fixed sm:hidden text-white h-svh w-full gap-2 bg-slate-900 opacity-80 z-20 "
         ></div>
       )}
 

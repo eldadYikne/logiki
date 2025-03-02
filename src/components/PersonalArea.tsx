@@ -73,7 +73,7 @@ export default function PersonalArea() {
   }
   return (
     <div className=" relative flex gap-3  items-center w-full pb-6  flex-col">
-      <div className=" bg-blue-950 p-3 justify-end flex w-full">
+      <div className=" bg-[#175454] p-3 justify-end flex w-full">
         {newAdmin?.isSuperAdmin && (
           <Button
             onClick={() => {

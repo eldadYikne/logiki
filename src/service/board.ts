@@ -388,6 +388,10 @@ export const fetchFilteredData = async (
     let queryRef: Query<DocumentData> = query(subRef);
     const conditions: any[] = [];
 
+    let isPartialSearch = false;
+    let searchKey = "";
+    let searchValue = "";
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (key === "team") {
@@ -400,6 +404,11 @@ export const fetchFilteredData = async (
             startAt(searchValue),
             endAt(searchValue + "\uf8ff")
           );
+        } else if (key === "name") {
+          // Enable manual filtering for substring search
+          isPartialSearch = true;
+          searchKey = key;
+          searchValue = value.toString().toLowerCase();
         } else {
           conditions.push(
             orderBy(key),
@@ -415,23 +424,26 @@ export const fetchFilteredData = async (
     }
 
     const snapshot = await getDocs(queryRef);
-    console.log(
-      "snapshot",
-      snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }))
-    );
-
-    return snapshot.docs.map((doc) => ({
+    let results = snapshot.docs.map((doc: any) => ({
       ...doc.data(),
       id: doc.id,
     }));
+
+    // Apply substring search manually if needed
+    if (isPartialSearch) {
+      results = results.filter((doc) =>
+        doc[searchKey]?.toLowerCase().includes(searchValue)
+      );
+    }
+
+    console.log("Filtered Results:", results);
+    return results;
   } catch (error) {
     console.error("Error fetching filtered data:", error);
     throw error;
   }
 };
+
 export const getBoardByIdWithPagination = async (
   boardId: string,
   boardKeysConfig: Array<{

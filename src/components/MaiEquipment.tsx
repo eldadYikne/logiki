@@ -390,7 +390,7 @@ function MaiEquipment() {
                       />
                     </div>
                   )}
-                  {
+                  {!Object.values(filters).find((val) => val) && (
                     <div className="flex gap-2 items-center justify-center w-full my-3">
                       <Button
                         appearance={
@@ -415,7 +415,7 @@ function MaiEquipment() {
                         <PagePreviousIcon />
                       </Button>
                     </div>
-                  }
+                  )}
                 </div>
               )}
             {/* {dataToTable && !dataToTable[selecteTable] && <div>לא מצא</div>} */}

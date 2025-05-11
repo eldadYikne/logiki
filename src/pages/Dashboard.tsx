@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Modal, Input } from "rsuite";
 import { v4 as uuidv4 } from "uuid";
-import { Admin, NewTableData, TableData } from "../types/table";
+import { Admin, TableData } from "../types/table";
 import { getAuth, User } from "firebase/auth";
 import { getAllBoards } from "../service/dashboard";
 

@@ -1,6 +1,5 @@
-import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { db } from "../main";
-import { TableData } from "../types/table";
 
 export const getAllBoards = async () => {
   try {

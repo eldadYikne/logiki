@@ -44,19 +44,32 @@ export const addAdmin = async (boardId: string, admin: Admin) => {
     console.error("Error adding admin:", error);
   }
 };
+// export const createAdmin = async (boardId: string, admin: Admin) => {
+//   try {
+//     // Reference to the admins subcollection inside the board document
+//     const adminsRef = collection(db, `boards/${boardId}/admins`);
+
+//     // Add the admin to the collection
+//     const docRef = await addDoc(adminsRef, admin);
+
+//     console.log("Admin successfully created with ID:");
+//     return docRef.id; // Return the ID of the created admin
+//   } catch (error) {
+//     console.error("Error creating admin:", error);
+//     throw error; // Re-throw the error to handle it where the function is called
+//   }
+// };
 export const createAdmin = async (boardId: string, admin: Admin) => {
   try {
-    // Reference to the admins subcollection inside the board document
-    const adminsRef = collection(db, `boards/${boardId}/admins`);
+    const adminRef = doc(db, `boards/${boardId}/admins/${admin.id}`);
 
-    // Add the admin to the collection
-    const docRef = await addDoc(adminsRef, admin);
+    await setDoc(adminRef, admin);
 
-    console.log("Admin successfully created with ID:");
-    return docRef.id; // Return the ID of the created admin
+    console.log("Admin successfully created with ID:", admin.id);
+    return admin.id;
   } catch (error) {
     console.error("Error creating admin:", error);
-    throw error; // Re-throw the error to handle it where the function is called
+    throw error;
   }
 };
 export const updateAdmin = async (
@@ -65,6 +78,8 @@ export const updateAdmin = async (
   updates: Partial<Admin>
 ) => {
   try {
+    console.log("adminId", adminId);
+    console.log("updates", updates);
     const adminRef = doc(db, `boards/${boardId}/admins`, adminId);
 
     await updateDoc(adminRef, updates);

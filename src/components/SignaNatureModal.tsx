@@ -12,10 +12,13 @@ export default function SignaNatureModal({ user }: Props) {
   const [isSignatured, setIsSignatured] = useState<boolean>(false);
   const toaster = useToaster();
   const { admin } = useSelector((state: RootState) => state.admin);
+  console.log("admin", admin);
 
   const handleSignature = async () => {
     try {
       if (signatureUrl && admin) {
+        console.log("signatureUrl", signatureUrl);
+        console.log("admin", admin);
         await updateAdmin("hapak162", admin.id, {
           ...admin,
           signature: signatureUrl,

@@ -57,6 +57,7 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const { admin } = useSelector((state: RootState) => state.admin);
   const location = useLocation();
+  console.log("adminadminadmin", admin);
 
   // console.log("VITE_API_URL", import.meta.env.VITE_API_URL);
   const navigate = useNavigate();

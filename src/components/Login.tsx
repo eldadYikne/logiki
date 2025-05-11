@@ -1,7 +1,7 @@
 import GoogleAuth from "./GoogleAuth";
 import Logo from "../assets/logo.png";
 
-function Login({ setConnectedUser, userConnected }: Props) {
+function Login({ setConnectedUser = () => {}, userConnected = "" }: Props) {
   return (
     <div className="p-10  w-full flex items-center justify-center font-['Nachlieli'] bg-gradient-to-r from-slate-100 via-black-500 to-slate-800">
       <div className="bg-white mx-3  p-8 rounded-lg shadow-lg max-w-md w-full">
@@ -29,10 +29,10 @@ function Login({ setConnectedUser, userConnected }: Props) {
 
 export default Login;
 
-Login.defaultProps = {
-  setConnectedUser: () => {},
-  userConnected: "",
-};
+// Login.defaultProps = {
+//   setConnectedUser: () => {},
+//   userConnected: "",
+// };
 
 interface Props {
   setConnectedUser: Function;

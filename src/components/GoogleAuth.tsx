@@ -10,7 +10,11 @@ import GoogleIcon from "@rsuite/icons/Google";
 import { useEffect, useState } from "react";
 import { Button } from "rsuite";
 import ExitIcon from "@rsuite/icons/Exit";
-function GoogleAuth(props: Props) {
+function GoogleAuth({
+  setUser = () => {},
+  userConnected = "",
+  color = undefined,
+}: Props) {
   const [connectedUser, setConnectedUser] = useState<User>();
   const auth = getAuth();
 
@@ -21,7 +25,7 @@ function GoogleAuth(props: Props) {
         user.uid;
         // console.log("connected user", user);
         setConnectedUser(user);
-        props.setUser(user);
+        setUser(user);
       } else {
         console.log("USER FIRBASE NOT FOUND");
       }
@@ -43,7 +47,7 @@ function GoogleAuth(props: Props) {
     try {
       await signOut(auth);
       setConnectedUser(undefined);
-      props.setUser(undefined);
+      setUser(undefined);
       localStorage.removeItem("logikey-admin");
     } catch (err) {
       console.error(err);
@@ -52,7 +56,7 @@ function GoogleAuth(props: Props) {
 
   return (
     <div className="flex gap-3 justify-center items-center">
-      {!props.userConnected && (
+      {!userConnected && (
         <Button onClick={signInWithGoogle}>
           הכנס באמצעות גוגל
           <span className="px-1">
@@ -61,10 +65,10 @@ function GoogleAuth(props: Props) {
         </Button>
       )}
 
-      {props.userConnected && (
-        <Button color={props?.color} className=" flex gap-1" onClick={logOut}>
+      {userConnected && (
+        <Button color={color} className=" flex gap-1" onClick={logOut}>
           <ExitIcon />
-          {props.userConnected}
+          {userConnected}
         </Button>
       )}
     </div>
@@ -72,13 +76,9 @@ function GoogleAuth(props: Props) {
 }
 
 export default GoogleAuth;
-GoogleAuth.defaultProps = {
-  userConnected: "",
-  setUser: () => {},
-};
 
 interface Props {
   userConnected: string;
   setUser: Function;
-  color?: "red";
+  color?: "red" | undefined;
 }

@@ -42,6 +42,7 @@ import HomePage from "./pages/Home";
 import OptinalAdminPage from "./pages/OptinalAdminPage";
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import NewVersionNotifier from "./components/NewVersionNotifier";
+import Dashboard from "./pages/Dashboard";
 export function toasterApp(text: string, type: TypeAttributes.Status) {
   return toaster.push(
     <Message type={type} showIcon>
@@ -196,6 +197,9 @@ export default function App() {
             <Route path="/:type/details/:id" element={<DetailsPreview />} />
           )}
           {user && <Route path="/admin" element={<AdminPage user={user} />} />}
+          {user && admin && (
+            <Route path="/dashboard" element={<Dashboard user={user} />} />
+          )}
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </div>

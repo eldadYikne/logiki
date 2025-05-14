@@ -16,6 +16,8 @@ import { NewTeam, Size, Soldier } from "../types/soldier";
 import { v4 as uuidv4 } from "uuid";
 import { UploadWidget } from "./UploadWidget";
 import { getBoardByIdWithCallback } from "../service/board";
+import ImagePicker from "./ImagePicker";
+import TrashIcon from "@rsuite/icons/Trash";
 
 type FormData = Item | Soldier;
 interface NewForm {
@@ -39,6 +41,7 @@ const DynamicForm: React.FC<Props> = ({
   itemTypesOptions,
 }) => {
   const [tryConfirm, setTryConfirm] = useState<boolean>(false);
+  const [isImagesPickerOpen, setIsImagesPickerOpen] = useState<boolean>(false);
   const toaster = useToaster();
   const formRef = useRef<any>();
   const [data, setData] = useState<TableData>();
@@ -181,38 +184,70 @@ const DynamicForm: React.FC<Props> = ({
       formValue={newForm}
       className="flex flex-col w-2/3 max-w-96 gap-2 justify-center items-center"
     >
-      {newForm.profileImage ? (
-        <div className="py-3 relative">
-          <img className="h-24 w-24 rounded-full" src={newForm.profileImage} />
-          <div className="absolute top-10 opacity-0">
+      <div className="relative">
+        {newForm.profileImage && (
+          <TrashIcon
+            className="absolute z-30 top-0 right-[-5px] h-6 w-6 bg-slate-200 p-1 rounded-full  "
+            style={{ fontSize: "20px", color: "red" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setNewForm((prev) => ({ ...prev, profileImage: "" }));
+            }}
+          />
+        )}
+        {newForm.profileImage ? (
+          <div className="py-3 relative">
+            <img
+              className="h-24 w-24 rounded-full"
+              src={newForm.profileImage}
+            />
+            <div className="absolute top-10 opacity-0">
+              <UploadWidget
+                text="החלף תמונה"
+                previewType="button"
+                onSetImageUrl={(e: string) => {
+                  setNewForm((prev) => ({ ...prev, profileImage: e }));
+                }}
+                isImagePickerPopup={type === "item"}
+                openImagesPicker={() => setIsImagesPickerOpen(true)}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="relative">
             <UploadWidget
-              text="החלף תמונה"
-              previewType="button"
+              text="העלה תמונה"
+              previewType="addPhoto"
               onSetImageUrl={(e: string) => {
                 setNewForm((prev) => ({ ...prev, profileImage: e }));
               }}
+              isImagePickerPopup={type === "item"}
+              openImagesPicker={() => setIsImagesPickerOpen(true)}
             />
+            <ImagePicker
+              isOpen={isImagesPickerOpen}
+              onCloseModal={() => {
+                setIsImagesPickerOpen(false);
+              }}
+              onSelectImage={(e: string) => {
+                if (e) {
+                  setNewForm((prev) => ({ ...prev, profileImage: e }));
+                }
+              }}
+            />
+            {formRef.current &&
+              !formRef.current.profileImage &&
+              !(newForm as Soldier).profileImage &&
+              tryConfirm && (
+                <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 right-14">
+                  הוסף תמונה
+                </span>
+              )}
           </div>
-        </div>
-      ) : (
-        <div className="relative">
-          <UploadWidget
-            text="העלה תמונה"
-            previewType="addPhoto"
-            onSetImageUrl={(e: string) => {
-              setNewForm((prev) => ({ ...prev, profileImage: e }));
-            }}
-          />
-          {formRef.current &&
-            !formRef.current.profileImage &&
-            !(newForm as Soldier).profileImage &&
-            tryConfirm && (
-              <span className="text-[#fc0000] font-thin text-[13px] shadow-md absolute bg-white p-1 rounded-sm z-50 top-14 right-14">
-                הוסף תמונה
-              </span>
-            )}
-        </div>
-      )}
+        )}
+      </div>
+
       {fields.map((field, i) => {
         return field === "profileImage" ? (
           <div key={field} className=""></div>

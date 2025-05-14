@@ -35,6 +35,7 @@ export default function OptinalAdminPage({ user }: Props) {
   const [formError, setFormError] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [reqSent, setReqSent] = useState<boolean>(false);
+  const [userGoogle, setUser] = useState<User>();
 
   const { boardId } = useParams();
   const fieldLabels: {
@@ -127,7 +128,10 @@ export default function OptinalAdminPage({ user }: Props) {
       {!user && (
         <div className="flex flex-col">
           <h4>התחברו בעזרת גוגל</h4>
-          <GoogleAuth />
+          <GoogleAuth
+            setUser={setUser}
+            userConnected={userGoogle?.displayName ?? ""}
+          />
         </div>
       )}
       {user && (

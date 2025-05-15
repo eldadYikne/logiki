@@ -564,6 +564,7 @@ export default function DetailsPreview() {
       />
     );
   };
+
   useEffect(() => {
     if (isLoading) {
       document.body.classList.add("overflow-hidden");
@@ -831,6 +832,41 @@ export default function DetailsPreview() {
       );
     }
   };
+  const onChangeItemStatus = async () => {
+    console.log("item", item);
+    try {
+      if (
+        item &&
+        !(item as Item).owner &&
+        item.id &&
+        (item as Item).isExclusiveItem
+      ) {
+        await updateDynamic(
+          "hapak162",
+          item.id,
+          "items",
+          {
+            ...item,
+            status: (item as Item).status === "stored" ? "broken" : "stored",
+          },
+          admin,
+          "edit",
+          {
+            soldierId: (item as Item).history[0].soldierId,
+            name: (item as Item).history[0].ownerName,
+          }
+        );
+        toaster.push(
+          <Message type="success" showIcon>
+            !הפעולה בוצעה בהצלחה
+          </Message>,
+          { placement: "topCenter" }
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   if (!item && id && !admin) {
     return (
       <div className=" w-full justify-center items-start  sm:p-24 p-4  pt-10 flex  ">
@@ -909,6 +945,18 @@ export default function DetailsPreview() {
                             background: statusColors[(item as Item).status],
                           }}
                           className=" sm:p-2 p-1 sm:w-1/2 text-white flex justify-center text-sm font-thin rounded-md shadow-sm max-h-7 sm:max-h-12"
+                          onClick={() => {
+                            if ((item as Item).status !== "signed") {
+                              onChangeItemStatus();
+                            } else if ((item as Item).status === "signed") {
+                              toaster.push(
+                                <Message type="info" showIcon>
+                                  לא ניתן להעביר סטטוס של פריט חתום
+                                </Message>,
+                                { placement: "topCenter" }
+                              );
+                            }
+                          }}
                         >
                           {statusTranslate[(item as Item).status]}
                         </div>

@@ -233,7 +233,11 @@ function renderCellData(header: string, row: Soldier | Item) {
             <img
               loading="lazy"
               alt={`${row.name ?? ""}`}
-              className="sm:h-12   m-0 p-0 rounded-full shadow-xl profile"
+              className={`sm:h-12 ${
+                (row as Item).status === "broken"
+                  ? "shadow-lg shadow-rose-300"
+                  : ""
+              }  m-0 p-0 rounded-full shadow-xl profile`}
               src={
                 (row as Soldier).profileImage.length > 1
                   ? getTransformedUrl(

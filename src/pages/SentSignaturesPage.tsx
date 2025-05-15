@@ -57,8 +57,6 @@ export default function SentSignaturesPage() {
       )
       .filter((item) => item !== undefined);
 
-    // itemsToSignature.filter((item) => !item.isExclusiveItem);
-
     console.log("exclusiveItems", exclusiveItems);
     console.log("notExclusiveItems", notExclusiveItems);
     setIsLoading(false);
@@ -137,7 +135,7 @@ export default function SentSignaturesPage() {
                   pdfFileSignature: "",
                   signtureDate: "",
                   soldierPersonalNumber: 0,
-                  status: "stored",
+                  status: "signed",
                   representative: "",
                   numberOfUnExclusiveItems:
                     Number(item.numberOfUnExclusiveItems) -

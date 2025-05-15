@@ -277,6 +277,12 @@ function MaiEquipment() {
   const onActionClickInTable = (item: Item | Soldier) => {
     setItemToEdit(item);
   };
+  const getDataLentgh = () => {
+    if (Object.values(filters).find((val) => val) && dataToTable) {
+      return dataToTable[selecteTable].length;
+    }
+    return itemsAmount;
+  };
   if (isError) {
     return <div>בעיית רשת שפר את מהירות האינטרנט שלך</div>;
   }
@@ -310,7 +316,7 @@ function MaiEquipment() {
                   filters={filters}
                   onFilter={onFilter}
                   filterType={selecteTable}
-                  dataLength={itemsAmount}
+                  dataLength={getDataLentgh()}
                   openForm={() => {
                     // setItemToEdit(undefined);
                   }}

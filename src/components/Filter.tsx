@@ -5,6 +5,7 @@ import { CombinedKeys } from "../types/table";
 import { useEffect, useRef, useState } from "react";
 import { NewTeam } from "../types/soldier";
 import PeoplesIcon from "@rsuite/icons/Peoples";
+import CountUp from "./CountUp";
 
 export default function Filter({
   filterType,
@@ -51,7 +52,7 @@ export default function Filter({
     { label: "הכל", value: "" },
     { label: "מאופסן", value: "stored" },
     { label: "חתום", value: "signed" },
-    { label: "שבור", value: "broken" },
+    { label: "תקול", value: "broken" },
   ];
   return (
     <div>
@@ -137,7 +138,10 @@ export default function Filter({
           })}
         </div>
         <div className="bg-gray-200 p-2 flex items-center justify-center gap-1 rounded-md">
-          <span className="text-xs sm:text-sm">{dataLength}</span>
+          <span className="text-xs sm:text-sm">
+            {" "}
+            <CountUp target={Number(dataLength)} />
+          </span>
 
           <span className="sm:flex hidden ">תוצאות</span>
           <span className="flex sm:hidden">

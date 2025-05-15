@@ -85,7 +85,7 @@ export const sizeIcons: { [key in keyof Size]: string } = {
   short: "👕",
 };
 export const statusTranslate: Record<Status, string> = {
-  broken: "שבור",
+  broken: "תקול",
   signed: "חתום",
   stored: "מאופסן",
 };

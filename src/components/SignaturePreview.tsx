@@ -26,6 +26,8 @@ export default function SignaturePreview({
   const [isNavActionsOpen, setIsNavActionsOpen] = useState<boolean>(false);
   const toaster = useToaster();
   const baseURL = "https://wa.me/";
+  const [signatureClickedOnce, setSignatureClickedOnce] = useState(false);
+
   const link = `https://logiki-smart.onrender.com/signature/${signature.id}`;
   const message = `שלום ${signature.soldierName}, הזמינו אותך לחתום על על ציוד באופן מקוון, לחץ על הקישור למעבר לחתימה `;
   let phoneNum = formatPhoneNumberToIsraelInternational(
@@ -171,11 +173,16 @@ export default function SignaturePreview({
           )}
         {signature.pdfFileSignature && (
           <div
-            className={`flex gap-2  w-full items-center justify-center h-10 bg-green-400 `}
+            className={`flex gap-2  w-full items-center justify-center h-10 bg-green-400 ${
+              signatureClickedOnce ? "opacity-50 pointer-events-none" : ""
+            } `}
           >
             <span
               className={`text-lg sm:text-sm cursor-pointer font-bold text-gray-800 flex items-center justify-center gap-2 `}
-              onClick={() => onSignature(signature)}
+              onClick={() => {
+                setSignatureClickedOnce(true);
+                onSignature(signature);
+              }}
             >
               נחתם בהצלחה לחץ לאישור והחתמה
             </span>
